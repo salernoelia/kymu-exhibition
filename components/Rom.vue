@@ -6,11 +6,11 @@
         <div class="angle-display">
           <p>Exercise: {{ currentExercise?.name }}</p>
           <p>Current Angle: {{ currentAngle.toFixed(2) }}</p>
-          <p>Pain Moments: {{ romStore.painMomentAngles }}</p>
+          <p>Pain Moments: {{ exerciseStore.painMomentAngles }}</p>
 
           <p>{{ referenceAngle }}</p>
           <p>{{ isInsideOfThreshold }}</p>
-          <!-- <p>Result Angle: {{ romStore.resultAngle.toFixed(2) }}</p> -->
+          <!-- <p>Result Angle: {{ exerciseStore.resultAngle.toFixed(2) }}</p> -->
         </div>
 
         <video class="input_video" ref="source" v-show="false"></video>
@@ -23,31 +23,20 @@
 </template>
 
 <script setup lang="ts">
-import { PoseService } from "~/shared/services/pose_service";
-// todo: use the fetched categories
-import { ROMCombinations } from "~/shared/constants/ROMCombinations";
-import { getReferenceAngleDeg } from "~/shared/utils/getReferenceAngleDeg";
+import { PoseService } from "~/shared/utils/pose_service";
 import type { Results } from "@mediapipe/pose";
 import type { NormalizedLandmarkList } from "@mediapipe/drawing_utils";
-import { useRomStore } from "~/stores/romStore";
-import * as Tone from "tone";
 
-const tvStore = useTVStore();
-const currentExercise = computed(() => tvStore.currentExercise);
+
+const exerciseStore = useExerciseStore();
+
+const currentExercise = computed(() => exerciseStore.currentExercise);
 
 const props = defineProps<{
   romCombination: string;
 }>();
 
 console.log(props.romCombination);
-
-const romStore = useRomStore();
-
-//create a synth and connect it to the main output (your speakers)
-const synth = new Tone.Synth().toDestination();
-
-//play a middle 'C' for the duration of an 8th note
-// synth.triggerAttackRelease("C4", "8n");
 
 const source = ref<HTMLVideoElement | null>(null);
 const canvas = ref<HTMLCanvasElement | null>(null);
@@ -130,18 +119,18 @@ function saveLandmarks() {
 
 function calculateAngle() {
   console.log("calculateVectorAngle");
-  romStore.resultAngle = currentAngle.value;
+  exerciseStore.resultAngle = currentAngle.value;
 }
 
 function markPainMoment() {
   console.log("marked pain moment at", currentAngle.value);
-  romStore.painMomentAngles.push(currentAngle.value);
-  romStore.painMomentAngles.sort((a, b) => a - b);
+  exerciseStore.painMomentAngles.push(currentAngle.value);
+  exerciseStore.painMomentAngles.sort((a, b) => a - b);
 }
 
 function cleanup() {
   currentAngle.value = 0;
-  romStore.resultAngle = 0;
+  exerciseStore.resultAngle = 0;
   exerciseInitialNormalizedLandmarks.value = null;
   console.log("cleanup done");
 }

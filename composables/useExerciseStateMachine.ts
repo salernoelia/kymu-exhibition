@@ -1,107 +1,147 @@
+import exercisesConfig from "~/assets/exercises_config.json";
+
 export const useExerciseStateMachine = () => {
+  // --- State ---
+  const appState = ref<"start" | "exercises" | "results">("start");
   const exercises = ref<ExerciseCollection>([]);
   const currentExerciseIndex = ref<number>(0);
-  const isLoading = ref<boolean>(false);
-  const error = ref<string | null>(null);
 
-  const currentExercise = computed(() => {
-    if (exercises.value.length === 0) return null;
+  // --- Computed ---
+  const currentExercise = computed<Exercise | null>(() => {
+    if (exercises.value.length === 0 || appState.value !== "exercises")
+      return null;
     return exercises.value[currentExerciseIndex.value];
   });
-
-  const isFirstExercise = computed(() => currentExerciseIndex.value === 0);
-
-  const isLastExercise = computed(
-    () => currentExerciseIndex.value === exercises.value.length - 1
-  );
 
   const progress = computed(() => {
     if (exercises.value.length === 0) {
       return { current: 0, total: 0, percentage: 0 };
     }
-    const current = currentExerciseIndex.value + 1;
+    // Ensure index is valid before calculating progress
+    const currentIdx =
+      currentExerciseIndex.value < exercises.value.length
+        ? currentExerciseIndex.value
+        : 0;
+    const current = currentIdx + 1;
     const total = exercises.value.length;
     const percentage = Math.round((current / total) * 100);
     return { current, total, percentage };
   });
 
-  const initializeExercises = (unitExercises: any[]) => {
-    if (!unitExercises || unitExercises.length === 0) {
-      exercises.value = [];
-      return;
+  // --- Methods ---
+
+  // Initialize directly from the imported JSON
+  const loadExercises = () => {
+    // Map the raw config to add the initial state properties
+    exercises.value = exercisesConfig.exercises.map((ex) => ({
+      ...ex,
+      status: "not_started", // Default status
+      results: {}, // Default results
+    })) as ExerciseCollection; // Add type assertion if needed
+    currentExerciseIndex.value = 0; // Reset index
+    appState.value = "start"; // Ensure starting state
+  };
+
+  const startExperience = () => {
+    if (exercises.value.length > 0) {
+      appState.value = "exercises";
+      // Optionally reset statuses or index here if needed on restart
+      // currentExerciseIndex.value = 0;
+      // exercises.value.forEach(ex => ex.status = 'not_started');
     }
+  };
 
-    exercises.value = unitExercises.map((exercise) => ({
-      ...exercise,
-      status:
-        exercise.completed_status === "none"
-          ? "not_started"
-          : exercise.completed_status,
-      results: exercise.results || {},
-      unitId: exercise.unitID,
-    })) as ExerciseCollection;
-
-    currentExerciseIndex.value = 0;
+  const showResults = () => {
+    // Logic to determine if results can be shown (e.g., all completed?)
+    // For now, just allows transitioning to the results state
+    appState.value = "results";
   };
 
   const goToNextExercise = () => {
-    if (isLastExercise.value) return;
-    currentExerciseIndex.value++;
+    if (exercises.value.length === 0 || appState.value !== "exercises") return;
+    const nextIndex = currentExerciseIndex.value + 1;
+    // Loop back to the first exercise if currently on the last one
+    currentExerciseIndex.value =
+      nextIndex >= exercises.value.length ? 0 : nextIndex;
   };
 
   const goToPreviousExercise = () => {
-    if (isFirstExercise.value) return;
-    currentExerciseIndex.value--;
+    if (exercises.value.length === 0 || appState.value !== "exercises") return;
+    const prevIndex = currentExerciseIndex.value - 1;
+    // Loop back to the last exercise if currently on the first one
+    currentExerciseIndex.value =
+      prevIndex < 0 ? exercises.value.length - 1 : prevIndex;
   };
-
-  const startExercise = () => {
-    if (!currentExercise.value) return;
-    currentExercise.value.status = "in_progress";
-  };
-
-  const completeExercise = (results?: ExerciseResults) => {
-    if (!currentExercise.value) return;
-    currentExercise.value.status = "completed";
-    if (results) {
-      currentExercise.value.results = results;
-    }
-  };
-
-  const skipExercise = () => {
-    if (!currentExercise.value) return;
-    currentExercise.value.status = "completed";
-  };
-
-  const getExerciseStatus = () => {
-    if (!currentExercise.value) return null;
-    return currentExercise.value.status;
-  };
-
-  const getAllExercises = () => exercises.value;
 
   const goToExercise = (index: number) => {
-    if (index >= 0 && index < exercises.value.length) {
+    if (
+      appState.value === "exercises" &&
+      index >= 0 &&
+      index < exercises.value.length
+    ) {
       currentExerciseIndex.value = index;
     }
   };
 
+  const startCurrentExercise = () => {
+    if (currentExercise.value) {
+      currentExercise.value.status = "in_progress";
+    }
+  };
+
+  const completeCurrentExercise = (results?: any) => {
+    if (currentExercise.value) {
+      currentExercise.value.status = "completed";
+      if (results) {
+        currentExercise.value.results = results;
+      }
+      // Optional: Automatically navigate to next or show results if all done
+      // if (exercises.value.every(ex => ex.status === 'completed')) {
+      //   showResults();
+      // } else {
+      //   goToNextExercise(); // Or let the user click next
+      // }
+    }
+  };
+
+  const skipCurrentExercise = () => {
+    if (currentExercise.value) {
+      // Mark as completed even when skipped, or use a different status like 'skipped'
+      currentExercise.value.status = "completed";
+      // goToNextExercise(); // Or let the user click next
+    }
+  };
+
+  const getExerciseStatus = (exerciseId: string): Exercise["status"] | null => {
+    const exercise = exercises.value.find((ex) => ex.id === exerciseId);
+    return exercise ? exercise.status : null;
+  };
+
+  const getAllExercises = (): ExerciseCollection => exercises.value;
+
+  // --- Lifecycle ---
+  // Load exercises when the composable is first used
+  loadExercises();
+
+  // --- Return ---
   return {
-    exercises,
+    appState,
+    exercises, // The raw list might not be needed externally often
     currentExercise,
-    currentExerciseIndex,
-    isLoading,
-    error,
+    currentExerciseIndex, // Might not be needed externally
     progress,
-    isFirstExercise,
-    isLastExercise,
-    initializeExercises,
+    // --- Actions ---
+    loadExercises, // Expose if re-loading is needed
+    startExperience,
+    showResults,
     goToNextExercise,
     goToPreviousExercise,
-    startExercise,
-    completeExercise,
-    skipExercise,
-    getExerciseStatus,
-    getAllExercises,
     goToExercise,
+    startCurrentExercise,
+    completeCurrentExercise,
+    skipCurrentExercise,
+    // --- Getters ---
+    getExerciseStatus,
+    getAllExercises, // Useful for overview or results page
   };
 };
