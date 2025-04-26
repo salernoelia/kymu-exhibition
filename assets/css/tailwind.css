@@ -1,0 +1,142 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Root Variables (Colors)
+   -------------------------------------------------------------------------- */
+:root {
+  --color-primaryLight: #e8ebf6;
+  --color-primaryLightHover: #dce1f1;
+  --color-primaryLightActive: #b7c0e2;
+  --color-primaryNormal: #1734a3;
+  --color-primaryNormalHover: #152f93;
+  --color-primaryNormalActive: #122a82;
+  --color-primaryDark: #11277a;
+  --color-primaryDarkHover: #0e1f62;
+  --color-primaryDarkActive: #0a1749;
+  --color-primaryDarker: #081239;
+
+  --color-secondaryLight: #fdeee9;
+  --color-secondaryLightHover: #fce6de;
+  --color-secondaryLightActive: #facbbc;
+  --color-secondaryNormal: #ee5826;
+  --color-secondaryNormalHover: #d64f22;
+  --color-secondaryNormalActive: #be461e;
+  --color-secondaryDark: #b3421d;
+  --color-secondaryDarkHover: #8f3517;
+  --color-secondaryDarkActive: #6b2811;
+  --color-secondaryDarker: #531f0d;
+
+  --color-tertiaryLight: #f8fafe;
+  --color-tertiaryLightHover: #f5f7fe;
+  --color-tertiaryLightActive: #eaeefd;
+  --color-tertiaryNormal: #bac9f9;
+  --color-tertiaryNormalHover: #a7b5e0;
+  --color-tertiaryNormalActive: #95a1c7;
+  --color-tertiaryDark: #8c97bb;
+  --color-tertiaryDarkHover: #707995;
+  --color-tertiaryDarkActive: #545a70;
+  --color-tertiaryDarker: #414657;
+
+  --color-successLight: #edf6f0;
+  --color-successLightHover: #e4f1e8;
+  --color-successLightActive: #c8e2cf;
+  --color-successNormal: #4ca264;
+  --color-successNormalHover: #44925a;
+  --color-successNormalActive: #3d8250;
+  --color-successDark: #397a4b;
+  --color-successDarkHover: #2e613c;
+  --color-successDarkActive: #22492d;
+  --color-successDarker: #1b3923;
+
+  --color-warningLight: #fef9ec;
+  --color-warningLightHover: #fdf6e2;
+  --color-warningLightActive: #fbedc3;
+  --color-warningNormal: #f2c63f;
+  --color-warningNormalHover: #dab239;
+  --color-warningNormalActive: #c29e32;
+  --color-warningDark: #b6952f;
+  --color-warningDarkHover: #917726;
+  --color-warningDarkActive: #6d591c;
+  --color-warningDarker: #554516;
+
+  --color-dangerLight: #fdf0f1;
+  --color-dangerLightHover: #fce8ea;
+  --color-dangerLightActive: #f8cfd4;
+  --color-dangerNormal: #e86575;
+  --color-dangerNormalHover: #d15b69;
+  --color-dangerNormalActive: #ba515e;
+  --color-dangerDark: #ae4c58;
+  --color-dangerDarkHover: #8b3d46;
+  --color-dangerDarkActive: #682d35;
+  --color-dangerDarker: #512329;
+
+  --color-contrastLight: #fdf9f9;
+  --color-contrastLightHover: #fcf6f5;
+  --color-contrastLightActive: #f8eceb;
+  --color-contrastNormal: #e9c2be;
+  --color-contrastNormalHover: #d2afab;
+  --color-contrastNormalActive: #ba9b98;
+  --color-contrastDark: #af928f;
+  --color-contrastDarkHover: #8c7472;
+  --color-contrastDarkActive: #695755;
+  --color-contrastDarker: #524443;
+
+  --color-outline_grayLight: #f9f9f9;
+  --color-outline_grayLightHover: #f6f6f6;
+  --color-outline_grayLightActive: #ebebeb;
+  --color-outline_grayNormal: #c0c0c0;
+  --color-outline_grayNormalHover: #adadad;
+  --color-outline_grayNormalActive: #9a9a9a;
+  --color-outline_grayDark: #909090;
+  --color-outline_grayDarkHover: #737373;
+  --color-outline_grayDarkActive: #565656;
+  --color-outline_grayDarker: #434343;
+
+  --color-inactiveLight: #f3f3f3;
+  --color-inactiveLightHover: #ededed;
+  --color-inactiveLightActive: #d9d9d9;
+  --color-inactiveNormal: #848484;
+  --color-inactiveNormalHover: #777777;
+  --color-inactiveNormalActive: #6a6a6a;
+  --color-inactiveDark: #636363;
+  --color-inactiveDarkHover: #4f4f4f;
+  --color-inactiveDarkActive: #3b3b3b;
+  --color-inactiveDarker: #2e2e2e;
+}
+/* Base Styles
+   -------------------------------------------------------------------------- */
+body {
+  font-family: "Poppins", sans-serif;
+  font-weight: 300;
+  font-size: 14px;
+  margin: 0;
+  padding: 1em;
+  word-break: break-word;
+}
+
+h1 {
+  font-weight: 500;
+  margin: 0 0 0.8em 0;
+  padding: 0 0 0.2em 0;
+  font-size: 2rem;
+}
+
+h2 {
+  font-weight: 400;
+  margin: 0 0 0.8em 0;
+  padding: 0 0 0.2em 0;
+  font-size: 1.2rem;
+}
+
+h3 {
+  font-weight: 500;
+  margin: 0 0 0.8em 0;
+  padding: 0 0 0.2em 0;
+  font-size: 1rem;
+}
+
+h4 {
+  margin: 0;
+  padding: 0 0 0.2em 0;
+}

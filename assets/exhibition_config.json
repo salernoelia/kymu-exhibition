@@ -1,0 +1,54 @@
+{
+  "name": "Unit",
+  "description": "Schwerpunkt auf der Verbesserung des Körpergleichgewichts.",
+  "exercises": [
+    {
+      "id": "exercise_0",
+      "name": "Beweglichkeit Linkes Bein",
+      "results": null,
+      "category": "knee_flexion_left",
+      "description": "Ein Test um die Beweglichkeit des linken beins zu testen",
+      "exercise_type": "assessment_screen",
+      "goal_type": "repetitions_goal",
+      "repetitions_goal": 3,
+      "duration_seconds_goal": null,
+      "type": "range-of-motion",
+      "inherited_default_exercise": null,
+      "therapist_added_image_urls": null,
+      "therapist_added_video_urls": null,
+      "family_scene_adjustment_access": false
+    },
+    {
+      "id": "exercise_1",
+      "name": "Hanteln linker Arm",
+      "results": null,
+      "category": "elbow_flexion_left",
+      "description": "Bewege die Hantel fünf mal hoch und runter mit deinem Linken Arm.",
+      "exercise_type": "assessment_screen",
+      "goal_type": "repetitions_goal",
+      "repetitions_goal": 5,
+      "duration_seconds_goal": null,
+      "type": "range-of-motion",
+      "inherited_default_exercise": null,
+      "therapist_added_image_urls": null,
+      "therapist_added_video_urls": null,
+      "family_scene_adjustment_access": false
+    },
+    {
+      "id": "exercise_2",
+      "name": "Beweglichkeit Linke Hüftseite",
+      "results": null,
+      "category": "hip_flexion_left",
+      "description": "Test für die Beweglichkeit der linken Hüftseite.",
+      "exercise_type": "assessment_screen",
+      "goal_type": "repetitions_goal",
+      "repetitions_goal": 3,
+      "duration_seconds_goal": null,
+      "type": "range-of-motion",
+      "inherited_default_exercise": null,
+      "therapist_added_image_urls": null,
+      "therapist_added_video_urls": null,
+      "family_scene_adjustment_access": true
+    }
+  ]
+}
