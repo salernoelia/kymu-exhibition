@@ -5,6 +5,7 @@ export const useExerciseStateMachine = () => {
   const appState = ref<"start" | "exercises" | "results">("start");
   const exercises = ref<ExerciseCollection>([]);
   const currentExerciseIndex = ref<number>(0);
+  const exerciseCount = computed(() => exercises.value.length);
 
   // --- Computed ---
   const currentExercise = computed<Exercise | null>(() => {
@@ -126,12 +127,13 @@ export const useExerciseStateMachine = () => {
   // --- Return ---
   return {
     appState,
-    exercises, // The raw list might not be needed externally often
+    exercises,
+    exerciseCount,
     currentExercise,
-    currentExerciseIndex, // Might not be needed externally
+    currentExerciseIndex,
     progress,
     // --- Actions ---
-    loadExercises, // Expose if re-loading is needed
+    loadExercises,
     startExperience,
     showResults,
     goToNextExercise,

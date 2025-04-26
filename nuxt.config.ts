@@ -2,7 +2,11 @@
 export default defineNuxtConfig({
   devtools: { enabled: true },
   ssr: false,
-  css: ["~/assets/css/main.css", "~/assets/css/reset.css"],
+  css: [
+    "~/assets/css/main.css",
+    "~/assets/css/reset.css",
+    "~/assets/css/tailwind.css",
+  ],
 
   imports: {
     dirs: ["~/shared/types/*.d.ts", "~/shared/utils/*.ts", "~/assets/*.json"],
