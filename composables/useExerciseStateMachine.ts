@@ -39,7 +39,7 @@ export const useExerciseStateMachine = () => {
     const startExperience = async () => {
         if (exercises.value.length > 0) {
             appState.value = 'exercises';
-            currentExerciseIndex.value = 0; // Ensure we're starting with the first exercise
+            currentExerciseIndex.value = 0;
             exerciseStore.userKey = v4();
             try {
                 await $fetch('/api/users', {
@@ -60,7 +60,6 @@ export const useExerciseStateMachine = () => {
                 exerciseStore.userKey
             );
 
-            // Navigate to the first exercise's instruction page
             const firstExerciseId = exercises.value[0].id;
             await navigateTo(`/${firstExerciseId}/instruction`, { replace: true });
         }
