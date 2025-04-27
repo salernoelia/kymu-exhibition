@@ -25,7 +25,6 @@ export const useExerciseStore = defineStore('exerciseStore', () => {
         const index = exercises.value.findIndex((ex) => ex.id === exerciseId);
         console.log('found index:', index);
         if (index >= 0) {
-            // Make sure we're in the exercises state
             if (exerciseStateMachine.appState.value !== 'exercises') {
                 exerciseStateMachine.appState.value = 'exercises';
             }
@@ -74,7 +73,7 @@ export const useExerciseStore = defineStore('exerciseStore', () => {
     };
 
     watch(
-        () => route.params.exerciseid, // Changed from exerciseId to exerciseid
+        () => route.params.exerciseid,
         (newExerciseId) => {
             if (newExerciseId) {
                 setCurrentExercise(newExerciseId as string);
