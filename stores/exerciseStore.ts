@@ -83,6 +83,7 @@ export const useExerciseStore = defineStore('exerciseStore', () => {
             const results: ExerciseResults = {
                 exercise_id: currentExercise.value.id,
                 achieved_angle: resultAngle.value,
+                pain_angles_deg: painMomentAngles.value,
             };
             currentExercise.value.status = 'completed';
             startedRecording.value = false;

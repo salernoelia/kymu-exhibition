@@ -52,7 +52,7 @@ const props = defineProps<{
   romCombination: string;
 }>();
 
-console.log(props.romCombination);
+
 
 const source = ref<HTMLVideoElement | null>(null);
 const canvas = ref<HTMLCanvasElement | null>(null);
@@ -144,6 +144,7 @@ function markPainMoment() {
 function cleanup() {
   currentAngle.value = 0;
   exerciseStore.resultAngle = 0;
+  exerciseStore.painMomentAngles = [];
   exerciseInitialNormalizedLandmarks.value = null;
   console.log("cleanup done");
   exerciseStore.startedRecording = false;
@@ -193,7 +194,16 @@ onMounted(async () => {
   }
 
   toneForRom.startTone();
+
+  setTimeout(() => {
+    if (!props.romCombination) {
+      toneForRom.stopTone();
+      exerciseStore.resetExperience();
+    }
+  }, 1000);
 });
+
+
 
 onBeforeUnmount(() => {
   toneForRom.stopTone();

@@ -69,13 +69,15 @@ const handleRemoteKey = (newKey: string | null) => {
             if (exerciseStore.startedRecording) {
 
                 romComponent.value.calculateAngle()
-
                 exerciseStore.completeCurrentExercise();
                 romComponent.value.cleanup();
-                if (exerciseStore.currentExercise?.id == "exercise_2" || route.params.exerciseid == "exercise_2") {
+                if (exerciseStore.currentExercise?.id == "exercise_2" && route.params.exerciseid == "exercise_2" && exerciseStore.currentExercise.status !== "not_started") {
                     navigateTo("/results")
+                } else {
+                    console.log("nav to ")
+                    navigateTo("/" + exerciseStore.currentExercise?.id + "/progress")
+
                 }
-                navigateTo("/" + exerciseStore.currentExercise?.id + "/progress")
 
             } else if (!exerciseStore.startedRecording) {
                 romComponent.value.saveLandmarks();
