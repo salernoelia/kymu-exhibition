@@ -1,15 +1,16 @@
 <template>
   <div class="w-full">
     <div class="flex flex-row w-full overflow-hidden">
-      <div class="flex flex-col w-full h-full items-center justify-start overflow-hidden">
+      <div class="flex flex-col w-full h-full overflow-hidden">
         <!-- Display the angle information -->
         <div class="angle-display">
           <p>Exercise: {{ currentExercise?.name }}</p>
           <p>Current Angle: {{ currentAngle.toFixed(2) }}</p>
           <p>Pain Moments: {{ exerciseStore.painMomentAngles }}</p>
 
-          <p>{{ referenceAngle }}</p>
-          <p>{{ isInsideOfThreshold }}</p>
+          <p>{{ romCombination }}</p>
+          <p>{{ isPersonVisible }}</p>
+
           <!-- <p>Result Angle: {{ exerciseStore.resultAngle.toFixed(2) }}</p> -->
         </div>
 
@@ -26,7 +27,14 @@
 import { PoseService } from "~/shared/utils/pose_service";
 import type { Results } from "@mediapipe/pose";
 import type { NormalizedLandmarkList } from "@mediapipe/drawing_utils";
+import PoseCombinations from '~/assets/pose_config.json'
 
+const canvasWidth = computed(() =>
+  Math.min(window.innerWidth, window.innerHeight * (16 / 9))
+);
+const canvasHeight = computed(() =>
+  Math.min(window.innerHeight * 0.9, canvasWidth.value * (9 / 16))
+);
 
 const exerciseStore = useExerciseStore();
 
@@ -57,7 +65,7 @@ const thresholdDeg = ref(30);
 
 const toneForRom = useToneForRom(currentAngle);
 
-const isInsideOfThreshold = computed((): boolean => {
+const isPersonVisible = computed((): boolean => {
   if (
     !mediapipeResults.value ||
     !mediapipeResults.value.poseWorldLandmarks ||
@@ -68,8 +76,10 @@ const isInsideOfThreshold = computed((): boolean => {
     mediapipeResults.value.poseWorldLandmarks[movableIndex.value]
       ?.visibility === undefined ||
     (mediapipeResults.value.poseWorldLandmarks[movableIndex.value]
-      ?.visibility ?? 0) < 0.9
+      ?.visibility ?? 0) < 0.8
   ) {
+    toneForRom.stopTone();
+
     return false;
   }
 
@@ -77,17 +87,11 @@ const isInsideOfThreshold = computed((): boolean => {
   const B = mediapipeResults.value.poseWorldLandmarks[pivotIndex.value];
   const C = mediapipeResults.value.poseWorldLandmarks[referenceIndex.value];
 
+
   if (!A || !B || !C) return false;
 
-  referenceAngle.value = getReferenceAngleDeg(A, B, C);
-
-  if (referenceAngle.value <= thresholdDeg.value) {
-    // toneForRom.startTone();
-    return true;
-  } else {
-    // toneForRom.stopTone();
-    return false;
-  }
+  toneForRom.startTone();
+  return true;
 });
 
 watch(
@@ -95,16 +99,16 @@ watch(
   (newCombination) => {
     if (
       newCombination &&
-      ROMCombinations[newCombination as keyof typeof ROMCombinations]
+      PoseCombinations[newCombination as keyof typeof PoseCombinations]
     ) {
-      updateROMCombination(newCombination as keyof typeof ROMCombinations);
+      updateROMCombination(newCombination as keyof typeof PoseCombinations);
     }
   },
   { immediate: true }
 );
 
-function updateROMCombination(combination: keyof typeof ROMCombinations) {
-  const { pivot, movable, reference, threshold } = ROMCombinations[combination];
+function updateROMCombination(combination: keyof typeof PoseCombinations) {
+  const { pivot, movable, reference, threshold } = PoseCombinations[combination];
   pivotIndex.value = pivot;
   movableIndex.value = movable;
   referenceIndex.value = reference;
@@ -167,12 +171,7 @@ onBeforeUnmount(() => {
   toneForRom.stopTone();
 });
 
-const canvasWidth = computed(() =>
-  Math.min(window.innerWidth, window.innerHeight * (16 / 9))
-);
-const canvasHeight = computed(() =>
-  Math.min(window.innerHeight * 0.9, canvasWidth.value * (9 / 16))
-);
+
 
 defineExpose({
   saveLandmarks,
@@ -195,6 +194,16 @@ defineExpose({
 
 .loading_canvas {
   background: url("https://media.giphy.com/media/8agqybiK5LW8qrG3vJ/giphy.gif") center no-repeat;
+}
+
+/* .output_canvas {
+  translate: 0 -10px;
+} */
+
+.output_canvas {
+  object-fit: contain;
+  max-height: calc(100vh - 120px);
+  /* Account for top bar and padding */
 }
 
 .angle-display {

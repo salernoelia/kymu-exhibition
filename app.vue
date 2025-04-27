@@ -3,6 +3,18 @@
     <div class="parent">
       <Transition appear>
         <Menu v-if="menu">
+          <div v-for="(exercise, index) in exerciseStore.exercises" :key="index" class="flex flex-col mb-2 gap-4">
+            <p>Debug - ID: {{ exercise.id }}</p>
+            <Button @click="navigateTo(`/${exercise.id}/progress`)">
+              Progress {{ exercise.name }}
+            </Button>
+            <Button @click="navigateTo(`/${exercise.id}/instruction`)">
+              Instruction {{ exercise.name }}
+            </Button>
+            <Button @click="navigateTo(`/${exercise.id}/exercise`)">
+              Exercise {{ exercise.name }}
+            </Button>
+          </div>
         </Menu>
       </Transition>
 
@@ -18,6 +30,7 @@
 const { toggleFullscreen } = useFullscreen();
 const { remoteKey } = useRemoteControl();
 const route = useRoute();
+const exerciseStore = useExerciseStore();
 
 const menu = ref(false);
 
@@ -50,11 +63,8 @@ body {
 }
 
 .parent {
-  display: flex;
-  flex-direction: column;
-  position: absolute;
-  inset: 0;
-  justify-content: center;
+  height: 100vh;
   align-items: center;
+  overflow: hidden;
 }
 </style>

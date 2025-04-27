@@ -1,40 +1,94 @@
 export const useExerciseStore = defineStore("exerciseStore", () => {
   const isLoading = ref(false);
   const error = ref<string | null>(null);
-
   const resultAngle = ref(0);
   const painMomentAngles = ref<number[]>([]);
   const startedRecording = ref<boolean>(false);
 
   const exerciseStateMachine = useExerciseStateMachine();
-  const exercises = exerciseStateMachine.getAllExercises();
+
+  const exercises = computed(() => exerciseStateMachine.exercises.value);
+  const currentExerciseIndex = computed(
+    () => exerciseStateMachine.currentExerciseIndex.value
+  );
+  const currentExercise = computed(
+    () => exerciseStateMachine.currentExercise.value
+  );
+  const exercisesCount = computed(
+    () => exerciseStateMachine.exerciseCount.value
+  );
+  const exerciseProgress = computed(() => exerciseStateMachine.progress.value);
 
   const getExerciseById = (exerciseId: string) => {
-    const exercises = exerciseStateMachine.getAllExercises();
-    return exercises.find((ex) => ex.id === exerciseId);
+    return exercises.value.find((ex) => ex.id === exerciseId);
   };
 
   const setCurrentExercise = (exerciseId: string) => {
-    const exercises = exerciseStateMachine.getAllExercises();
-    const index = exercises.findIndex((ex) => ex.id === exerciseId);
+    const index = exercises.value.findIndex((ex) => ex.id === exerciseId);
     if (index >= 0) {
       exerciseStateMachine.goToExercise(index);
     }
+  };
+
+  const nextExercise = () => {
+    const nextIndex = currentExerciseIndex.value + 1;
+    console.log(nextIndex);
+    const newIndex = nextIndex >= exercises.value.length ? 0 : nextIndex;
+    exerciseStateMachine.goToExercise(newIndex);
+  };
+
+  const previousExercise = () => {
+    const prevIndex = currentExerciseIndex.value - 1;
+    const newIndex = prevIndex < 0 ? exercises.value.length - 1 : prevIndex;
+    exerciseStateMachine.goToExercise(newIndex);
+  };
+
+  const startCurrentExercise = () => {
+    if (currentExercise.value) {
+      currentExercise.value.status = "in_progress";
+    }
+  };
+
+  const completeCurrentExercise = (results?: any) => {
+    if (currentExercise.value) {
+      currentExercise.value.status = "completed";
+      if (results) {
+        currentExercise.value.results = results;
+      }
+    }
+  };
+
+  const skipCurrentExercise = () => {
+    if (currentExercise.value) {
+      currentExercise.value.status = "completed";
+    }
+  };
+
+  const getExerciseStatus = (exerciseId: string): Exercise["status"] | null => {
+    const exercise = exercises.value.find((ex) => ex.id === exerciseId);
+    return exercise ? exercise.status : null;
   };
 
   return {
     isLoading,
     error,
     exercises,
-    exercisesCount: exerciseStateMachine.exerciseCount,
+    exercisesCount,
     getExerciseById,
     setCurrentExercise,
-    exerciseStateMachine,
-    currentExercise: exerciseStateMachine.currentExercise,
-    currentExerciseIndex: exerciseStateMachine.currentExerciseIndex,
-    exerciseProgress: exerciseStateMachine.progress,
+    nextExercise,
+    previousExercise,
+    currentExercise,
+    currentExerciseIndex,
+    exerciseProgress,
     resultAngle,
     painMomentAngles,
     startedRecording,
+    startCurrentExercise,
+    completeCurrentExercise,
+    skipCurrentExercise,
+    getExerciseStatus,
+    startExperience: exerciseStateMachine.startExperience,
+    showResults: exerciseStateMachine.showResults,
   };
 });

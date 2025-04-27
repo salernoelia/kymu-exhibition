@@ -1,8 +1,12 @@
 <template>
-    <div class="flex flex-col w-full h-full items-center justify-center">
-        <h1>Progress</h1>
+    <div class="flex flex-col w-full h-full ">
+        <h1>Start</h1>
         <Progress :current="exerciseStore.currentExerciseIndex" :total="exerciseStore.exercisesCount" />
+        <button @click="exerciseStore.startExperience">
+            Start
+        </button>
 
+        {{ exerciseStore.currentExerciseIndex }}
     </div>
 </template>
 
