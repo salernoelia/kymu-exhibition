@@ -1,12 +1,12 @@
-// Simple schema
+// User schema
 import { sqliteTable, integer, text } from 'drizzle-orm/sqlite-core';
 import { sql } from 'drizzle-orm';
 
 export const users = sqliteTable('users', {
-    id: integer('id').primaryKey(),
-    firstName: text('first_name'),
-    lastName: text('last_name'),
-    createdAt: text('timestamp').default(sql`CURRENT_TIMESTAMP`),
+    id: integer('id').primaryKey({ autoIncrement: true }),
+    key: text('key'),
+    completed_exercise: text('completed_exercise'),
+    createdAt: text('created_at').default(sql`CURRENT_TIMESTAMP`),
 });
 
 // For select queries
