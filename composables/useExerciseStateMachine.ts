@@ -93,10 +93,7 @@ export const useExerciseStateMachine = () => {
             );
 
             await navigateTo('/', { replace: true });
-
-            setTimeout(() => {
-                window.location.reload();
-            }, 100);
+            window.location.reload();
         }
     };
 

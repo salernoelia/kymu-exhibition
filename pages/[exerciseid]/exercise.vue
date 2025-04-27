@@ -67,14 +67,20 @@ const handleRemoteKey = (newKey: string | null) => {
     } else if (newKey === "ok") {
         if (romComponent.value) {
             if (exerciseStore.startedRecording) {
-                exerciseStore.saveExerciseResults();
-            } else if (!exerciseStore.startedRecording) {
 
+                romComponent.value.calculateAngle()
+
+                exerciseStore.completeCurrentExercise();
+                romComponent.value.cleanup();
+                if (exerciseStore.currentExercise?.id == "exercise_2" || route.params.exerciseid == "exercise_2") {
+                    navigateTo("/results")
+                }
+                navigateTo("/" + exerciseStore.currentExercise?.id + "/progress")
+
+            } else if (!exerciseStore.startedRecording) {
                 romComponent.value.saveLandmarks();
             }
         }
-    } else if (newKey === "down") {
-        window.location.reload();
     } else if (newKey === "up") {
         if (romComponent.value) {
             romComponent.value.markPainMoment();

@@ -3,7 +3,11 @@
     <div class="parent">
       <Transition appear>
         <Menu v-if="menu">
-          <div v-for="(exercise, index) in exerciseStore.exercises" :key="index" class="flex flex-col mb-2 gap-4">
+          <div
+            v-for="(exercise, index) in exerciseStore.exercises"
+            :key="index"
+            class="flex flex-col mb-2 gap-4"
+          >
             <p>Debug - ID: {{ exercise.id }}</p>
             <Button @click="navigateTo(`/${exercise.id}/progress`)">
               Progress {{ exercise.name }}
@@ -51,6 +55,8 @@ watch(
     } else if (newKey === "fullscreen") {
       console.log("Fullscreen button pressed - toggling fullscreen");
       toggleFullscreen();
+    } else if (newKey === "down") {
+      exerciseStore.resetExperience();
     }
   }
 );

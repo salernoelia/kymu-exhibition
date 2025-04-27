@@ -31,7 +31,7 @@ export const useExerciseStore = defineStore('exerciseStore', () => {
                     achievedRepetitions: currentExercise.value.results.achieved_repetitions,
                     achievedSeconds: currentExercise.value.results.achieved_seconds,
                     achievedAngle: currentExercise.value.results.achieved_angle,
-                    painAnglesDeg: currentExercise.value.results.pain_angles_deg,
+                    painAnglesDeg: JSON.stringify(currentExercise.value.results.pain_angles_deg),
                 },
             });
         } catch (e: any) {
@@ -78,13 +78,21 @@ export const useExerciseStore = defineStore('exerciseStore', () => {
         }
     };
 
-    const completeCurrentExercise = (results: ExerciseResults) => {
+    const completeCurrentExercise = () => {
         if (currentExercise.value) {
+            const results: ExerciseResults = {
+                exercise_id: currentExercise.value.id,
+                achieved_angle: resultAngle.value,
+            };
             currentExercise.value.status = 'completed';
+            startedRecording.value = false;
+            painMomentAngles.value = [];
+            resultAngle.value = 0;
             if (results) {
                 currentExercise.value.results = results;
                 saveExerciseResults();
             }
+            nextExercise();
         }
     };
 
