@@ -47,6 +47,7 @@ export const useExerciseStore = defineStore('exerciseStore', () => {
     };
 
     const startCurrentExercise = () => {
+        console.log('Starting Exercise');
         if (currentExercise.value) {
             currentExercise.value.status = 'in_progress';
         }
