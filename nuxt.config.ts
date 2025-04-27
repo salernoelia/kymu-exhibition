@@ -19,6 +19,7 @@ export default defineNuxtConfig({
     "@pinia/nuxt",
     "@vueuse/nuxt",
     "@nuxt/eslint",
+    "motion-v/nuxt",
   ],
 
   pinia: {

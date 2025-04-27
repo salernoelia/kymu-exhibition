@@ -1,0 +1,9 @@
+{
+    "printWidth": 100,
+    "tabWidth": 4,
+    "singleQuote": true,
+    "vueIndentScriptAndStyle": true,
+    "bracketSameLine": false,
+    "htmlWhitespaceSensitivity": "ignore",
+    "singleAttributePerLine": false
+}

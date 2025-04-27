@@ -1,24 +1,32 @@
 <template>
-  <div class="w-full">
-    <div class="flex flex-row w-full overflow-hidden">
-      <div class="flex flex-col w-full h-full overflow-hidden">
-        <!-- Display the angle information -->
-        <div class="angle-display">
-          <p>Exercise: {{ currentExercise?.name }}</p>
-          <p>Current Angle: {{ currentAngle.toFixed(2) }}</p>
-          <p>Pain Moments: {{ exerciseStore.painMomentAngles }}</p>
-
-          <p>{{ romCombination }}</p>
-          <p>{{ isPersonVisible }}</p>
-
-          <!-- <p>Result Angle: {{ exerciseStore.resultAngle.toFixed(2) }}</p> -->
-        </div>
-
-        <video class="input_video" ref="source" v-show="false"></video>
-        <canvas class="output_canvas" :class="{ loading_canvas: loadingCanvas }" :width="canvasWidth"
-          :height="canvasHeight" ref="canvas"></canvas>
-        <div class="landmark-grid-container" ref="landmarkContainer"></div>
+  <div class="w-full h-full flex flex-col">
+    <div class="flex flex-row w-full flex-grow overflow-hidden">
+      <div class="flex flex-col w-full h-full justify-center items-center overflow-hidden">
+        <video
+          v-show="false"
+          ref="source"
+          class="input_video"
+        />
+        <canvas
+          ref="canvas"
+          class="output_canvas"
+          :class="{ loading_canvas: loadingCanvas }"
+          :width="canvasWidth"
+          :height="canvasHeight"
+        />
+        <div
+          ref="landmarkContainer"
+          class="landmark-grid-container"
+        />
       </div>
+    </div>
+    <!-- Display the angle information -->
+    <div class="angle-display">
+      <p>Exercise: {{ currentExercise?.name }}</p>
+      <p>Current Angle: {{ currentAngle.toFixed(2) }}</p>
+      <p>Pain Moments: {{ exerciseStore.painMomentAngles }}</p>
+      <p>{{ romCombination }}</p>
+      <p>{{ isPersonVisible }}</p>
     </div>
   </div>
 </template>
@@ -141,27 +149,43 @@ function cleanup() {
 
 onMounted(async () => {
   if (canvas.value && source.value && landmarkContainer.value) {
-    await new PoseService(
-      canvas.value,
-      source.value,
-      canvasWidth.value,
-      canvasHeight.value,
-      landmarkContainer.value,
-      loadingCanvas,
-      mediapipeResults,
-      exerciseInitialNormalizedLandmarks,
-      pivotIndex,
-      movableIndex,
-      currentAngle
-    ).setOptions({
-      modelComplexity: 0,
-      smoothLandmarks: true,
-      enableSegmentation: false,
-      smoothSegmentation: false,
-      minDetectionConfidence: 0.3,
-      minTrackingConfidence: 0.3,
-      selfieMode: true,
-    });
+    // Let the video load first and use its natural dimensions
+    source.value.onloadedmetadata = async () => {
+      // Use the video's actual aspect ratio for the canvas
+      canvas.value.width = source.value.videoWidth;
+      canvas.value.height = source.value.videoHeight;
+
+      await new PoseService(
+        canvas.value,
+        source.value,
+        canvas.value.width,  // Use actual video dimensions
+        canvas.value.height,
+        landmarkContainer.value,
+        loadingCanvas,
+        mediapipeResults,
+        exerciseInitialNormalizedLandmarks,
+        pivotIndex,
+        movableIndex,
+        currentAngle
+      ).setOptions({
+        modelComplexity: 2,
+        smoothLandmarks: true,
+        enableSegmentation: false,
+        smoothSegmentation: false,
+        minDetectionConfidence: 0.3,
+        minTrackingConfidence: 0.3,
+        selfieMode: true,
+      });
+    };
+
+    // Request camera access
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      source.value.srcObject = stream;
+      source.value.play();
+    } catch (err) {
+      console.error("Error accessing camera:", err);
+    }
   }
 
   toneForRom.startTone();
@@ -202,8 +226,20 @@ defineExpose({
 
 .output_canvas {
   object-fit: contain;
+  width: 100%;
+  height: 100%;
+  max-width: 100vw;
   max-height: calc(100vh - 120px);
-  /* Account for top bar and padding */
+}
+
+.canvas-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
 }
 
 .angle-display {
@@ -217,6 +253,8 @@ defineExpose({
   font-weight: bold;
   text-align: center;
 }
+
+
 
 @media (min-width: 1024px) {
   .pose {
