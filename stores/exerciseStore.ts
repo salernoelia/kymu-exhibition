@@ -60,9 +60,15 @@ export const useExerciseStore = defineStore('exerciseStore', () => {
 
     const nextExercise = () => {
         const nextIndex = currentExerciseIndex.value + 1;
-        console.log(nextIndex);
-        const newIndex = nextIndex >= exercises.value.length ? 0 : nextIndex;
-        exerciseStateMachine.goToExercise(newIndex);
+        console.log(`Moving from exercise index ${currentExerciseIndex.value} to ${nextIndex}`);
+
+        if (nextIndex >= exercises.value.length) {
+            console.log('Reached the end of exercises, showing results');
+            exerciseStateMachine.showResults();
+            return;
+        }
+
+        exerciseStateMachine.goToExercise(nextIndex);
     };
 
     const previousExercise = () => {
@@ -93,7 +99,8 @@ export const useExerciseStore = defineStore('exerciseStore', () => {
                 currentExercise.value.results = results;
                 saveExerciseResults();
             }
-            nextExercise();
+            // Remove the automatic navigation to the next exercise
+            // nextExercise() call is removed from here
         }
     };
 

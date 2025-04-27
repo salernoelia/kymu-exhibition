@@ -48,37 +48,40 @@ const handleRemoteKey = (newKey: string | null) => {
     if (!newKey) return;
 
     if (newKey === "right") {
-        console.log("right")
-        if (exerciseStore.currentExercise?.id == "exercise_2" || route.params.exerciseid == "exercise_2") {
-            exerciseStore.skipCurrentExercise()
-            if (romComponent.value) {
-                romComponent.value.cleanup();
-            }
-            navigateTo("/results")
-        } else {
-            exerciseStore.skipCurrentExercise()
-            exerciseStore.nextExercise();
-            if (romComponent.value) {
-                romComponent.value.cleanup();
-            }
-            navigateTo("/" + exerciseStore.currentExercise?.id + "/progress")
+        console.log("skipping exercise");
+        exerciseStore.skipCurrentExercise();
+
+        if (romComponent.value) {
+            romComponent.value.cleanup();
         }
 
+        const currentExerciseId = exerciseStore.currentExercise?.id;
+        const isLastExercise = exerciseStore.currentExerciseIndex === exerciseStore.exercisesCount - 1;
+
+        if (isLastExercise) {
+            navigateTo("/results");
+        } else {
+            exerciseStore.nextExercise();
+            navigateTo(`/${exerciseStore.currentExercise?.id}/progress`);
+        }
     } else if (newKey === "ok") {
         if (romComponent.value) {
             if (exerciseStore.startedRecording) {
+                romComponent.value.calculateAngle();
 
-                romComponent.value.calculateAngle()
                 exerciseStore.completeCurrentExercise();
                 romComponent.value.cleanup();
-                if (exerciseStore.currentExercise?.id == "exercise_2" && route.params.exerciseid == "exercise_2" && exerciseStore.currentExercise.status !== "not_started") {
-                    navigateTo("/results")
+
+                const isLastExercise = exerciseStore.currentExerciseIndex === exerciseStore.exercisesCount - 1;
+
+                if (isLastExercise) {
+                    navigateTo("/results");
                 } else {
-                    console.log("nav to ")
-                    navigateTo("/" + exerciseStore.currentExercise?.id + "/progress")
+                    exerciseStore.nextExercise();
 
+                    console.log(`Navigating to next exercise: ${exerciseStore.currentExercise?.id}`);
+                    navigateTo(`/${exerciseStore.currentExercise?.id}/progress`);
                 }
-
             } else if (!exerciseStore.startedRecording) {
                 romComponent.value.saveLandmarks();
             }

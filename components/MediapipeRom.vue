@@ -195,12 +195,11 @@ onMounted(async () => {
 
   toneForRom.startTone();
 
-  setTimeout(() => {
-    if (!props.romCombination) {
-      toneForRom.stopTone();
-      exerciseStore.resetExperience();
-    }
-  }, 1000);
+
+  if (!props.romCombination) {
+    console.warn("No ROM combination provided");
+    toneForRom.stopTone();
+  }
 });
 
 
