@@ -21,7 +21,6 @@ const romComponent = ref<null | {
 
 onMounted(() => {
     exerciseStore.startCurrentExercise();
-
 })
 
 
