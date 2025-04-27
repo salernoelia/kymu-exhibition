@@ -1,3 +1,6 @@
+import { useStorage } from '@vueuse/core';
+import type { InsertResult } from '../db/results';
+
 export const useExerciseStore = defineStore('exerciseStore', () => {
     const isLoading = ref(false);
     const error = ref<string | null>(null);
@@ -5,6 +8,7 @@ export const useExerciseStore = defineStore('exerciseStore', () => {
     const painMomentAngles = ref<number[]>([]);
     const startedRecording = ref<boolean>(false);
     const route = useRoute();
+    const userKey = useStorage('user-key', '');
 
     const exerciseStateMachine = useExerciseStateMachine();
 
@@ -13,6 +17,27 @@ export const useExerciseStore = defineStore('exerciseStore', () => {
     const currentExercise = computed(() => exerciseStateMachine.currentExercise.value);
     const exercisesCount = computed(() => exerciseStateMachine.exerciseCount.value);
     const exerciseProgress = computed(() => exerciseStateMachine.progress.value);
+
+    const saveExerciseResults = async () => {
+        try {
+            if (!currentExercise.value) throw new Error('No current Exercise');
+            if (currentExercise.value.status !== 'completed')
+                throw new Error('Exercise is not yet completed and thus there are no results');
+
+            await $fetch<InsertResult>('/api/results', {
+                method: 'POST',
+                body: {
+                    exerciseId: currentExercise?.value.id,
+                    achievedRepetitions: currentExercise.value.results.achieved_repetitions,
+                    achievedSeconds: currentExercise.value.results.achieved_seconds,
+                    achievedAngle: currentExercise.value.results.achieved_angle,
+                    painAnglesDeg: currentExercise.value.results.pain_angles_deg,
+                },
+            });
+        } catch (e: any) {
+            console.log('Error logging user:', e);
+        }
+    };
 
     const getExerciseById = (exerciseId: string) => {
         return exercises.value.find((ex) => ex.id === exerciseId);
@@ -53,18 +78,19 @@ export const useExerciseStore = defineStore('exerciseStore', () => {
         }
     };
 
-    const completeCurrentExercise = (results?: any) => {
+    const completeCurrentExercise = (results: ExerciseResults) => {
         if (currentExercise.value) {
             currentExercise.value.status = 'completed';
             if (results) {
                 currentExercise.value.results = results;
+                saveExerciseResults();
             }
         }
     };
 
     const skipCurrentExercise = () => {
         if (currentExercise.value) {
-            currentExercise.value.status = 'completed';
+            currentExercise.value.status = 'skipped';
         }
     };
 
@@ -76,8 +102,11 @@ export const useExerciseStore = defineStore('exerciseStore', () => {
     watch(
         () => route.params.exerciseid,
         (newExerciseId) => {
-            if (newExerciseId) {
+            if (newExerciseId && exerciseStateMachine.appState.value === 'exercises') {
+                console.log('Route changed to exercise:', newExerciseId);
                 setCurrentExercise(newExerciseId as string);
+            } else {
+                console.log('Ignoring route change because app is not in exercises state');
             }
         },
         { immediate: true }
@@ -86,6 +115,7 @@ export const useExerciseStore = defineStore('exerciseStore', () => {
     return {
         isLoading,
         error,
+        userKey,
         exercises,
         exercisesCount,
         getExerciseById,
@@ -98,11 +128,13 @@ export const useExerciseStore = defineStore('exerciseStore', () => {
         resultAngle,
         painMomentAngles,
         startedRecording,
+        saveExerciseResults,
         startCurrentExercise,
         completeCurrentExercise,
         skipCurrentExercise,
         getExerciseStatus,
         startExperience: exerciseStateMachine.startExperience,
+        resetExperience: exerciseStateMachine.resetExperience,
         showResults: exerciseStateMachine.showResults,
     };
 });

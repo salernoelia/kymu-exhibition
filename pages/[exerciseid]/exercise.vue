@@ -1,8 +1,28 @@
 <template>
-    <div class="w-full h-full flex flex-col items-center justify-start mt-2">
-        <MediapipeRom
-            ref="romComponent"
-            :rom-combination="exerciseStore.currentExercise?.category"
+    <div class="w-full h-full">
+
+        <div class="w-full h-full flex flex-col items-center justify-start mt-2">
+            <MediapipeRom
+                ref="romComponent"
+                :rom-combination="exerciseStore.currentExercise?.category"
+            />
+        </div>
+        <KeyInstruction
+            class=""
+            :instructions="[
+                {
+                    button: 'ok',
+                    action: 'start_exercise'
+                },
+                {
+                    button: 'up',
+                    action: 'mark_pain'
+                },
+                {
+                    button: 'right',
+                    action: 'skip'
+                }
+            ]"
         />
     </div>
 </template>
@@ -29,12 +49,29 @@ const handleRemoteKey = (newKey: string | null) => {
 
     if (newKey === "right") {
         console.log("right")
-        exerciseStore.nextExercise();
-        navigateTo("/progress")
+        if (exerciseStore.currentExercise?.id == "exercise_2" || route.params.exerciseid == "exercise_2") {
+            exerciseStore.skipCurrentExercise()
+            if (romComponent.value) {
+                romComponent.value.cleanup();
+            }
+            navigateTo("/results")
+        } else {
+            exerciseStore.skipCurrentExercise()
+            exerciseStore.nextExercise();
+            if (romComponent.value) {
+                romComponent.value.cleanup();
+            }
+            navigateTo("/" + exerciseStore.currentExercise?.id + "/progress")
+        }
 
     } else if (newKey === "ok") {
         if (romComponent.value) {
-            romComponent.value.saveLandmarks();
+            if (exerciseStore.startedRecording) {
+                exerciseStore.saveExerciseResults();
+            } else if (!exerciseStore.startedRecording) {
+
+                romComponent.value.saveLandmarks();
+            }
         }
     } else if (newKey === "down") {
         window.location.reload();

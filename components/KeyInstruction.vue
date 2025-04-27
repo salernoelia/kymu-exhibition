@@ -7,7 +7,7 @@
             >
                 <div class="instruction">
                     <span class="text">
-                        Press <span class="button-label">{{ instruction.button }}</span> to {{
+                        <span class="button-label">{{ instruction.button }}</span> to {{
                             getActionText(instruction.action) }}
                     </span>
                 </div>
@@ -23,7 +23,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 
-type Actions = "continue" | "skip" | "cancel" | "retry";
+type Actions = "continue" | "skip" | "cancel" | "retry" | "start_exercise" | "mark_pain" | "restart";
 
 interface Instruction {
     button: string;
@@ -53,7 +53,10 @@ const getActionText = (action: Actions) => {
         continue: "continue",
         skip: "skip this step",
         cancel: "cancel the operation",
-        retry: "try again"
+        retry: "try again",
+        start_exercise: "start exercise",
+        mark_pain: "mark pain",
+        restart: "restart"
     };
 
     return actionTexts[action] || "continue";
@@ -63,7 +66,7 @@ const getActionText = (action: Actions) => {
 <style scoped>
 .c {
     position: absolute;
-    bottom: 15px;
+    bottom: 10px;
 }
 
 .instructions-container {

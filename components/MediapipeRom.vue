@@ -64,7 +64,7 @@ const exerciseInitialNormalizedLandmarks = ref<NormalizedLandmarkList | null>(
 );
 
 const currentAngle = ref(0);
-const referenceAngle = ref(0);
+// const referenceAngle = ref(0);
 
 const pivotIndex = ref(14);
 const movableIndex = ref(16);
@@ -127,6 +127,7 @@ function saveLandmarks() {
   exerciseInitialNormalizedLandmarks.value =
     mediapipeResults.value?.poseLandmarks ?? null;
   console.log("Landmarks saved");
+  exerciseStore.startedRecording = true;
 }
 
 function calculateAngle() {
@@ -145,13 +146,16 @@ function cleanup() {
   exerciseStore.resultAngle = 0;
   exerciseInitialNormalizedLandmarks.value = null;
   console.log("cleanup done");
+  exerciseStore.startedRecording = false;
 }
 
 onMounted(async () => {
   if (canvas.value && source.value && landmarkContainer.value) {
-    // Let the video load first and use its natural dimensions
     source.value.onloadedmetadata = async () => {
-      // Use the video's actual aspect ratio for the canvas
+      if (!canvas.value || !source.value || !landmarkContainer.value) {
+        console.log("canvas, source or landmark container missing")
+        return;
+      }
       canvas.value.width = source.value.videoWidth;
       canvas.value.height = source.value.videoHeight;
 
@@ -192,6 +196,10 @@ onMounted(async () => {
 });
 
 onBeforeUnmount(() => {
+  toneForRom.stopTone();
+});
+
+onUnmounted(() => {
   toneForRom.stopTone();
 });
 

@@ -40,6 +40,14 @@ export const useToneForRom = (angle: Ref<number>) => {
         }
     });
 
+    const route = useRoute();
+    watch(
+        () => route.path,
+        () => {
+            stopTone();
+        }
+    );
+
     return {
         startTone,
         stopTone,

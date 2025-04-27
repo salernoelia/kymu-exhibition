@@ -1,4 +1,4 @@
-type ExerciseStatus = 'not_started' | 'in_progress' | 'completed';
+type ExerciseStatus = 'not_started' | 'in_progress' | 'completed' | 'skipped';
 
 type ExerciseResults = {
     exercise_id: text;
@@ -22,7 +22,7 @@ type Exercise = {
     therapist_added_image_urls: null;
     therapist_added_video_urls: null;
     family_scene_adjustment_access: boolean;
-    results: ExerciseResults[];
+    results: ExerciseResults;
     status: ExerciseStatus;
 };
 

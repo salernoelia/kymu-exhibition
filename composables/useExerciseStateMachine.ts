@@ -1,10 +1,13 @@
 import exercisesConfig from '~/assets/exercises_config.json';
 
+import { v4 } from 'uuid';
+
 export const useExerciseStateMachine = () => {
     const appState = ref<'start' | 'exercises' | 'results'>('start');
     const exercises = ref<ExerciseCollection>([]);
     const currentExerciseIndex = ref<number>(0);
     const exerciseCount = computed(() => exercises.value.length);
+    const exerciseStore = useExerciseStore();
 
     const currentExercise = computed<Exercise | null>(() => {
         if (exercises.value.length === 0 || appState.value !== 'exercises') return null;
@@ -33,11 +36,67 @@ export const useExerciseStateMachine = () => {
         appState.value = 'start';
     };
 
-    const startExperience = () => {
+    const startExperience = async () => {
         if (exercises.value.length > 0) {
             appState.value = 'exercises';
-            console.log(appState.value, 'is experience state');
-            navigateTo(currentExercise.value?.id + '/instruction');
+            currentExerciseIndex.value = 0; // Ensure we're starting with the first exercise
+            exerciseStore.userKey = v4();
+            try {
+                await $fetch('/api/users', {
+                    method: 'POST',
+                    body: {
+                        key: exerciseStore.userKey,
+                        state: 'started',
+                    },
+                });
+            } catch (e: any) {
+                console.log('Error logging user:', e);
+            }
+
+            console.log(
+                'STARTING EXPERIENCE:',
+                appState.value,
+                'is experience state and user key is',
+                exerciseStore.userKey
+            );
+
+            // Navigate to the first exercise's instruction page
+            const firstExerciseId = exercises.value[0].id;
+            await navigateTo(`/${firstExerciseId}/instruction`, { replace: true });
+        }
+    };
+
+    const resetExperience = async () => {
+        if (exercises.value.length > 0) {
+            appState.value = 'start';
+
+            exerciseStore.userKey = '';
+            exerciseStore.resultAngle = 0;
+            exerciseStore.painMomentAngles = [];
+            exerciseStore.startedRecording = false;
+            exerciseStore.isLoading = false;
+            exerciseStore.error = null;
+
+            exercises.value = exercisesConfig.exercises.map((ex) => ({
+                ...ex,
+                status: 'not_started',
+                results: {},
+            })) as ExerciseCollection;
+
+            currentExerciseIndex.value = 0;
+
+            console.log(
+                'RESET EXPERIENCE:',
+                appState.value,
+                'is experience state (reset) and user key is',
+                exerciseStore.userKey
+            );
+
+            await navigateTo('/', { replace: true });
+
+            setTimeout(() => {
+                window.location.reload();
+            }, 100);
         }
     };
 
@@ -62,6 +121,7 @@ export const useExerciseStateMachine = () => {
         progress,
         loadExercises,
         startExperience,
+        resetExperience,
         showResults,
         goToExercise,
         getAllExercises: () => exercises.value,
