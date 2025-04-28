@@ -29,7 +29,13 @@ export class PoseService extends Camera {
         public readonly angle: Ref<number>
     ) {
         super(source, {
-            onFrame: async () => await this.pipe.send({ image: source }),
+            onFrame: async () => {
+                try {
+                    await this.pipe.send({ image: source });
+                } catch (err) {
+                    console.error('Error processing frame:', err);
+                }
+            },
             width: canvasWidth,
             height: canvasHeight,
         });
@@ -39,7 +45,11 @@ export class PoseService extends Camera {
             this.canvas.width = source.videoWidth;
         });
 
-        this.ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
+        const context = canvas.getContext('2d');
+        if (!context) {
+            throw new Error('Failed to get canvas context');
+        }
+        this.ctx = context;
     }
 
     /**
@@ -47,14 +57,18 @@ export class PoseService extends Camera {
      */
     public setOptions(options: Options): Promise<void> {
         this.pipe.onResults((results) => {
-            this.render(results);
-            if (isRef(this.mediapipeResults)) {
-                this.mediapipeResults.value = {
-                    ...results,
-                    poseWorldLandmarks: results.poseWorldLandmarks,
-                };
-            } else {
-                console.error('mediapipeResults is not a Vue ref!');
+            try {
+                this.render(results);
+                if (isRef(this.mediapipeResults)) {
+                    this.mediapipeResults.value = {
+                        ...results,
+                        poseWorldLandmarks: results.poseWorldLandmarks,
+                    };
+                } else {
+                    console.error('mediapipeResults is not a Vue ref!');
+                }
+            } catch (err) {
+                console.error('Error in pose results processing:', err);
             }
         });
         this.pipe.setOptions(options);
@@ -67,65 +81,67 @@ export class PoseService extends Camera {
         // poseWorldLandmarks,
         image,
     }: Results): void {
-        // const grid = new LandmarkGrid(this.landmarkContainer);
+        try {
+            // Guard against missing or invalid data
+            if (!poseLandmarks || !image) {
+                return;
+            }
 
-        if (!poseLandmarks) {
-            return;
-        }
-        if (this.loadingCanvas.value) {
-            this.loadingCanvas.value = false;
-        }
+            if (this.loadingCanvas.value) {
+                this.loadingCanvas.value = false;
+            }
 
-        const { width, height } = this.canvas;
-        // this.logService.delay_log(10, "width: %d, height: %d", width, height);
-        // this.logService.delay_log(10, "poseLandmarks", poseLandmarks);
+            const { width, height } = this.canvas;
+            // this.logService.delay_log(10, "width: %d, height: %d", width, height);
+            // this.logService.delay_log(10, "poseLandmarks", poseLandmarks);
 
-        this.ctx.save();
-        this.ctx.clearRect(0, 0, width, height);
+            this.ctx.save();
+            this.ctx.clearRect(0, 0, width, height);
 
-        // Only overwrite existing pixels.
-        this.ctx.globalCompositeOperation = 'source-in';
-        this.ctx.fillStyle = '#00FF00';
-        this.ctx.fillRect(0, 0, width, height);
+            // Only overwrite existing pixels.
+            this.ctx.globalCompositeOperation = 'source-in';
+            this.ctx.fillStyle = '#00FF00';
+            this.ctx.fillRect(0, 0, width, height);
 
-        // Only overwrite missing pixels.
-        this.ctx.globalCompositeOperation = 'destination-atop';
-        this.ctx.drawImage(image, 0, 0, width, height);
+            // Only overwrite missing pixels.
+            this.ctx.globalCompositeOperation = 'destination-atop';
+            this.ctx.drawImage(image, 0, 0, width, height);
 
-        this.ctx.globalCompositeOperation = 'source-over';
-        drawConnectors(this.ctx, poseLandmarks, POSE_CONNECTIONS, {
-            color: '#e8ebf6',
-            lineWidth: 2,
-        });
-        // drawLandmarks(this.ctx, poseLandmarks, {
-        //     color: '#e8ebf6',
-        //     lineWidth: 2,
-        // });
-
-        //  if saved landmarks is not null, draw them also
-        if (this.savedLandmarks.value) {
-            // drawLandmarks(this.ctx, this.savedLandmarks.value, {
-            //     color: '#1734a3',
-            //     lineWidth: 2,
-            // });
-            drawConnectors(this.ctx, this.savedLandmarks.value, POSE_CONNECTIONS, {
-                color: '#1734a3',
+            this.ctx.globalCompositeOperation = 'source-over';
+            drawConnectors(this.ctx, poseLandmarks, POSE_CONNECTIONS, {
+                color: '#e8ebf6',
                 lineWidth: 2,
             });
+            // drawLandmarks(this.ctx, poseLandmarks, {
+            //     color: '#e8ebf6',
+            //     lineWidth: 2,
+            // });
 
-            // Draw angle arc and text for specific joints
-            // For example, for right elbow (assuming indices 12=shoulder, 14=elbow, 16=wrist)
-            this.drawJointAngle(
-                this.pivotIndex.value,
-                this.pointIndex.value,
-                poseLandmarks,
-                this.savedLandmarks.value
-            );
+            //  if saved landmarks is not null, draw them also
+            if (this.savedLandmarks.value) {
+                // drawLandmarks(this.ctx, this.savedLandmarks.value, {
+                //     color: '#1734a3',
+                //     lineWidth: 2,
+                // });
+                drawConnectors(this.ctx, this.savedLandmarks.value, POSE_CONNECTIONS, {
+                    color: '#1734a3',
+                    lineWidth: 2,
+                });
+
+                // Draw angle arc and text for specific joints
+                // For example, for right elbow (assuming indices 12=shoulder, 14=elbow, 16=wrist)
+                this.drawJointAngle(
+                    this.pivotIndex.value,
+                    this.pointIndex.value,
+                    poseLandmarks,
+                    this.savedLandmarks.value
+                );
+            }
+
+            this.ctx.restore();
+        } catch (error) {
+            console.error('Error in render method:', error);
         }
-
-        this.ctx.restore();
-
-        // grid.updateLandmarks(poseWorldLandmarks);
     }
 
     private drawJointAngle(
@@ -134,65 +150,79 @@ export class PoseService extends Camera {
         currentLandmarks: NormalizedLandmarkList,
         savedLandmarks: NormalizedLandmarkList
     ): void {
-        // Ensure landmarks exist at these indices
-        if (
-            !currentLandmarks[pivotIndex] ||
-            !currentLandmarks[pointIndex] ||
-            !savedLandmarks[pivotIndex] ||
-            !savedLandmarks[pointIndex]
-        ) {
-            return;
+        try {
+            // Ensure landmarks exist at these indices and indices are valid
+            if (
+                !currentLandmarks ||
+                !savedLandmarks ||
+                pivotIndex < 0 ||
+                pointIndex < 0 ||
+                pivotIndex >= currentLandmarks.length ||
+                pointIndex >= currentLandmarks.length ||
+                pivotIndex >= savedLandmarks.length ||
+                pointIndex >= savedLandmarks.length ||
+                !currentLandmarks[pivotIndex] ||
+                !currentLandmarks[pointIndex] ||
+                !savedLandmarks[pivotIndex] ||
+                !savedLandmarks[pointIndex]
+            ) {
+                return;
+            }
+
+            // Get pivot point (e.g. elbow)
+            const pivot = currentLandmarks[pivotIndex];
+
+            // Get the saved position (point A)
+            const pointA = savedLandmarks[pointIndex];
+
+            // Get current position (point B)
+            const pointB = currentLandmarks[pointIndex];
+
+            const minVisibility = 0.7;
+            if (
+                (pivot.visibility || 0) < minVisibility ||
+                (pointA.visibility || 0) < minVisibility ||
+                (pointB.visibility || 0) < minVisibility
+            ) {
+                return;
+            }
+
+            const { angle, angleRad, startAngle, endAngle, vectorA, vectorB } =
+                this.calculateJointAngle(pivot, pointA, pointB);
+
+            const { width, height } = this.canvas;
+            const pivotX = pivot.x * width;
+            const pivotY = pivot.y * height;
+
+            const radius =
+                Math.min(
+                    Math.sqrt(vectorA.x * vectorA.x + vectorA.y * vectorA.y),
+                    Math.sqrt(vectorB.x * vectorB.x + vectorB.y * vectorB.y)
+                ) * 0.3;
+
+            this.ctx.beginPath();
+            this.ctx.arc(pivotX, pivotY, radius * width, startAngle, endAngle);
+            this.ctx.strokeStyle = '#FFFF00';
+            this.ctx.lineWidth = 2;
+            this.ctx.stroke();
+
+            this.ctx.font = 'bold 16px Arial';
+            this.ctx.fillStyle = '#FFFF00';
+            this.ctx.textAlign = 'center';
+
+            const textAngle = (startAngle + endAngle) / 2;
+            const textRadius = radius * 1.3;
+            const textX = pivotX + textRadius * width * Math.cos(textAngle);
+            const textY = pivotY + textRadius * width * Math.sin(textAngle);
+
+            this.ctx.fillText(`${angle}°`, textX, textY);
+
+            if (this.angle && isRef(this.angle)) {
+                this.angle.value = angle;
+            }
+        } catch (error) {
+            console.error('Error in drawJointAngle:', error);
         }
-
-        // Get pivot point (e.g. elbow)
-        const pivot = currentLandmarks[pivotIndex];
-
-        // Get the saved position (point A)
-        const pointA = savedLandmarks[pointIndex];
-
-        // Get current position (point B)
-        const pointB = currentLandmarks[pointIndex];
-
-        const minVisibility = 0.7;
-        if (
-            (pivot.visibility || 0) < minVisibility ||
-            (pointA.visibility || 0) < minVisibility ||
-            (pointB.visibility || 0) < minVisibility
-        ) {
-            return;
-        }
-
-        const { angle, angleRad, startAngle, endAngle, vectorA, vectorB } =
-            this.calculateJointAngle(pivot, pointA, pointB);
-
-        const { width, height } = this.canvas;
-        const pivotX = pivot.x * width;
-        const pivotY = pivot.y * height;
-
-        const radius =
-            Math.min(
-                Math.sqrt(vectorA.x * vectorA.x + vectorA.y * vectorA.y),
-                Math.sqrt(vectorB.x * vectorB.x + vectorB.y * vectorB.y)
-            ) * 0.3;
-
-        this.ctx.beginPath();
-        this.ctx.arc(pivotX, pivotY, radius * width, startAngle, endAngle);
-        this.ctx.strokeStyle = '#FFFF00';
-        this.ctx.lineWidth = 2;
-        this.ctx.stroke();
-
-        this.ctx.font = 'bold 16px Arial';
-        this.ctx.fillStyle = '#FFFF00';
-        this.ctx.textAlign = 'center';
-
-        const textAngle = (startAngle + endAngle) / 2;
-        const textRadius = radius * 1.3;
-        const textX = pivotX + textRadius * width * Math.cos(textAngle);
-        const textY = pivotY + textRadius * width * Math.sin(textAngle);
-
-        this.ctx.fillText(`${angle}°`, textX, textY);
-
-        this.angle.value = angle;
     }
 
     /**
@@ -214,42 +244,66 @@ export class PoseService extends Camera {
         vectorA: { x: number; y: number };
         vectorB: { x: number; y: number };
     } {
-        const vectorA = {
-            x: pointA.x - pivot.x,
-            y: pointA.y - pivot.y,
-        };
+        try {
+            const vectorA = {
+                x: pointA.x - pivot.x,
+                y: pointA.y - pivot.y,
+            };
 
-        const vectorB = {
-            x: pointB.x - pivot.x,
-            y: pointB.y - pivot.y,
-        };
+            const vectorB = {
+                x: pointB.x - pivot.x,
+                y: pointB.y - pivot.y,
+            };
 
-        const dotProduct = vectorA.x * vectorB.x + vectorA.y * vectorB.y;
-        const magA = Math.sqrt(vectorA.x * vectorA.x + vectorA.y * vectorA.y);
-        const magB = Math.sqrt(vectorB.x * vectorB.x + vectorB.y * vectorB.y);
+            const dotProduct = vectorA.x * vectorB.x + vectorA.y * vectorB.y;
+            const magA = Math.sqrt(vectorA.x * vectorA.x + vectorA.y * vectorA.y);
+            const magB = Math.sqrt(vectorB.x * vectorB.x + vectorB.y * vectorB.y);
 
-        const cosTheta = Math.min(Math.max(dotProduct / (magA * magB), -1), 1);
-        const angleRad = Math.acos(cosTheta);
-        const angle = Math.round(angleRad * (180 / Math.PI));
-
-        let startAngle = Math.atan2(vectorA.y, vectorA.x);
-        let endAngle = Math.atan2(vectorB.y, vectorB.x);
-
-        if (Math.abs(endAngle - startAngle) > Math.PI) {
-            if (endAngle > startAngle) {
-                startAngle += 2 * Math.PI;
-            } else {
-                endAngle += 2 * Math.PI;
+            // Prevent division by zero
+            if (magA === 0 || magB === 0) {
+                return {
+                    angle: 0,
+                    angleRad: 0,
+                    startAngle: 0,
+                    endAngle: 0,
+                    vectorA,
+                    vectorB,
+                };
             }
-        }
 
-        return {
-            angle,
-            angleRad,
-            startAngle,
-            endAngle,
-            vectorA,
-            vectorB,
-        };
+            const cosTheta = Math.min(Math.max(dotProduct / (magA * magB), -1), 1);
+            const angleRad = Math.acos(cosTheta);
+            const angle = Math.round(angleRad * (180 / Math.PI));
+
+            let startAngle = Math.atan2(vectorA.y, vectorA.x);
+            let endAngle = Math.atan2(vectorB.y, vectorB.x);
+
+            if (Math.abs(endAngle - startAngle) > Math.PI) {
+                if (endAngle > startAngle) {
+                    startAngle += 2 * Math.PI;
+                } else {
+                    endAngle += 2 * Math.PI;
+                }
+            }
+
+            return {
+                angle,
+                angleRad,
+                startAngle,
+                endAngle,
+                vectorA,
+                vectorB,
+            };
+        } catch (error) {
+            console.error('Error in calculateJointAngle:', error);
+            return {
+                angle: 0,
+                angleRad: 0,
+                startAngle: 0,
+                endAngle: 0,
+                vectorA: { x: 0, y: 0 },
+                vectorB: { x: 0, y: 0 },
+            };
+        }
     }
 }

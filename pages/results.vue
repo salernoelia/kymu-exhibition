@@ -45,9 +45,7 @@ onMounted(() => {
     exerciseStore.showResults();
 })
 
-onUnmounted(() => {
-    exerciseStore.resetExperience();
-})
+
 
 </script>
 

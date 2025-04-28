@@ -2,8 +2,11 @@ import * as Tone from 'tone';
 
 export const useToneForRom = (angle: Ref<number>) => {
     const reverb = new Tone.Reverb(2).toDestination();
+    // Add filter and delay nodes
+    const filter = new Tone.Filter(1000, 'lowpass').connect(reverb);
+    const delay = new Tone.FeedbackDelay(0.3, 0.3).connect(filter);
 
-    const synth = new Tone.Synth(Tone.FMSynth).connect(reverb);
+    const synth = new Tone.Synth(Tone.FMSynth).connect(delay);
     synth.set({
         harmonicity: 2,
         modulationIndex: 3.5,
@@ -45,38 +48,42 @@ export const useToneForRom = (angle: Ref<number>) => {
     };
 
     watchEffect(() => {
-        if (isPlaying.value) {
-            const minAngle = 0;
-            const maxAngle = 180;
-            const minNote = 48; // C3
-            const maxNote = 84; // C6
+        try {
+            if (isPlaying.value) {
+                const minAngle = 0;
+                const maxAngle = 180;
+                const minNote = 48; // C3
+                const maxNote = 84; // C6
 
-            // Normalize angle to 0-1 range
-            const normalizedValue =
-                (Number(angle.value.toFixed(0)) - minAngle) / (maxAngle - minAngle);
+                // Normalize angle to 0-1 range
+                const normalizedValue =
+                    (Number(angle.value?.toFixed(0) || 0) - minAngle) / (maxAngle - minAngle);
 
-            // Map to note
-            const noteValue = Math.floor(minNote + normalizedValue * (maxNote - minNote));
-            const frequency = Tone.Frequency(noteValue, 'midi').toFrequency();
+                // Map to note
+                const noteValue = Math.floor(minNote + normalizedValue * (maxNote - minNote));
+                const frequency = Tone.Frequency(noteValue, 'midi').toFrequency();
 
-            // Update frequency with smoother transition
-            synth.set({
-                frequency: frequency,
-            });
+                // Update frequency with smoother transition
+                synth.set({
+                    frequency: frequency,
+                });
 
-            // Map to filter cutoff (higher angles = brighter sound)
-            const filterCutoff = 200 + normalizedValue * 5000;
-            filter.frequency.rampTo(filterCutoff, 0.2);
+                // Map to filter cutoff (higher angles = brighter sound)
+                const filterCutoff = 200 + normalizedValue * 5000;
+                filter.frequency.rampTo(filterCutoff, 0.2);
 
-            // Map to reverb/delay amount (higher angles = more atmospheric)
-            const delayFeedback = 0.1 + normalizedValue * 0.4;
-            delay.feedback.rampTo(delayFeedback, 0.3);
+                // Map to reverb/delay amount (higher angles = more atmospheric)
+                const delayFeedback = 0.1 + normalizedValue * 0.4;
+                delay.feedback.rampTo(delayFeedback, 0.3);
 
-            // Map to modulation (higher angles = more modulation)
-            if (synth.get().modulationIndex) {
-                const modIndex = 1 + normalizedValue * 10;
-                synth.set({ modulationIndex: modIndex });
+                // Map to modulation (higher angles = more modulation)
+                if (synth.get().modulationIndex) {
+                    const modIndex = 1 + normalizedValue * 10;
+                    synth.set({ modulationIndex: modIndex });
+                }
             }
+        } catch (error) {
+            console.error('Error in tone adjustment:', error);
         }
     });
 
@@ -87,6 +94,17 @@ export const useToneForRom = (angle: Ref<number>) => {
             stopTone();
         }
     );
+
+    // Clean up resources when component unmounts
+    onBeforeUnmount(() => {
+        stopTone();
+        setTimeout(() => {
+            synth.dispose();
+            filter.dispose();
+            delay.dispose();
+            reverb.dispose();
+        }, 100);
+    });
 
     return {
         startTone,

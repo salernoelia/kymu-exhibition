@@ -43,7 +43,7 @@ onMounted(() => {
 })
 
 setTimeout(() => {
-    if (!exerciseStore.currentExercise) {
+    if (!exerciseStore.currentExercise && useRouter().currentRoute.value.path.includes('/exercise')) {
         console.error("NO EXERCISE FOUND — RESTARTING")
         exerciseStore.resetExperience();
     }
