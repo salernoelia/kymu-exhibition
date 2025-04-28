@@ -73,7 +73,7 @@ watch(() => route.path, (newPath, oldPath) => {
 
     setTimeout(() => {
       isTransitioning.value = false;
-    }, 1800);
+    }, 1000);
   }
 });
 

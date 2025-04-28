@@ -16,14 +16,13 @@
 <script setup lang="ts">
 // const exerciseStore = useExerciseStore();
 const { remoteKey } = useRemoteControl();
-const soundPlayer = useSoundPlayer();
+
 const route = useRoute()
 
 watch(
     () => remoteKey.value,
     (newKey) => {
         if (newKey === "ok") {
-            soundPlayer.playStartSound();
             navigateTo("/" + route.params?.exerciseid + "/exercise")
         }
     }
