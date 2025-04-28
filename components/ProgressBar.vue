@@ -27,6 +27,7 @@
           :initial="{ opacity: 0, scale: 0 }"
           :animate="{ opacity: 1, scale: 1 }"
           :transition="{ delay: index * 0.3 + 0.2, duration: 0.3 }"
+          @animationComplete="playCompletionSound(n)"
           class="flex items-center justify-center"
         >
           <Icon
@@ -66,8 +67,10 @@
 
 <script setup lang="ts">
 import { motion } from 'motion-v'
+import { ref, onMounted } from 'vue'
+import { useSoundPlayer } from '~/composables/useSoundPlayer'
 
-defineProps({
+const props = defineProps({
   current: {
     type: Number,
     default: 0,
@@ -78,6 +81,23 @@ defineProps({
     default: 5,
   },
 });
+
+// Import the sound player
+const { preloadSound, playSuccessSound } = useSoundPlayer()
+const playedSounds = ref<Record<number, boolean>>({})
+
+// Preload the success sound when the component mounts
+onMounted(() => {
+  preloadSound('/sfx/success.wav')
+})
+
+// Play the completion sound only once per step
+const playCompletionSound = (stepNumber: number) => {
+  if (!playedSounds.value[stepNumber]) {
+    playedSounds.value[stepNumber] = true
+    playSuccessSound()
+  }
+}
 </script>
 
 <style scoped lang="scss">

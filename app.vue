@@ -76,12 +76,16 @@ body {
 
 .page-enter-active,
 .page-leave-active {
-  transition: all 0.4s;
+  transition: all 0.2s ease;
+  position: absolute;
+  width: 100%;
 }
 
-.page-enter-from,
+.page-enter-from {
+  transform: translateX(100%);
+}
+
 .page-leave-to {
-  opacity: 0;
-  filter: blur(1rem);
+  transform: translateX(-100%);
 }
 </style>

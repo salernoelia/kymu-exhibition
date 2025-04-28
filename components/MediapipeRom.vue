@@ -229,8 +229,14 @@ async function getAvailableVideoDevices() {
     const devices = await navigator.mediaDevices.enumerateDevices();
     videoDevices.value = devices.filter(device => device.kind === 'videoinput');
 
-    if (videoDevices.value.length > 0 && !selectedDeviceId.value) {
-      selectedDeviceId.value = videoDevices.value[0].deviceId;
+    if (videoDevices.value.length > 0) {
+      const faceTimeCamera = videoDevices.value.find(device =>
+        device.label && device.label.toLowerCase().includes('facetime')
+      );
+
+      selectedDeviceId.value = faceTimeCamera ?
+        faceTimeCamera.deviceId :
+        videoDevices.value[0].deviceId;
     }
   } catch (error) {
     console.error("Error getting video devices:", error);
