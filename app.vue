@@ -98,8 +98,6 @@ watch(
     } else if (newKey === "back") {
       if (menu.value) {
         menu.value = false;
-      } else if (route.path == "/tv") {
-        console.log("already home");
       } else {
         router.back();
       }

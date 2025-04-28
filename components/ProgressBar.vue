@@ -27,8 +27,7 @@
           :initial="{ opacity: 0, scale: 0 }"
           :animate="{ opacity: 1, scale: 1 }"
           :transition="{ delay: index * 0.3 + 0.2, duration: 0.3 }"
-          class="flex items-center justif
-          y-center"
+          class="flex items-center justify-center"
         >
           <Icon
             name="material-symbols-light:check-rounded"
@@ -79,10 +78,6 @@ defineProps({
     default: 5,
   },
 });
-
-
-
-
 </script>
 
 <style scoped lang="scss">
