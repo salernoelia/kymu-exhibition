@@ -41,6 +41,9 @@ export const useExerciseStateMachine = () => {
             appState.value = 'exercises';
             currentExerciseIndex.value = 0;
             exerciseStore.userKey = v4();
+            console.log('=========================');
+            console.log('Experience has started', exerciseStore.userKey);
+            console.log('=========================');
             try {
                 await $fetch('/api/users', {
                     method: 'POST',

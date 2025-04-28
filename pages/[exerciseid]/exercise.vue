@@ -43,6 +43,12 @@ onMounted(() => {
     exerciseStore.startCurrentExercise();
 })
 
+setTimeout(() => {
+    if (!exerciseStore.currentExercise) {
+        exerciseStore.resetExperience();
+    }
+}, 1000);
+
 
 const handleRemoteKey = (newKey: string | null) => {
     if (!newKey) return;
