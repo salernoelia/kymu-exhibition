@@ -27,6 +27,23 @@
       <p>Pain Moments: {{ exerciseStore.painMomentAngles }}</p>
       <p>{{ romCombination }}</p>
       <p>{{ isPersonVisible }}</p>
+
+      <div class="camera-controls">
+        <select
+          v-if="videoDevices.length > 1"
+          v-model="selectedDeviceId"
+          class="camera-selector"
+          @change="startCamera"
+        >
+          <option
+            v-for="device in videoDevices"
+            :key="device.deviceId"
+            :value="device.deviceId"
+          >
+            {{ device.label || `Camera ${videoDevices.indexOf(device) + 1}` }}
+          </option>
+        </select>
+      </div>
     </div>
   </div>
 </template>
@@ -151,6 +168,7 @@ function cleanup() {
 }
 
 onMounted(async () => {
+  await getAvailableVideoDevices();
   if (canvas.value && source.value && landmarkContainer.value) {
     source.value.onloadedmetadata = async () => {
       if (!canvas.value || !source.value || !landmarkContainer.value) {
@@ -175,12 +193,13 @@ onMounted(async () => {
       ).setOptions({
         modelComplexity: 2,
         smoothLandmarks: true,
-        enableSegmentation: false,
+        enableSegmentation: true,
         smoothSegmentation: false,
         minDetectionConfidence: 0.3,
         minTrackingConfidence: 0.3,
         selfieMode: true,
       });
+      await startCamera();
     };
 
     // Request camera access
@@ -201,6 +220,45 @@ onMounted(async () => {
     toneForRom.stopTone();
   }
 });
+
+const videoDevices = ref<MediaDeviceInfo[]>([]);
+const selectedDeviceId = ref<string>("");
+
+async function getAvailableVideoDevices() {
+  try {
+    const devices = await navigator.mediaDevices.enumerateDevices();
+    videoDevices.value = devices.filter(device => device.kind === 'videoinput');
+
+    if (videoDevices.value.length > 0 && !selectedDeviceId.value) {
+      selectedDeviceId.value = videoDevices.value[0].deviceId;
+    }
+  } catch (error) {
+    console.error("Error getting video devices:", error);
+  }
+}
+
+async function startCamera() {
+  if (!source.value) return;
+
+  try {
+    if (source.value.srcObject) {
+      const tracks = (source.value.srcObject as MediaStream).getTracks();
+      tracks.forEach(track => track.stop());
+    }
+
+    const constraints = {
+      video: selectedDeviceId.value
+        ? { deviceId: { exact: selectedDeviceId.value } }
+        : true
+    };
+
+    const stream = await navigator.mediaDevices.getUserMedia(constraints);
+    source.value.srcObject = stream;
+    source.value.play();
+  } catch (err) {
+    console.error("Error accessing camera:", err);
+  }
+}
 
 
 
@@ -270,6 +328,8 @@ defineExpose({
   font-weight: bold;
   text-align: center;
 }
+
+
 
 
 
