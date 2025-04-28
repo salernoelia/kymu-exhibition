@@ -60,26 +60,23 @@ const onPageEnter = (component) => {
   const routeName = component?.type?.name || 'New Page';
   transitionText.value = `Entering ${routeName}`;
 
-  // Hide the overlay after a short delay to create a staggered effect
   setTimeout(() => {
     isTransitioning.value = false;
-  }, 500);
+  }, 1000);
 };
 
-// Watch for route changes to trigger transitions
 watch(() => route.path, (newPath, oldPath) => {
   if (newPath !== oldPath) {
     transitionText.value = `Loading ${getPageNameFromPath(newPath)}`;
     isTransitioning.value = true;
 
-    // Hide overlay after the navigation is likely complete
+
     setTimeout(() => {
       isTransitioning.value = false;
-    }, 800);
+    }, 1800);
   }
 });
 
-// Helper function to get a user-friendly name from the path
 const getPageNameFromPath = (path) => {
   if (path === '/') return 'Home Page';
 
@@ -136,26 +133,11 @@ body {
 
 .page-enter-active,
 .page-leave-active {
-  transition: all 0.3s;
+  transition: all 0.4s;
 }
 
-.page-enter-from {
-  opacity: 0;
-  transform: translateX(100%);
-}
-
-.page-enter-to {
-  opacity: 1;
-  transform: translateX(0);
-}
-
-.page-leave-from {
-  opacity: 1;
-  transform: translateX(0);
-}
-
+.page-enter-from,
 .page-leave-to {
   opacity: 0;
-  transform: translateX(-100%);
 }
 </style>
