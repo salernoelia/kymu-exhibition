@@ -9,6 +9,7 @@
         <div class="circle-layer circle-layer-4" />
         <div class="overlay-content">
             <Icon name="svg-spinners:bouncing-ball" />
+            <h2>Unit 2</h2>
             <h1>{{ text }}</h1>
         </div>
     </div>
@@ -39,6 +40,17 @@ watch(
 h1 {
     font-size: 5rem;
     font-weight: 200;
+    margin: 0;
+    padding: 0;
+}
+
+h2 {
+    font-size: 2.75rem;
+    font-weight: 100;
+    color: var(--color-inactiveLightActive);
+    margin: 0;
+
+    padding: 0;
 }
 
 
@@ -130,10 +142,13 @@ h1 {
     left: 50%;
     transform: translate(-50%, -50%);
     color: white;
-    font-size: 2rem;
     font-weight: bold;
     text-align: center;
-    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
     opacity: 0;
     transition: opacity 0.5s ease-in-out 0.4s;
     z-index: 1010;

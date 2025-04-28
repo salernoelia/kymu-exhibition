@@ -27,8 +27,8 @@
           :initial="{ opacity: 0, scale: 0 }"
           :animate="{ opacity: 1, scale: 1 }"
           :transition="{ delay: index * 0.3 + 0.2, duration: 0.3 }"
-          @animationComplete="playCompletionSound(n)"
           class="flex items-center justify-center"
+          @animation-complete="playCompletionSound(n)"
         >
           <Icon
             name="material-symbols-light:check-rounded"

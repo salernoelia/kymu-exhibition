@@ -49,7 +49,6 @@ const menu = ref(false);
 const isTransitioning = ref(false);
 const transitionText = ref('Loading...');
 
-// Handle page transitions
 const onPageLeave = (component) => {
   const routeName = component?.type?.name || 'New Page';
   transitionText.value = `Leaving ${routeName}`;
@@ -67,9 +66,13 @@ const onPageEnter = (component) => {
 
 watch(() => route.path, (newPath, oldPath) => {
   if (newPath !== oldPath) {
+    if (newPath === '/') {
+      isTransitioning.value = false;
+      return;
+    }
+
     transitionText.value = `Loading ${getPageNameFromPath(newPath)}`;
     isTransitioning.value = true;
-
 
     setTimeout(() => {
       isTransitioning.value = false;
