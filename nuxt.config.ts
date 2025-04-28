@@ -23,5 +23,9 @@ export default defineNuxtConfig({
         storesDirs: ['./stores/**'],
     },
 
+    app: {
+        pageTransition: { name: 'page', mode: 'out-in' },
+    },
+
     compatibilityDate: '2025-04-26',
 });

@@ -201,17 +201,41 @@ export class PoseService extends Camera {
                 ) * 0.3;
 
             this.ctx.beginPath();
-            this.ctx.arc(pivotX, pivotY, radius * width, startAngle, endAngle);
-            this.ctx.strokeStyle = '#FFFF00';
-            this.ctx.lineWidth = 2;
-            this.ctx.stroke();
+            // Draw a pie-like filled segment instead of just an arc
+            this.ctx.moveTo(pivotX, pivotY);
+            this.ctx.arc(pivotX, pivotY, radius * width * 1.5, startAngle, endAngle); // Increased radius by 50%
+            this.ctx.lineTo(pivotX, pivotY);
+            this.ctx.closePath();
+
+            const arcLength = endAngle - startAngle;
+            const gradientAngle = startAngle + arcLength / 2;
+            const gradientStartX = pivotX + Math.cos(startAngle) * radius * width * 1.5;
+            const gradientStartY = pivotY + Math.sin(startAngle) * radius * width * 1.5;
+            const gradientEndX = pivotX + Math.cos(endAngle) * radius * width * 1.5;
+            const gradientEndY = pivotY + Math.sin(endAngle) * radius * width * 1.5;
+
+            const gradient = this.ctx.createLinearGradient(
+                gradientStartX,
+                gradientStartY,
+                gradientEndX,
+                gradientEndY
+            );
+
+            gradient.addColorStop(0, '#1734a3'); // Start of arc is blue
+            gradient.addColorStop(0.33, '#4b59b6'); // First third
+            gradient.addColorStop(0.66, '#b96e48'); // Second third
+            gradient.addColorStop(1, '#ee5826'); // End of arc is orange
+
+            // Apply gradient fill
+            this.ctx.fillStyle = gradient;
+            this.ctx.fill();
 
             this.ctx.font = 'bold 16px Arial';
-            this.ctx.fillStyle = '#FFFF00';
+            this.ctx.fillStyle = '#FFFFFF'; //
             this.ctx.textAlign = 'center';
 
             const textAngle = (startAngle + endAngle) / 2;
-            const textRadius = radius * 1.3;
+            const textRadius = radius * 1.8; // Position text further out from the pie
             const textX = pivotX + textRadius * width * Math.cos(textAngle);
             const textY = pivotY + textRadius * width * Math.sin(textAngle);
 

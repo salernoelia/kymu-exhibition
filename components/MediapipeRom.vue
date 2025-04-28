@@ -84,7 +84,7 @@ const isPersonVisible = computed((): boolean => {
     mediapipeResults.value.poseWorldLandmarks[movableIndex.value]
       ?.visibility === undefined ||
     (mediapipeResults.value.poseWorldLandmarks[movableIndex.value]
-      ?.visibility ?? 0) < 0.8
+      ?.visibility ?? 0) < 0.5
   ) {
     toneForRom.stopTone();
 
