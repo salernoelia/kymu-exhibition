@@ -28,7 +28,6 @@
 </template>
 
 <script setup lang="ts">
-const route = useRoute();
 const exerciseStore = useExerciseStore();
 const { remoteKey } = useRemoteControl();
 
@@ -45,9 +44,10 @@ onMounted(() => {
 
 setTimeout(() => {
     if (!exerciseStore.currentExercise) {
+        console.error("NO EXERCISE FOUND — RESTARTING")
         exerciseStore.resetExperience();
     }
-}, 1000);
+}, 2000);
 
 
 const handleRemoteKey = (newKey: string | null) => {
@@ -61,7 +61,6 @@ const handleRemoteKey = (newKey: string | null) => {
             romComponent.value.cleanup();
         }
 
-        const currentExerciseId = exerciseStore.currentExercise?.id;
         const isLastExercise = exerciseStore.currentExerciseIndex === exerciseStore.exercisesCount - 1;
 
         if (isLastExercise) {
