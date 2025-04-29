@@ -49,13 +49,13 @@ const menu = ref(false);
 const isTransitioning = ref(false);
 const transitionText = ref('Loading...');
 
-const onPageLeave = (component) => {
+const onPageLeave = (component: { type?: { name?: string } }) => {
   const routeName = component?.type?.name || 'New Page';
   transitionText.value = `Leaving ${routeName}`;
   isTransitioning.value = true;
 };
 
-const onPageEnter = (component) => {
+const onPageEnter = (component: { type: { name: string; }; }) => {
   const routeName = component?.type?.name || 'New Page';
   transitionText.value = `Entering ${routeName}`;
 
@@ -66,7 +66,13 @@ const onPageEnter = (component) => {
 
 watch(() => route.path, (newPath, oldPath) => {
   if (newPath !== oldPath) {
-    if (newPath === '/') {
+    if (newPath === '/' ||
+      newPath === '/caution' ||
+      newPath === '/onboarding' ||
+      newPath === '/results' ||
+      newPath.includes('/instruction') ||
+      newPath.includes('/progress')
+    ) {
       isTransitioning.value = false;
       return;
     }
@@ -76,11 +82,11 @@ watch(() => route.path, (newPath, oldPath) => {
 
     setTimeout(() => {
       isTransitioning.value = false;
-    }, 1000);
+    }, 3000);
   }
 });
 
-const getPageNameFromPath = (path) => {
+const getPageNameFromPath = (path: string) => {
   if (path === '/') return 'Home Page';
 
   const segments = path.split('/').filter(Boolean);

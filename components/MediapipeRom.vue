@@ -24,9 +24,11 @@
     <div class="angle-display">
       <p>Exercise: {{ currentExercise?.name }}</p>
       <p>Current Angle: {{ currentAngle.toFixed(2) }}</p>
+      <p>Reference Angle: {{ referenceAngle.toFixed(2) }}</p>
+      <p>Target Angle: {{ targetAngle }}</p>
+      <p>Threshold: ±{{ thresholdDeg }}°</p>
+      <p>Position Valid: {{ isPersonVisible ? 'Yes' : 'No' }}</p>
       <p>Pain Moments: {{ exerciseStore.painMomentAngles }}</p>
-      <p>{{ romCombination }}</p>
-      <p>{{ isPersonVisible }}</p>
 
       <div class="camera-controls">
         <select
@@ -81,14 +83,40 @@ const exerciseInitialNormalizedLandmarks = ref<NormalizedLandmarkList | null>(
 );
 
 const currentAngle = ref(0);
-// const referenceAngle = ref(0);
 
 const pivotIndex = ref(14);
 const movableIndex = ref(16);
 const referenceIndex = ref(23);
-const thresholdDeg = ref(30);
+
+const thresholdDeg = ref(25);
+const targetAngle = ref(0)
 
 const toneForRom = useToneForRom(currentAngle);
+
+const referenceAngle = computed(() => {
+  if (!mediapipeResults.value ||
+    !mediapipeResults.value.poseWorldLandmarks ||
+    !mediapipeResults.value.poseWorldLandmarks.length) {
+    return 0;
+  }
+
+  const A = mediapipeResults.value.poseWorldLandmarks[movableIndex.value];
+  const B = mediapipeResults.value.poseWorldLandmarks[pivotIndex.value];
+  const C = mediapipeResults.value.poseWorldLandmarks[referenceIndex.value];
+
+  if (!A || !B || !C) return 0;
+
+  const ab = { x: A.x - B.x, y: A.y - B.y };
+  const cb = { x: C.x - B.x, y: C.y - B.y };
+  const dot = ab.x * cb.x + ab.y * cb.y;
+  const magAB = Math.hypot(ab.x, ab.y);
+  const magCB = Math.hypot(cb.x, cb.y);
+  const angleRad = Math.acos(dot / (magAB * magCB));
+  return angleRad * (180 / Math.PI);
+});
+
+
+
 
 const isPersonVisible = computed((): boolean => {
   if (
@@ -104,7 +132,6 @@ const isPersonVisible = computed((): boolean => {
       ?.visibility ?? 0) < 0.5
   ) {
     toneForRom.stopTone();
-
     return false;
   }
 
@@ -112,11 +139,18 @@ const isPersonVisible = computed((): boolean => {
   const B = mediapipeResults.value.poseWorldLandmarks[pivotIndex.value];
   const C = mediapipeResults.value.poseWorldLandmarks[referenceIndex.value];
 
-
   if (!A || !B || !C) return false;
 
-  toneForRom.startTone();
-  return true;
+  const angleDifference = Math.abs(referenceAngle.value - targetAngle.value);
+
+  if (angleDifference <= thresholdDeg.value) {
+    toneForRom.startTone();
+    return true;
+  } else {
+    console.log(`Out of reference: current ${referenceAngle.value.toFixed(2)}° vs target ${targetAngle.value}°`);
+    toneForRom.stopTone();
+    return false;
+  }
 });
 
 watch(
@@ -132,12 +166,14 @@ watch(
   { immediate: true }
 );
 
+
 function updateROMCombination(combination: keyof typeof PoseCombinations) {
-  const { pivot, movable, reference, threshold } = PoseCombinations[combination];
+  const { pivot, movable, reference, threshold, targetAngle: configTargetAngle } = PoseCombinations[combination];
   pivotIndex.value = pivot;
   movableIndex.value = movable;
   referenceIndex.value = reference;
   thresholdDeg.value = threshold;
+  targetAngle.value = configTargetAngle || 0;
 }
 
 function saveLandmarks() {

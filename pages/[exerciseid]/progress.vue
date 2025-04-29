@@ -50,10 +50,8 @@ watch(
     }
 );
 
-setTimeout(() => {
-    playSuccessSound()
+playSuccessSound()
 
-}, 1700);
 
 
 </script>
