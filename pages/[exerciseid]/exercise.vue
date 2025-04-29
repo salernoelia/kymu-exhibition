@@ -3,9 +3,11 @@
 
         <div class="w-full h-full flex flex-col items-center justify-start mt-2">
             <MediapipeRom
+                v-if="exerciseStore.currentExercise?.category"
                 ref="romComponent"
                 :rom-combination="exerciseStore.currentExercise?.category"
             />
+
         </div>
         <KeyInstruction
             class=""

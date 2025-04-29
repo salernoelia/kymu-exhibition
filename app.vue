@@ -97,8 +97,9 @@ watch(
   () => remoteKey.value,
   (newKey) => {
     if (newKey === "menu") {
-      console.log("Menu button pressed - toggling menu");
-      menu.value = !menu.value;
+      // console.log("Menu button pressed - toggling menu");
+      // menu.value = !menu.value;
+      exerciseDevmode.value = !exerciseDevmode.value;
     } else if (newKey === "back") {
       if (menu.value) {
         menu.value = false;

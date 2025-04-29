@@ -1,7 +1,7 @@
 <template>
     <div class="h-full w-full">
 
-        <div class="flex flex-col w-full h-full items-center justify-center">
+        <div class="flex flex-col w-full h-full items-center justify-center gap-8">
 
             <DotLottieVue
                 style="height: 300px; width: 300px"

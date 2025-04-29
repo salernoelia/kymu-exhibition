@@ -14,6 +14,18 @@
           :width="canvasWidth"
           :height="canvasHeight"
         />
+        <motion.div
+          v-if="isPersonVisible"
+          :initial="{ opacity: 0, scale: 0 }"
+          :animate="{ opacity: 1, scale: 1 }"
+          :transition="{ duration: 0.3 }"
+          class="absolute flex items-center justify-center z-20 dot"
+        >
+          <Icon
+            name="material-symbols-light:check-rounded"
+            class="text-white h-8 w-8 icon-centered"
+          />
+        </motion.div>
         <div
           ref="landmarkContainer"
           class="landmark-grid-container"
@@ -59,6 +71,7 @@ import { PoseService } from "~/shared/utils/pose_service";
 import type { Results } from "@mediapipe/pose";
 import type { NormalizedLandmarkList } from "@mediapipe/drawing_utils";
 import PoseCombinations from '~/assets/pose_config.json'
+import { motion } from 'motion-v'
 
 const exerciseDevmode = useStorage('exercise-devmode', false)
 
@@ -343,6 +356,26 @@ defineExpose({
 
 .loading_canvas {
   background: url("https://media.giphy.com/media/8agqybiK5LW8qrG3vJ/giphy.gif") center no-repeat;
+}
+
+.icon-centered {
+  display: flex;
+  line-height: 0;
+  vertical-align: middle;
+}
+
+.dot {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--color-successNormal);
+}
+
+.line-svg {
+  display: block;
 }
 
 /* .output_canvas {
