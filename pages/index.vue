@@ -17,6 +17,16 @@
                     class="text-char animated-char"
                 >{{ char }}</span>
             </h1>
+            <motion.img
+                src="/images/pandas/1.png"
+                class="panda"
+                :initial="{ opacity: 0, scale: 0 }"
+                :animate="{ opacity: 1, scale: 1 }"
+                :transition="{
+                    duration: 0.4,
+                    scale: { type: 'spring', stiffness: 110, damping: 20 }
+                }"
+            />
         </div>
         <KeyInstruction
             button="ok"
@@ -28,6 +38,7 @@
 <script setup lang="ts">
 import { DotLottieVue } from '@lottiefiles/dotlottie-vue'
 import { animate } from 'animejs';
+import { motion } from 'motion-v'
 
 // Text to be animated
 const text = "Welcome to Kymu!";
@@ -94,5 +105,12 @@ h2 {
 .grid {
     display: flex;
     flex-wrap: wrap;
+}
+
+.panda {
+    width: 50vw;
+    position: absolute;
+    right: 0;
+    bottom: 0;
 }
 </style>

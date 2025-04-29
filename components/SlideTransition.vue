@@ -3,14 +3,22 @@
         class="transition-container"
         :class="{ 'active': active }"
     >
+
         <div class="circle-layer circle-layer-1" />
         <div class="circle-layer circle-layer-2" />
         <div class="circle-layer circle-layer-3" />
         <div class="circle-layer circle-layer-4" />
         <div class="overlay-content">
-            <Icon name="svg-spinners:bouncing-ball" />
+            <img
+                src="/images/pandas/2.png"
+                alt="panda"
+                class="panda"
+            >
             <h2>Unit 2</h2>
             <h1>{{ text }}</h1>
+            <!-- <Icon name="svg-spinners:bouncing-ball" /> -->
+
+
         </div>
     </div>
 </template>
@@ -160,5 +168,9 @@ h2 {
 
 .transition-container:not(.active) .overlay-content {
     transition: opacity 0.3s ease-in-out;
+}
+
+.panda {
+    width: 250px;
 }
 </style>

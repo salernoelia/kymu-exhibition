@@ -14,13 +14,14 @@
                 alt="caution"
                 class="w-3/4"
             />
+
             <DotLottieVue
                 style="height: 100px; width: 300px; transform: scale(4);"
                 autoplay
                 loop
                 src="/lottifiles/space-arrows.lottie"
             />
-            <h1>Please ensure having enough space.</h1>
+            <h1>Make sure you have enough space around you.</h1>
         </div>
 
 
