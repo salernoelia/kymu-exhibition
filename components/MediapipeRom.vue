@@ -14,9 +14,25 @@
           :width="canvasWidth"
           :height="canvasHeight"
         />
+        <!-- Countdown overlay -->
+        <div
+          v-if="showCountdown"
+          class="countdown-overlay"
+        >
+          <motion.h1
+            :initial="{ scale: 0.5, opacity: 0 }"
+            :animate="{ scale: 1, opacity: 1 }"
+            :exit="{ scale: 1.5, opacity: 0 }"
+            :key="countdownValue"
+            :transition="{ duration: 0.7 }"
+            class="countdown-number"
+          >
+            {{ countdownValue }}
+          </motion.h1>
+        </div>
         <img
-          v-if="!isPersonVisibleState"
-          src="/images/overlay_white.png"
+          v-if="!isPersonVisibleState && exerciseStore.currentExercise?.therapist_added_image_urls"
+          :src="`/images/instructions/${exerciseStore.currentExercise?.therapist_added_image_urls[0]}.png`"
           class="absolute h-full output_canvas overlay"
         >
         <motion.div
@@ -83,6 +99,12 @@ const exerciseDevmode = useStorage('exercise-devmode', false)
 const personDetectedTimeout = ref<ReturnType<typeof setTimeout> | null>(null)
 const isPersonVisibleState = ref(false)
 const showCheckIcon = ref(false)
+
+// Countdown variables
+const showCountdown = ref(false)
+const countdownValue = ref(5)
+const countdownInterval = ref<ReturnType<typeof setInterval> | null>(null)
+const scanningReady = ref(false)
 
 const canvasWidth = computed(() =>
   Math.min(window.innerWidth, window.innerHeight * (16 / 9))
@@ -173,6 +195,8 @@ const isPersonVisible = computed((): boolean => {
 
 watch(isPersonVisible, (visible) => {
   isPersonVisibleState.value = visible;
+  if (!scanningReady.value) return;
+
 
   if (visible) {
     soundPlayer.playDetectedSound();
@@ -185,9 +209,10 @@ watch(isPersonVisible, (visible) => {
 
     personDetectedTimeout.value = setTimeout(() => {
       showCheckIcon.value = false;
-    }, 500);
+    }, 250);
   } else {
     console.log(`Out of reference: current ${referenceAngle.value.toFixed(2)}° vs target ${targetAngle.value}°`);
+    soundPlayer.playErrorSound();
     toneForRom.stopTone();
     cleanup();
   }
@@ -335,19 +360,63 @@ async function startCamera() {
     const stream = await navigator.mediaDevices.getUserMedia(constraints);
     source.value.srcObject = stream;
     source.value.play();
+
+    // Start countdown if not already scanning
+    if (!scanningReady.value) {
+      startCountdown();
+    }
   } catch (err) {
     console.error("Error accessing camera:", err);
   }
 }
 
+// Countdown function to display countdown before starting detection
+function startCountdown() {
+  // Reset countdown
+  countdownValue.value = 5;
+  showCountdown.value = true;
 
+  // Create countdown interval
+  countdownInterval.value = setInterval(() => {
+    countdownValue.value--;
+
+    // Sound effect for countdown
+    // soundPlayer.playPageSound();
+
+    // When countdown is done
+    if (countdownValue.value <= 0) {
+      if (countdownInterval.value) {
+        clearInterval(countdownInterval.value);
+        countdownInterval.value = null;
+      }
+
+      // Hide the countdown and set scanning as ready
+      setTimeout(() => {
+        showCountdown.value = false;
+        scanningReady.value = true;
+      }, 1000);
+    }
+  }, 1000);
+}
 
 onBeforeUnmount(() => {
   toneForRom.stopTone();
+
+  // Clear countdown interval if it exists
+  if (countdownInterval.value) {
+    clearInterval(countdownInterval.value);
+    countdownInterval.value = null;
+  }
 });
 
 onUnmounted(() => {
   toneForRom.stopTone();
+
+  // Clear countdown interval if it exists
+  if (countdownInterval.value) {
+    clearInterval(countdownInterval.value);
+    countdownInterval.value = null;
+  }
 });
 
 
@@ -369,6 +438,27 @@ defineExpose({
 
 .pose h1 {
   margin: 1.5rem 1.5rem;
+}
+
+/* Countdown styles */
+.countdown-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.6);
+  z-index: 100;
+}
+
+.countdown-number {
+  font-size: 12rem;
+  color: white;
+  font-weight: bold;
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.7);
 }
 
 .loading_canvas {
@@ -412,7 +502,6 @@ defineExpose({
 }
 
 .overlay {
-  transform: scale(0.8) translateY(10%);
   opacity: 0.5;
   filter: brightness(20) saturate(100%) invert(21%) sepia(92%) saturate(500%) hue-rotate(180deg) brightness(95%) contrast(85%);
 }

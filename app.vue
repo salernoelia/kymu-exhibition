@@ -44,6 +44,7 @@ const exerciseStore = useExerciseStore();
 
 const menu = ref(false);
 const isTransitioning = ref(false);
+const soundPlayer = useSoundPlayer();
 const transitionText = ref('Loading...');
 const exerciseDevmode = useStorage('exercise-devmode', false)
 
@@ -72,6 +73,7 @@ watch(() => route.path, (newPath, oldPath) => {
       newPath.includes('/progress')
     ) {
       isTransitioning.value = false;
+      soundPlayer.playPageSound();
       return;
     }
 

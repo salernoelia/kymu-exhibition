@@ -73,14 +73,26 @@ export function useSoundPlayer() {
     const playTransitionSound = () => {
         return playSound('/sfx/transition.wav');
     };
+    const playPageSound = () => {
+        return playSound('/sfx/page.wav');
+    };
 
-    // Debounced detection sound (prevents multiple plays within 500ms)
     const playDetectedSound = () => {
         const path = '/sfx/detected.wav';
         const now = Date.now();
         const lastPlayed = lastPlayedTimestamps.value[path] || 0;
 
-        // Only play the sound if it hasn't been played in the last 500ms
+        if (now - lastPlayed >= 500) {
+            lastPlayedTimestamps.value[path] = now;
+            return playSound(path);
+        }
+        return Promise.resolve();
+    };
+    const playErrorSound = () => {
+        const path = '/sfx/error.wav';
+        const now = Date.now();
+        const lastPlayed = lastPlayedTimestamps.value[path] || 0;
+
         if (now - lastPlayed >= 500) {
             lastPlayedTimestamps.value[path] = now;
             return playSound(path);
@@ -94,6 +106,8 @@ export function useSoundPlayer() {
         playSuccessSound,
         playStartSound,
         playTransitionSound,
+        playPageSound,
         playDetectedSound,
+        playErrorSound,
     };
 }
