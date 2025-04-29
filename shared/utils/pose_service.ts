@@ -201,9 +201,8 @@ export class PoseService extends Camera {
                 ) * 0.3;
 
             this.ctx.beginPath();
-            // Draw a pie-like filled segment instead of just an arc
             this.ctx.moveTo(pivotX, pivotY);
-            this.ctx.arc(pivotX, pivotY, radius * width * 1.5, startAngle, endAngle); // Increased radius by 50%
+            this.ctx.arc(pivotX, pivotY, radius * width * 1.5, startAngle, endAngle);
             this.ctx.lineTo(pivotX, pivotY);
             this.ctx.closePath();
 

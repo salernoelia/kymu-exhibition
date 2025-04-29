@@ -4,14 +4,14 @@
         "movable": 13,
         "reference": 23,
         "threshold": 5,
-        "targetAngle": 0
+        "targetAngle": 10
     },
     "shoulder_abduction_left": {
         "pivot": 12,
         "movable": 14,
         "reference": 24,
         "threshold": 5,
-        "targetAngle": 0
+        "targetAngle": 10
     },
     "elbow_flexion_right": {
         "pivot": 13,

@@ -22,13 +22,13 @@
     </div>
     <!-- Display the angle information -->
     <div class="angle-display">
-      <p>Exercise: {{ currentExercise?.name }}</p>
-      <p>Current Angle: {{ currentAngle.toFixed(2) }}</p>
-      <p>Reference Angle: {{ referenceAngle.toFixed(2) }}</p>
-      <p>Target Angle: {{ targetAngle }}</p>
-      <p>Threshold: ±{{ thresholdDeg }}°</p>
-      <p>Position Valid: {{ isPersonVisible ? 'Yes' : 'No' }}</p>
-      <p>Pain Moments: {{ exerciseStore.painMomentAngles }}</p>
+      <h2>Exercise: {{ currentExercise?.name }}</h2>
+      <h2>Current Angle: {{ currentAngle.toFixed(2) }}</h2>
+      <h2>Reference Angle: {{ referenceAngle.toFixed(2) }}</h2>
+      <h2>Target Angle: {{ targetAngle }}</h2>
+      <h2>Threshold: ±{{ thresholdDeg }}°</h2>
+      <h2>Position Valid: {{ isPersonVisible ? 'Yes' : 'No' }}</h2>
+      <h2>Pain Moments: {{ exerciseStore.painMomentAngles }}</h2>
 
       <div class="camera-controls">
         <select
@@ -129,8 +129,9 @@ const isPersonVisible = computed((): boolean => {
     mediapipeResults.value.poseWorldLandmarks[movableIndex.value]
       ?.visibility === undefined ||
     (mediapipeResults.value.poseWorldLandmarks[movableIndex.value]
-      ?.visibility ?? 0) < 0.5
+      ?.visibility ?? 0) < 0.6
   ) {
+    cleanup();
     toneForRom.stopTone();
     return false;
   }
@@ -143,12 +144,13 @@ const isPersonVisible = computed((): boolean => {
 
   const angleDifference = Math.abs(referenceAngle.value - targetAngle.value);
 
-  if (angleDifference <= thresholdDeg.value) {
+  if (angleDifference <= thresholdDeg.value || exerciseStore.startedRecording) {
     toneForRom.startTone();
     return true;
   } else {
     console.log(`Out of reference: current ${referenceAngle.value.toFixed(2)}° vs target ${targetAngle.value}°`);
     toneForRom.stopTone();
+    cleanup();
     return false;
   }
 });
