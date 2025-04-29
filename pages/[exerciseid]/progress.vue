@@ -46,7 +46,7 @@ const exerciseStore = useExerciseStore()
 const { remoteKey } = useRemoteControl()
 const { playSuccessSound } = useSoundPlayer()
 
-const targetValue = computed(() => exerciseStore.resultAnglePreviousExercise)
+const targetValue = computed(() => exerciseStore.resultAnglePreviousExercise || 0)
 const countedValue = ref(0)
 
 onMounted(() => {

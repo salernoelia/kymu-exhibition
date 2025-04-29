@@ -1,6 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-    devtools: { enabled: true },
+    devtools: { enabled: false },
     ssr: false,
     css: ['~/assets/css/main.css', '~/assets/css/reset.css', '~/assets/css/tailwind.css'],
 
