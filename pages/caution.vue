@@ -9,7 +9,7 @@
                 :animate="{ opacity: 1, scale: 1 }"
                 :transition="{
                     duration: 0.4,
-                    scale: { type: 'spring', visualDuration: 0.4, bounce: 0.5 }
+                    scale: { type: 'spring', stiffness: 110, damping: 20 }
                 }"
                 alt="caution"
                 class="w-3/4"

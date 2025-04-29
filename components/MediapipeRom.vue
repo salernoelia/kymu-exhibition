@@ -23,7 +23,8 @@
           v-if="isPersonVisible"
           :initial="{ opacity: 0, scale: 0 }"
           :animate="{ opacity: 1, scale: 1 }"
-          :transition="{ duration: 0.3 }"
+          :exit="{ opacity: 0, scale: 0 }"
+          :transition="{ duration: 0.3, exit: { duration: 0.15 } }"
           class="absolute flex items-center justify-center z-20 dot"
         >
           <Icon
@@ -44,7 +45,7 @@
     >
       <h2>Exercise: {{ currentExercise?.name }}</h2>
       <h2>Current Angle: {{ currentAngle.toFixed(2) }}</h2>
-      <h2>Reference Angle: {{ referenceAngle.toFixed(2) }}</h2>
+      <h2>Reference Angle: {{ referenceAngle.toFixed(0) }}</h2>
       <h2>Target Angle: {{ targetAngle }}</h2>
       <h2>Threshold: ±{{ thresholdDeg }}°</h2>
       <h2>Position Valid: {{ isPersonVisible ? 'Yes' : 'No' }}</h2>
@@ -426,7 +427,9 @@ defineExpose({
   border-radius: 5px;
   font-size: 1.2rem;
   font-weight: bold;
-  text-align: center;
+  text-align: left;
+  width: 15%;
+
 }
 
 
