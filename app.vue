@@ -75,7 +75,7 @@ watch(() => route.path, (newPath, oldPath) => {
       return;
     }
 
-    transitionText.value = `Loading ${getPageNameFromPath(newPath)}`;
+    transitionText.value = `Exercise ${exerciseStore.currentExercise?.name}`;
     isTransitioning.value = true;
 
     setTimeout(() => {
@@ -84,14 +84,7 @@ watch(() => route.path, (newPath, oldPath) => {
   }
 });
 
-const getPageNameFromPath = (path: string) => {
-  if (path === '/') return 'Home Page';
 
-  const segments = path.split('/').filter(Boolean);
-  const lastSegment = segments[segments.length - 1];
-
-  return lastSegment.charAt(0).toUpperCase() + lastSegment.slice(1);
-};
 
 watch(
   () => remoteKey.value,

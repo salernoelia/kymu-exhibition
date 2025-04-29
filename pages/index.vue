@@ -1,6 +1,15 @@
 <template>
     <div class="h-full w-full">
+
         <div class="flex flex-col w-full h-full itens-center justify-center">
+            <DotLottieVue
+                style="height: 80vw; width: 80vw"
+                class="absolute"
+                autoplay
+                loop
+                src="/lottifiles/clouds.lottie"
+            />
+
             <h1 class=" flex flex-row gap-1 centered square-grid">
                 <span
                     v-for="(char, index) in textChars"
@@ -17,8 +26,8 @@
 </template>
 
 <script setup lang="ts">
+import { DotLottieVue } from '@lottiefiles/dotlottie-vue'
 import { animate } from 'animejs';
-import { ref, onMounted } from 'vue';
 
 // Text to be animated
 const text = "Welcome to Kymu!";

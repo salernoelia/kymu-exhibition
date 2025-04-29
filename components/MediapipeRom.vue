@@ -10,10 +10,15 @@
         <canvas
           ref="canvas"
           class="output_canvas"
-          :class="{ loading_canvas: loadingCanvas }"
+          :class="{ loading_canvas: loadingCanvas, inactive_canvas: !isPersonVisible }"
           :width="canvasWidth"
           :height="canvasHeight"
         />
+        <img
+          v-if="!isPersonVisible"
+          src="/images/overlay_white.png"
+          class="absolute h-full output_canvas overlay"
+        >
         <motion.div
           v-if="isPersonVisible"
           :initial="{ opacity: 0, scale: 0 }"
@@ -133,6 +138,8 @@ const referenceAngle = computed(() => {
   const angleRad = Math.acos(dot / (magAB * magCB));
   return angleRad * (180 / Math.PI);
 });
+
+
 
 
 
@@ -388,6 +395,16 @@ defineExpose({
   height: 100%;
   max-width: 100vw;
   max-height: calc(100vh - 120px);
+}
+
+.inactive_canvas {
+  filter: brightness(0.5);
+}
+
+.overlay {
+  transform: scale(0.8) translateY(10%);
+  opacity: 0.5;
+  filter: brightness(20) saturate(100%) invert(21%) sepia(92%) saturate(500%) hue-rotate(180deg) brightness(95%) contrast(85%);
 }
 
 .canvas-container {

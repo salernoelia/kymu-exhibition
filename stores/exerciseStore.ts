@@ -5,6 +5,7 @@ export const useExerciseStore = defineStore('exerciseStore', () => {
     const isLoading = ref(false);
     const error = ref<string | null>(null);
     const resultAngle = ref(0);
+    const resultAnglePreviousExercise = ref();
     const painMomentAngles = ref<number[]>([]);
     const startedRecording = ref<boolean>(false);
     const route = useRoute();
@@ -91,6 +92,8 @@ export const useExerciseStore = defineStore('exerciseStore', () => {
                 achieved_angle: resultAngle.value,
                 pain_angles_deg: painMomentAngles.value,
             };
+            resultAnglePreviousExercise.value = resultAngle.value;
+
             currentExercise.value.status = 'completed';
             startedRecording.value = false;
             painMomentAngles.value = [];
@@ -140,6 +143,7 @@ export const useExerciseStore = defineStore('exerciseStore', () => {
         currentExerciseIndex,
         exerciseProgress,
         resultAngle,
+        resultAnglePreviousExercise,
         painMomentAngles,
         startedRecording,
         saveExerciseResults,

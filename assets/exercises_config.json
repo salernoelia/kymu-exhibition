@@ -1,13 +1,13 @@
 {
     "name": "Unit",
-    "description": "Schwerpunkt auf der Verbesserung des Körpergleichgewichts.",
+    "description": "Focus on improving body balance.",
     "exercises": [
         {
             "id": "exercise_0",
-            "name": "Linker Arm",
+            "name": "Left Arm",
             "results": null,
             "category": "shoulder_abduction_left",
-            "description": "Ein Test um die Beweglichkeit des linken Arms zu testen",
+            "description": "A test to assess the mobility of the left arm",
             "exercise_type": "assessment_screen",
             "goal_type": "repetitions_goal",
             "repetitions_goal": 3,
@@ -20,10 +20,10 @@
         },
         {
             "id": "exercise_1",
-            "name": "Rechtes Bein",
+            "name": "Right Leg",
             "results": null,
             "category": "leg_abduction_right",
-            "description": "Test für die Beweglichkeit der linken Hüftseite.",
+            "description": "Test for the mobility of the left hip side.",
             "exercise_type": "assessment_screen",
             "goal_type": "repetitions_goal",
             "repetitions_goal": 3,
@@ -36,10 +36,10 @@
         },
         {
             "id": "exercise_2",
-            "name": "linker Ellbogen",
+            "name": "Left Elbow",
             "results": null,
             "category": "elbow_flexion_left",
-            "description": "Bewege die Hantel fünf mal hoch und runter mit deinem Linken Arm.",
+            "description": "Move the dumbbell up and down five times with your left arm.",
             "exercise_type": "assessment_screen",
             "goal_type": "repetitions_goal",
             "repetitions_goal": 5,

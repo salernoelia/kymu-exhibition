@@ -1,7 +1,7 @@
 <template>
     <div class="h-full w-full">
 
-        <div class="flex flex-col w-full h-full items-center justify-center gap-16">
+        <div class="flex flex-col w-full h-full items-center justify-center ">
 
             <DotLottieVue
                 style="height: 300px; width: 300px"
@@ -10,7 +10,11 @@
                 loop
                 src="/lottifiles/fireworls.lottie"
             />
+            <motion.h1 class="num">
+                {{ countedValue }}°
+            </motion.h1>
             <motion.h1
+                class="mb-12"
                 :initial="{ opacity: 0, scale: 0 }"
                 :animate="{ opacity: 1, scale: 1 }"
                 :transition="{
@@ -22,6 +26,7 @@
                 {{ exerciseStore.exercisesCount - exerciseStore.currentExerciseIndex }}
                 more to go!
             </motion.h1>
+
             <ProgressBar
                 :current="exerciseStore.currentExerciseIndex"
                 :total="exerciseStore.exercisesCount"
@@ -41,6 +46,27 @@ const exerciseStore = useExerciseStore()
 const { remoteKey } = useRemoteControl()
 const { playSuccessSound } = useSoundPlayer()
 
+const targetValue = computed(() => exerciseStore.resultAnglePreviousExercise)
+const countedValue = ref(0)
+
+onMounted(() => {
+    const duration = 1000
+    const startTime = performance.now()
+
+    function updateCounter(currentTime: number) {
+        const elapsed = currentTime - startTime
+        if (elapsed < duration) {
+            countedValue.value = Math.round((elapsed / duration) * targetValue.value)
+            requestAnimationFrame(updateCounter)
+        } else {
+            countedValue.value = targetValue.value
+        }
+    }
+
+    requestAnimationFrame(updateCounter)
+})
+
+
 watch(
     () => remoteKey.value,
     (newKey) => {
@@ -56,4 +82,8 @@ playSuccessSound()
 
 </script>
 
-<style scoped></style>
+<style scoped>
+.num {
+    font-size: 7rem;
+}
+</style>
