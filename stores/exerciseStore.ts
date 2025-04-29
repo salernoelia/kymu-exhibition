@@ -99,8 +99,6 @@ export const useExerciseStore = defineStore('exerciseStore', () => {
                 currentExercise.value.results = results;
                 saveExerciseResults();
             }
-            // Remove the automatic navigation to the next exercise
-            // nextExercise() call is removed from here
         }
     };
 
