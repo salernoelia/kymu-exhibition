@@ -10,17 +10,17 @@
         <canvas
           ref="canvas"
           class="output_canvas"
-          :class="{ loading_canvas: loadingCanvas, inactive_canvas: !isPersonVisible }"
+          :class="{ loading_canvas: loadingCanvas, inactive_canvas: !isPersonVisibleState }"
           :width="canvasWidth"
           :height="canvasHeight"
         />
         <img
-          v-if="!isPersonVisible"
+          v-if="!isPersonVisibleState"
           src="/images/overlay_white.png"
           class="absolute h-full output_canvas overlay"
         >
         <motion.div
-          v-if="isPersonVisible"
+          v-if="isPersonVisibleState && showCheckIcon"
           :initial="{ opacity: 0, scale: 0 }"
           :animate="{ opacity: 1, scale: 1 }"
           :exit="{ opacity: 0, scale: 0 }"
@@ -48,7 +48,7 @@
       <h2>Reference Angle: {{ referenceAngle.toFixed(0) }}</h2>
       <h2>Target Angle: {{ targetAngle }}</h2>
       <h2>Threshold: ±{{ thresholdDeg }}°</h2>
-      <h2>Position Valid: {{ isPersonVisible ? 'Yes' : 'No' }}</h2>
+      <h2>Position Valid: {{ isPersonVisibleState ? 'Yes' : 'No' }}</h2>
       <h2>Pain Moments: {{ exerciseStore.painMomentAngles }}</h2>
 
       <div class="camera-controls">
@@ -80,6 +80,9 @@ import PoseCombinations from '~/assets/pose_config.json'
 import { motion } from 'motion-v'
 
 const exerciseDevmode = useStorage('exercise-devmode', false)
+const personDetectedTimeout = ref<ReturnType<typeof setTimeout> | null>(null)
+const isPersonVisibleState = ref(false)
+const showCheckIcon = ref(false)
 
 const canvasWidth = computed(() =>
   Math.min(window.innerWidth, window.innerHeight * (16 / 9))
@@ -141,9 +144,6 @@ const referenceAngle = computed(() => {
   return angleRad * (180 / Math.PI);
 });
 
-
-
-
 const isPersonVisible = computed((): boolean => {
   if (
     !mediapipeResults.value ||
@@ -157,8 +157,6 @@ const isPersonVisible = computed((): boolean => {
     (mediapipeResults.value.poseWorldLandmarks[movableIndex.value]
       ?.visibility ?? 0) < 0.6
   ) {
-    cleanup();
-    toneForRom.stopTone();
     return false;
   }
 
@@ -170,16 +168,30 @@ const isPersonVisible = computed((): boolean => {
 
   const angleDifference = Math.abs(referenceAngle.value - targetAngle.value);
 
-  if (angleDifference <= thresholdDeg.value || exerciseStore.startedRecording) {
+  return angleDifference <= thresholdDeg.value || exerciseStore.startedRecording;
+});
+
+watch(isPersonVisible, (visible) => {
+  isPersonVisibleState.value = visible;
+
+  if (visible) {
+    soundPlayer.playDetectedSound();
     toneForRom.startTone();
-    return true;
+    showCheckIcon.value = true;
+
+    if (personDetectedTimeout.value) {
+      clearTimeout(personDetectedTimeout.value);
+    }
+
+    personDetectedTimeout.value = setTimeout(() => {
+      showCheckIcon.value = false;
+    }, 500);
   } else {
     console.log(`Out of reference: current ${referenceAngle.value.toFixed(2)}° vs target ${targetAngle.value}°`);
     toneForRom.stopTone();
     cleanup();
-    return false;
   }
-});
+}, { immediate: true });
 
 watch(
   () => props.romCombination,
@@ -245,7 +257,7 @@ onMounted(async () => {
       await new PoseService(
         canvas.value,
         source.value,
-        canvas.value.width,  // Use actual video dimensions
+        canvas.value.width,
         canvas.value.height,
         landmarkContainer.value,
         loadingCanvas,
@@ -266,7 +278,6 @@ onMounted(async () => {
       await startCamera();
     };
 
-    // Request camera access
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ video: true });
       source.value.srcObject = stream;
@@ -276,7 +287,6 @@ onMounted(async () => {
     }
   }
 
-  toneForRom.startTone();
 
 
   if (!props.romCombination) {

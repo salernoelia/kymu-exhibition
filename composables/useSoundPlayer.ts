@@ -5,6 +5,8 @@
  */
 export function useSoundPlayer() {
     const audioCache = ref<Record<string, HTMLAudioElement>>({});
+    // Add a debounce mechanism for detection sound
+    const lastPlayedTimestamps = ref<Record<string, number>>({});
 
     /**
      * Preloads an audio file for faster playback later
@@ -65,15 +67,25 @@ export function useSoundPlayer() {
     const playSuccessSound = () => {
         return playSound('/sfx/success.wav');
     };
-
     const playStartSound = () => {
         return playSound('/sfx/start.wav');
     };
     const playTransitionSound = () => {
         return playSound('/sfx/transition.wav');
     };
+
+    // Debounced detection sound (prevents multiple plays within 500ms)
     const playDetectedSound = () => {
-        return playSound('/sfx/detected.wav');
+        const path = '/sfx/detected.wav';
+        const now = Date.now();
+        const lastPlayed = lastPlayedTimestamps.value[path] || 0;
+
+        // Only play the sound if it hasn't been played in the last 500ms
+        if (now - lastPlayed >= 500) {
+            lastPlayedTimestamps.value[path] = now;
+            return playSound(path);
+        }
+        return Promise.resolve();
     };
 
     return {
