@@ -89,6 +89,7 @@ const canvasHeight = computed(() =>
 );
 
 const exerciseStore = useExerciseStore();
+const soundPlayer = useSoundPlayer();
 
 const currentExercise = computed(() => exerciseStore.currentExercise);
 
@@ -139,8 +140,6 @@ const referenceAngle = computed(() => {
   const angleRad = Math.acos(dot / (magAB * magCB));
   return angleRad * (180 / Math.PI);
 });
-
-
 
 
 

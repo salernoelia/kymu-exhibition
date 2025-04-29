@@ -72,6 +72,9 @@ export function useSoundPlayer() {
     const playTransitionSound = () => {
         return playSound('/sfx/transition.wav');
     };
+    const playDetectedSound = () => {
+        return playSound('/sfx/detected.wav');
+    };
 
     return {
         preloadSound,
@@ -79,5 +82,6 @@ export function useSoundPlayer() {
         playSuccessSound,
         playStartSound,
         playTransitionSound,
+        playDetectedSound,
     };
 }
