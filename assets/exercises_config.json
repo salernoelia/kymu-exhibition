@@ -4,7 +4,7 @@
     "exercises": [
         {
             "id": "exercise_0",
-            "name": "Beweglichkeit Linker Arm",
+            "name": "Linker Arm",
             "results": null,
             "category": "shoulder_abduction_left",
             "description": "Ein Test um die Beweglichkeit des linken Arms zu testen",
@@ -20,7 +20,7 @@
         },
         {
             "id": "exercise_1",
-            "name": "Beweglichkeit Rechtes bein",
+            "name": "Rechtes Bein",
             "results": null,
             "category": "leg_abduction_right",
             "description": "Test für die Beweglichkeit der linken Hüftseite.",
@@ -36,7 +36,7 @@
         },
         {
             "id": "exercise_2",
-            "name": "Hanteln linker Arm",
+            "name": "linker Ellbogen",
             "results": null,
             "category": "elbow_flexion_left",
             "description": "Bewege die Hantel fünf mal hoch und runter mit deinem Linken Arm.",

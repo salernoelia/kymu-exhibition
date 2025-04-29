@@ -1,34 +1,29 @@
 import * as Tone from 'tone';
 
 export const useToneForRom = (angle: Ref<number>) => {
-    const reverb = new Tone.Reverb(2).toDestination();
-    // Add filter and delay nodes
-    const filter = new Tone.Filter(1000, 'lowpass').connect(reverb);
-    const delay = new Tone.FeedbackDelay(0.3, 0.3).connect(filter);
-
-    const synth = new Tone.Synth(Tone.FMSynth).connect(delay);
-    synth.set({
-        harmonicity: 2,
-        modulationIndex: 3.5,
+    const synth = new Tone.FMSynth({
+        harmonicity: 3,
+        modulationIndex: 10,
         oscillator: {
             type: 'sine',
         },
         envelope: {
-            attack: 0.1,
-            decay: 0.2,
-            sustain: 0.8,
-            release: 1.5,
+            attack: 0.05,
+            decay: 0.3,
+            sustain: 0.6,
+            release: 1.2,
         },
         modulation: {
-            type: 'triangle',
+            type: 'sine',
         },
         modulationEnvelope: {
-            attack: 0.5,
-            decay: 0.1,
-            sustain: 0.2,
-            release: 0.5,
+            attack: 0.01,
+            decay: 0.2,
+            sustain: 0.3,
+            release: 0.8,
         },
-    });
+    }).toDestination();
+
     const isPlaying = ref(false);
 
     const startTone = () => {

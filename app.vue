@@ -8,21 +8,17 @@
     <div class="parent">
       <Transition appear>
         <Menu v-if="menu">
-          <div
-            v-for="(exercise, index) in exerciseStore.exercises"
-            :key="index"
-            class="flex flex-col mb-2 gap-4"
-          >
-            <p>Debug - ID: {{ exercise.id }}</p>
-            <Button @click="navigateTo(`/${exercise.id}/progress`)">
-              Progress {{ exercise.name }}
-            </Button>
-            <Button @click="navigateTo(`/${exercise.id}/instruction`)">
-              Instruction {{ exercise.name }}
-            </Button>
-            <Button @click="navigateTo(`/${exercise.id}/exercise`)">
-              Exercise {{ exercise.name }}
-            </Button>
+          <div class="flex flex-row gap-4">
+            <h3>
+              Exercise Developer Mode
+            </h3>
+            <input
+              id="exerciseDevmode"
+              v-model="exerciseDevmode"
+              type="checkbox"
+              name="exerciseDevmode"
+            >
+
           </div>
         </Menu>
       </Transition>
@@ -39,6 +35,7 @@
 </template>
 
 <script setup lang="ts">
+import { useStorage } from '@vueuse/core'
 const { toggleFullscreen } = useFullscreen();
 const { remoteKey } = useRemoteControl();
 const route = useRoute();
@@ -48,6 +45,7 @@ const exerciseStore = useExerciseStore();
 const menu = ref(false);
 const isTransitioning = ref(false);
 const transitionText = ref('Loading...');
+const exerciseDevmode = useStorage('exercise-devmode', false)
 
 const onPageLeave = (component: { type?: { name?: string } }) => {
   const routeName = component?.type?.name || 'New Page';

@@ -28,6 +28,7 @@
 </template>
 
 <script setup lang="ts">
+
 const exerciseStore = useExerciseStore();
 const { remoteKey } = useRemoteControl();
 

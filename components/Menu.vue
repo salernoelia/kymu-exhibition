@@ -1,7 +1,7 @@
 <template>
   <div class="overlay-menu">
     <div class="menu-content flex flex-col gap-4">
-      <h1>Settings</h1>
+      <h2>Settings</h2>
       <slot></slot>
     </div>
   </div>

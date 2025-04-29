@@ -6,6 +6,7 @@ import {
 } from '@mediapipe/drawing_utils';
 import type { Options, Results } from '@mediapipe/pose';
 import { Pose, POSE_CONNECTIONS } from '@mediapipe/pose';
+import { useStorage } from '@vueuse/core';
 
 export class PoseService extends Camera {
     private readonly pipe = new Pose({
@@ -13,6 +14,7 @@ export class PoseService extends Camera {
     });
 
     private readonly ctx: CanvasRenderingContext2D;
+    private readonly exerciseDevmode = useStorage('exercise-devmode', false);
     // public savedLandmarks: Ref<NormalizedLandmarkList | null> = ref(null);
 
     constructor(
@@ -98,20 +100,21 @@ export class PoseService extends Camera {
             this.ctx.save();
             this.ctx.clearRect(0, 0, width, height);
 
-            // Only overwrite existing pixels.
             this.ctx.globalCompositeOperation = 'source-in';
             this.ctx.fillStyle = '#00FF00';
             this.ctx.fillRect(0, 0, width, height);
 
-            // Only overwrite missing pixels.
             this.ctx.globalCompositeOperation = 'destination-atop';
             this.ctx.drawImage(image, 0, 0, width, height);
 
             this.ctx.globalCompositeOperation = 'source-over';
-            drawConnectors(this.ctx, poseLandmarks, POSE_CONNECTIONS, {
-                color: '#e8ebf6',
-                lineWidth: 2,
-            });
+
+            if (this.exerciseDevmode.value) {
+                drawConnectors(this.ctx, poseLandmarks, POSE_CONNECTIONS, {
+                    color: '#e8ebf6',
+                    lineWidth: 2,
+                });
+            }
             // drawLandmarks(this.ctx, poseLandmarks, {
             //     color: '#e8ebf6',
             //     lineWidth: 2,
@@ -123,10 +126,12 @@ export class PoseService extends Camera {
                 //     color: '#1734a3',
                 //     lineWidth: 2,
                 // });
-                drawConnectors(this.ctx, this.savedLandmarks.value, POSE_CONNECTIONS, {
-                    color: '#1734a3',
-                    lineWidth: 2,
-                });
+                if (this.exerciseDevmode.value) {
+                    drawConnectors(this.ctx, this.savedLandmarks.value, POSE_CONNECTIONS, {
+                        color: '#1734a3',
+                        lineWidth: 2,
+                    });
+                }
 
                 // Draw angle arc and text for specific joints
                 // For example, for right elbow (assuming indices 12=shoulder, 14=elbow, 16=wrist)

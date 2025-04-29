@@ -82,8 +82,8 @@ defineProps({
 
 <style scoped lang="scss">
 .dot {
-  width: 50px;
-  height: 50px;
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
   display: flex;
   justify-content: center;

@@ -21,7 +21,10 @@
       </div>
     </div>
     <!-- Display the angle information -->
-    <div class="angle-display">
+    <div
+      v-if="exerciseDevmode"
+      class="angle-display"
+    >
       <h2>Exercise: {{ currentExercise?.name }}</h2>
       <h2>Current Angle: {{ currentAngle.toFixed(2) }}</h2>
       <h2>Reference Angle: {{ referenceAngle.toFixed(2) }}</h2>
@@ -51,10 +54,13 @@
 </template>
 
 <script setup lang="ts">
+import { useStorage } from '@vueuse/core'
 import { PoseService } from "~/shared/utils/pose_service";
 import type { Results } from "@mediapipe/pose";
 import type { NormalizedLandmarkList } from "@mediapipe/drawing_utils";
 import PoseCombinations from '~/assets/pose_config.json'
+
+const exerciseDevmode = useStorage('exercise-devmode', false)
 
 const canvasWidth = computed(() =>
   Math.min(window.innerWidth, window.innerHeight * (16 / 9))
