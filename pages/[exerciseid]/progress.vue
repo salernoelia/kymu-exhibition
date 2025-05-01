@@ -52,7 +52,7 @@
                     scale: { type: 'spring', stiffness: 110, damping: 20 }
                 }"
                 alt="caution"
-                class="cloud_3 cloud"
+                class="cloud_rainbow cloud"
             />
             <motion.h1 class="num">
                 {{ countedValue }}°

@@ -79,7 +79,7 @@ export class PoseService extends Camera {
 
     public render({
         poseLandmarks,
-        // segmentationMask,
+        segmentationMask,
         // poseWorldLandmarks,
         image,
     }: Results): void {
@@ -142,6 +142,25 @@ export class PoseService extends Camera {
                     this.savedLandmarks.value
                 );
             }
+
+            // const activeEffect = 'mask';
+
+            // if (segmentationMask) {
+            //     this.ctx.drawImage(segmentationMask, 0, 0, this.canvas.width, this.canvas.height);
+            //     if (activeEffect === 'mask' || activeEffect === 'both') {
+            //         this.ctx.globalCompositeOperation = 'source-in';
+            //         this.ctx.fillStyle = '#00FF007F';
+            //         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+            //     } else {
+            //         this.ctx.globalCompositeOperation = 'source-out';
+            //         this.ctx.fillStyle = '#0000FF7F';
+            //         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+            //     }
+            //     // Only overwrite missing pixels.
+            //     this.ctx.globalCompositeOperation = 'destination-atop';
+            //     this.ctx.drawImage(image, 0, 0, this.canvas.width, this.canvas.height);
+            //     this.ctx.globalCompositeOperation = 'source-over';
+            // }
 
             this.ctx.restore();
         } catch (error) {

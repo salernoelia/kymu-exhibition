@@ -2,7 +2,6 @@ export function useRemoteControl() {
     const remoteKey = ref<RemoteAction | null>(null);
     const isKeyPressed = ref(false);
 
-    // Track when a key was last emitted to avoid duplicate events
     const lastKeyPressTime = ref<Record<RemoteAction, number>>({} as Record<RemoteAction, number>);
 
     const keyMapping: Record<string, RemoteAction> = {

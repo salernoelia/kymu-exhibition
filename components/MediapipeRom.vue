@@ -270,7 +270,7 @@ onMounted(async () => {
         modelComplexity: 2,
         smoothLandmarks: true,
         enableSegmentation: true,
-        smoothSegmentation: false,
+        smoothSegmentation: true,
         minDetectionConfidence: 0.3,
         minTrackingConfidence: 0.3,
         selfieMode: true,
