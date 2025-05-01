@@ -1,13 +1,19 @@
 <template>
     <div class="h-full w-full">
-
         <div class="flex flex-col w-full h-full itens-center justify-center">
-            <DotLottieVue
+            <!-- <DotLottieVue
                 style="height: 80vw; width: 80vw"
                 class="absolute"
                 autoplay
                 loop
                 src="/lottifiles/clouds.lottie"
+            /> -->
+            <DotLottieVue
+                style="height: 100vw; width: 100vw"
+                class="absolute"
+                autoplay
+                loop
+                src="/lottifiles/welcome.lottie"
             />
 
             <h1 class=" flex flex-row gap-1 centered square-grid">
@@ -17,7 +23,7 @@
                     class="text-char animated-char"
                 >{{ char }}</span>
             </h1>
-            <motion.img
+            <!-- <motion.img
                 src="/images/pandas/1.png"
                 class="panda"
                 :initial="{ opacity: 0, scale: 0 }"
@@ -26,7 +32,7 @@
                     duration: 0.4,
                     scale: { type: 'spring', stiffness: 110, damping: 20 }
                 }"
-            />
+            /> -->
         </div>
         <KeyInstruction
             button="ok"
