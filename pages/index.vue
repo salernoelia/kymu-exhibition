@@ -1,6 +1,5 @@
 <template>
     <div class="h-full w-full">
-
         <div class="flex flex-col w-full h-full itens-center justify-center">
             <!-- <DotLottieVue
                 style="height: 80vw; width: 80vw"
@@ -9,49 +8,22 @@
                 loop
                 src="/lottifiles/clouds.lottie"
             /> -->
-
-            <motion.img
-                src="/images/decoration/cloud_2.svg"
-                :initial="{ opacity: 0, scale: 0 }"
-                :animate="{ opacity: 1, scale: 1 }"
-                :transition="{
-                    duration: 0.4,
-                    scale: { type: 'spring', stiffness: 110, damping: 20 }
-                }"
-                alt="caution"
-                class="cloud_2 cloud"
+            <DotLottieVue
+                style="height: 100vw; width: 100vw"
+                class="absolute"
+                autoplay
+                loop
+                src="/lottifiles/welcome.lottie"
             />
 
-            <motion.img
-                src="/images/decoration/cloud_3.svg"
-                :initial="{ opacity: 0, scale: 0 }"
-                :animate="{ opacity: 1, scale: 1 }"
-                :transition="{
-                    duration: 0.4,
-                    scale: { type: 'spring', stiffness: 110, damping: 20 }
-                }"
-                alt="caution"
-                class="cloud_3 cloud"
-            />
-            <img
-                src="/images/decoration/cloud_rainbow.svg"
-                alt="caution"
-                class="cloud_rainbow cloud"
-            >
-
-            <div class="flex flex-col title">
-                <h1 class=" flex flex-row gap-1 centered square-grid">
-                    <span
-                        v-for="(char, index) in textChars"
-                        :key="index"
-                        class="text-char animated-char"
-                    >{{ char }}</span>
-                </h1>
-                <h2>
-                    Are you ready for today's workout?
-                </h2>
-            </div>
-            <motion.img
+            <h1 class=" flex flex-row gap-1 centered square-grid">
+                <span
+                    v-for="(char, index) in textChars"
+                    :key="index"
+                    class="text-char animated-char"
+                >{{ char }}</span>
+            </h1>
+            <!-- <motion.img
                 src="/images/pandas/1.png"
                 class="panda"
                 :initial="{ opacity: 0, scale: 0 }"
@@ -60,7 +32,7 @@
                     duration: 0.4,
                     scale: { type: 'spring', stiffness: 110, damping: 20 }
                 }"
-            />
+            /> -->
         </div>
         <KeyInstruction
             button="ok"
