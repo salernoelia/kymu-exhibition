@@ -30,6 +30,7 @@
           @page-enter="onPageEnter"
         />
       </main>
+
     </div>
   </div>
 </template>

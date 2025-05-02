@@ -1,5 +1,6 @@
 <template>
     <div class="h-full w-full">
+
         <div class="flex flex-col w-full h-full itens-center justify-center">
             <!-- <DotLottieVue
                 style="height: 80vw; width: 80vw"
@@ -8,13 +9,8 @@
                 loop
                 src="/lottifiles/clouds.lottie"
             /> -->
-            <DotLottieVue
-                style="height: 100vw; width: 100vw"
-                class="absolute"
-                autoplay
-                loop
-                src="/lottifiles/welcome.lottie"
-            />
+
+
 
             <h1 class=" flex flex-row gap-1 centered square-grid">
                 <span
@@ -23,6 +19,12 @@
                     class="text-char animated-char"
                 >{{ char }}</span>
             </h1>
+            <DotLottieVue
+                class="fixed w-screen h-screen bottom-0 left-0 z-[-1] bg"
+                autoplay
+                loop
+                src="/lottifiles/welcome.lottie"
+            />
             <!-- <motion.img
                 src="/images/pandas/1.png"
                 class="panda"
@@ -42,9 +44,9 @@
 </template>
 
 <script setup lang="ts">
-// import { DotLottieVue } from '@lottiefiles/dotlottie-vue'
+import { DotLottieVue } from '@lottiefiles/dotlottie-vue'
 import { animate } from 'animejs';
-import { motion } from 'motion-v'
+// import { motion } from 'motion-v'
 
 // Text to be animated
 const text = "Welcome to Kymu!";
@@ -148,5 +150,9 @@ h2 {
     width: 55vw;
     left: -20px;
     z-index: -3;
+}
+
+.bg {
+    transform: translateY(20px);
 }
 </style>
