@@ -1,11 +1,7 @@
 <template>
     <div class="h-full w-full">
-        <<<<<<<
-            Updated
-            upstream
-            <div
-            class="flex flex-col w-full h-full itens-center justify-center"
-        >
+
+        <div class="flex flex-col w-full h-full itens-center justify-center">
             =======
 
             <div class="flex flex-col w-full h-full items-center justify-center">
@@ -48,6 +44,7 @@
                 button="ok"
                 action="continue"
             />
+        </div>
     </div>
 </template>
 
