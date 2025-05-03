@@ -2,17 +2,19 @@
     <div class="h-full w-full">
 
         <div class="flex flex-col w-full h-full items-center justify-start gap-8 pt-20">
+
             <h1>You did it!</h1>
             <ProgressBar
                 :current="3"
                 :total="3"
             />
 
-            <img
+
+            <!-- <img
                 class="panda"
                 src="/images/pandas/4.png"
                 alt="panda"
-            >
+            > -->
 
 
             <div class="flex flex-row justify-center items-center gap-16">
@@ -26,6 +28,12 @@
                 </div>
             </div>
         </div>
+        <DotLottieVue
+                class="fixed w-screen h-screen bottom-0 left-0 z-[-1] bg"
+                autoplay
+                loop
+                src="/lottifiles/success.lottie"
+            />
 
         <KeyInstruction
             button="ok"
