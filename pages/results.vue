@@ -17,7 +17,7 @@
             > -->
 
 
-            <div class="flex flex-row justify-center items-center gap-16">
+            <div class="flex flex-row justify-center items-center gap-16 z-[-1] bg">
                 <div
                     v-for="e in exerciseStore.exercises"
                     :key="e.id"
@@ -43,6 +43,7 @@
 </template>
 
 <script setup lang="ts">
+import { DotLottieVue } from '@lottiefiles/dotlottie-vue'
 const exerciseStore = useExerciseStore();
 const { remoteKey } = useRemoteControl()
 

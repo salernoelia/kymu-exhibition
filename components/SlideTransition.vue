@@ -9,11 +9,12 @@
         <div class="circle-layer circle-layer-3" />
         <div class="circle-layer circle-layer-4" />
         <div class="overlay-content">
-            <img
-                src="/images/pandas/2.png"
-                alt="panda"
-                class="panda"
-            >
+            <DotLottieVue
+                style="height: 300px; width: 300px"
+                autoplay
+                loop
+                src="/lottifiles/progress.lottie"
+            />
             <h2>Unit 2</h2>
             <h1>{{ text }}</h1>
             <!-- <Icon name="svg-spinners:bouncing-ball" /> -->
@@ -24,6 +25,7 @@
 </template>
 
 <script setup lang="ts">
+import { DotLottieVue } from '@lottiefiles/dotlottie-vue'
 const soundPlayer = useSoundPlayer();
 
 const props = defineProps<{
