@@ -7,10 +7,10 @@
                 class="absolute top-28"
                 autoplay
                 loop
-                src="/lottifiles/fireworls.lottie"
+                src="/lottifiles/party.lottie"
             />
 
-            <motion.img
+            <!-- <motion.img
                 src="/images/pandas/3.png"
                 :initial="{ opacity: 0, scale: 0 }"
                 :animate="{ opacity: 1, scale: 1 }"
@@ -20,7 +20,7 @@
                 }"
                 alt="caution"
                 class="panda"
-            />
+            /> -->
             <motion.img
                 src="/images/decoration/cloud_1.svg"
                 :initial="{ opacity: 0, scale: 0 }"
