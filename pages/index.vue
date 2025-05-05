@@ -1,12 +1,7 @@
 <template>
     <div class="h-full w-full">
-
-        <div class="flex flex-col w-full h-full itens-center justify-center">
-            =======
-
-            <div class="flex flex-col w-full h-full items-center justify-center">
-                >>>>>>> Stashed changes
-                <!-- <DotLottieVue
+        <div class="flex flex-col w-full h-full items-center justify-center">
+            <!-- <DotLottieVue
                 style="height: 80vw; width: 80vw"
                 class="absolute"
                 autoplay
@@ -16,20 +11,20 @@
 
 
 
-                <h1 class=" flex flex-row gap-1 centered square-grid">
-                    <span
-                        v-for="(char, index) in textChars"
-                        :key="index"
-                        class="text-char animated-char"
-                    >{{ char }}</span>
-                </h1>
-                <DotLottieVue
-                    class="fixed w-screen h-screen bottom-0 left-0 z-[-1] bg"
-                    autoplay
-                    loop
-                    src="/lottifiles/welcome.lottie"
-                />
-                <!-- <motion.img
+            <h1 class=" flex flex-row gap-1 centered square-grid">
+                <span
+                    v-for="(char, index) in textChars"
+                    :key="index"
+                    class="text-char animated-char"
+                >{{ char }}</span>
+            </h1>
+            <DotLottieVue
+                class="fixed w-screen h-screen bottom-0 left-0 z-[-1] bg"
+                autoplay
+                loop
+                src="/lottifiles/welcome.lottie"
+            />
+            <!-- <motion.img
                 src="/images/pandas/1.png"
                 class="panda"
                 :initial="{ opacity: 0, scale: 0 }"
@@ -39,12 +34,12 @@
                     scale: { type: 'spring', stiffness: 110, damping: 20 }
                 }"
             /> -->
-            </div>
-            <KeyInstruction
-                button="ok"
-                action="continue"
-            />
         </div>
+        <KeyInstruction
+            button="ok"
+            action="continue"
+        />
+    </div>
     </div>
 </template>
 
