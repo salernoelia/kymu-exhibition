@@ -15,25 +15,27 @@
                 src="/images/pandas/4.png"
                 alt="panda"
             > -->
+            <DotLottieVue
+                class="absolute w-full h-full bottom-[-25px] left-0 z-[-1] overflow-hidden"
+                autoplay
+                loop
+                src="/lottifiles/success.lottie"
+            />
 
 
-            <div class="flex flex-row justify-center items-center gap-16 z-[-1] bg">
+            <div class="flex flex-row justify-center items-center gap-16">
                 <div
                     v-for="e in exerciseStore.exercises"
                     :key="e.id"
                     class="flex flex-col gap-2 justify-center items-center"
                 >
-                    <h1>{{ e.results.achieved_angle || 50 }}°</h1>
+                    <h1>{{ e.results.achieved_angle || 0 }}°</h1>
                     <h3>{{ e.name }}</h3>
                 </div>
             </div>
+
         </div>
-        <DotLottieVue
-                class="fixed w-screen h-screen bottom-0 left-0 z-[-1] bg"
-                autoplay
-                loop
-                src="/lottifiles/success.lottie"
-            />
+
 
         <KeyInstruction
             button="ok"
@@ -46,6 +48,7 @@
 import { DotLottieVue } from '@lottiefiles/dotlottie-vue'
 const exerciseStore = useExerciseStore();
 const { remoteKey } = useRemoteControl()
+const soundPlayer = useSoundPlayer();
 
 watch(
     () => remoteKey.value,
@@ -58,6 +61,7 @@ watch(
 
 onMounted(() => {
     exerciseStore.showResults();
+    soundPlayer.playResultsSound();
 })
 
 

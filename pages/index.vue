@@ -19,7 +19,7 @@
                 >{{ char }}</span>
             </h1>
             <DotLottieVue
-                class="fixed w-screen h-screen bottom-0 left-0 z-[-1] bg"
+                class="fixed w-full left-0 z-[-1] bg bottom-0"
                 autoplay
                 loop
                 src="/lottifiles/welcome.lottie"
@@ -40,7 +40,8 @@
             action="continue"
         />
     </div>
-    </div>
+
+
 </template>
 
 <script setup lang="ts">
@@ -153,6 +154,6 @@ h2 {
 }
 
 .bg {
-    transform: translateY(20px);
+    transform: translateY(20px) scale(1.13);
 }
 </style>

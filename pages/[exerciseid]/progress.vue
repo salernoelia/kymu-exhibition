@@ -52,7 +52,7 @@
                     scale: { type: 'spring', stiffness: 110, damping: 20 }
                 }"
                 alt="caution"
-                class="cloud_rainbow cloud"
+                class="cloud_3 cloud"
             />
             <motion.h1 class="num">
                 {{ countedValue }}°
@@ -163,5 +163,6 @@ playSuccessSound()
     left: -20px;
     width: 35vw;
     height: auto;
+    left: 0;
 }
 </style>

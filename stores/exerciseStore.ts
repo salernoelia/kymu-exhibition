@@ -40,6 +40,18 @@ export const useExerciseStore = defineStore('exerciseStore', () => {
         }
     };
 
+    const finalizeResults = () => {
+        exercises.value.forEach((ex) => {
+            if (!ex.results || typeof ex.results.achieved_angle === 'undefined') {
+                ex.results = {
+                    exercise_id: ex.id,
+                    achieved_angle: 0,
+                    pain_angles_deg: [],
+                };
+            }
+        });
+    };
+
     const getExerciseById = (exerciseId: string) => {
         return exercises.value.find((ex) => ex.id === exerciseId);
     };
@@ -151,6 +163,7 @@ export const useExerciseStore = defineStore('exerciseStore', () => {
         completeCurrentExercise,
         skipCurrentExercise,
         getExerciseStatus,
+        finalizeResults,
         startExperience: exerciseStateMachine.startExperience,
         resetExperience: exerciseStateMachine.resetExperience,
         showResults: exerciseStateMachine.showResults,
