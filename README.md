@@ -43,8 +43,8 @@ This Nuxt 3 web application is part of the larger [Kymu](https://github.com/sale
 
 1.  **Clone the repository:**
     ```bash
-    git clone <your-repository-url>
-    cd kymu-exhibition # Or your project's directory name
+    git clone https://github.com/salernoelia/kymu-exhibition.git
+    cd kymu-exhibition
     ```
 
 2.  **Install dependencies:**
