@@ -20,10 +20,14 @@ export default defineEventHandler(async (event) => {
             },
             result: result,
         };
-    } catch (e: any) {
+    } catch (e: unknown) {
+        let message = 'Unknown error';
+        if (e instanceof Error) {
+            message = e.message;
+        }
         throw createError({
             statusCode: 400,
-            statusMessage: e.message,
+            statusMessage: message,
         });
     }
 });

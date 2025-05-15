@@ -66,7 +66,8 @@ const getActionText = (action: Actions) => {
 <style scoped>
 .c {
     position: absolute;
-    bottom: 10px;
+    top: 10px;
+    right: 10px;
 }
 
 .instructions-container {
