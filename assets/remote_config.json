@@ -1,0 +1,16 @@
+{
+    "keyMappings": {
+      "w": "up",
+      "a": "left",
+      "s": "down",
+      "d": "right",
+      "Enter": "ok",
+      "Backspace": "back",
+      "m": "menu",
+      "v": "voice",
+      "p": "shutdown",
+      "f": "fullscreen"
+    },
+    "debounceTime": 300,
+    "keyPressResetTime": 100
+  }
