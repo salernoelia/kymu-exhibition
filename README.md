@@ -1,5 +1,7 @@
 # Kymu Exhibition App
 
+![Kymu Exhibition Overview](/public/kymu-exhibition-overview.png)
+
 This Nuxt 3 web application is part of the larger [Kymu](https://github.com/salernoelia/kymu) project (a platform for hybrid pediatric neuromuscular rehabilitation). This specific "Exhibition App" focuses on providing an interactive exercise experience using real-time body tracking via a webcam, designed for display on a TV or large screen. It assesses Range of Motion (ROM) and guides users through a series of configurable exercises and is meant to show the potential capabilities of the Kymu exercising platform.
 
 **Part of the [Kymu Main Project](https://github.com/salernoelia/kymu)** (Your link here if it's public, or describe the main project if private).
