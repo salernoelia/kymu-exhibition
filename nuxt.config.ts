@@ -2,6 +2,14 @@
 export default defineNuxtConfig({
     devtools: { enabled: false },
     ssr: false,
+    electron: {
+        build: [
+          {
+            // Main-Process entry file of the Electron App.
+            entry: 'electron/main.ts',
+          },
+        ],
+      },
     css: ['~/assets/css/main.css', '~/assets/css/reset.css', '~/assets/css/tailwind.css'],
 
     imports: {
@@ -9,14 +17,15 @@ export default defineNuxtConfig({
     },
 
     modules: [
-        '@nuxtjs/tailwindcss',
-        '@nuxt/fonts',
-        '@nuxt/icon',
-        '@pinia/nuxt',
-        '@vueuse/nuxt',
-        '@nuxt/eslint',
-        'motion-v/nuxt',
-        'nuxt-mcp',
+      '@nuxtjs/tailwindcss',
+      '@nuxt/fonts',
+      '@nuxt/icon',
+      '@pinia/nuxt',
+      '@vueuse/nuxt',
+      '@nuxt/eslint',
+      'motion-v/nuxt',
+      'nuxt-mcp',
+      'nuxt-electron',
     ],
 
     pinia: {
@@ -27,5 +36,5 @@ export default defineNuxtConfig({
         pageTransition: { name: 'page', mode: 'out-in' },
     },
 
-    compatibilityDate: '2025-04-26',
+    compatibilityDate: '2025-05-17',
 });

@@ -16,7 +16,7 @@
         />
         <img
           v-if="!isPersonVisibleState"
-          src="/images/overlay_white.png"
+          src="/public/images/overlay_white.png"
           class="absolute h-full output_canvas overlay"
         >
         <motion.div
