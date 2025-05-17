@@ -2,10 +2,10 @@
     "keyMappings": {
       "w": "up",
       "a": "left",
-      "s": "down",
+      "3": "down",
       "d": "right",
-      "Enter": "ok",
-      "Backspace": "back",
+      "2": "ok",
+      "1": "back",
       "m": "menu",
       "v": "voice",
       "p": "shutdown",

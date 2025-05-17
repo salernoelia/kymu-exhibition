@@ -6,7 +6,6 @@ export default defineEventHandler(async (event) => {
     try {
         const body = await readBody(event);
 
-        // Handle pain angles array - stringify it if it exists
         const newResult: InsertResult = {
             ...body,
             painAnglesDeg: body.painAnglesDeg ? JSON.stringify(body.painAnglesDeg) : null,
@@ -16,7 +15,7 @@ export default defineEventHandler(async (event) => {
         return {
             newResult: {
                 ...newResult,
-                painAnglesDeg: body.painAnglesDeg, // Return the original array in response
+                painAnglesDeg: body.painAnglesDeg, 
             },
             result: result,
         };
