@@ -308,9 +308,19 @@ async function getAvailableVideoDevices() {
         device.label && device.label.toLowerCase().includes('facetime')
       );
 
-      selectedDeviceId.value = faceTimeCamera ?
-        faceTimeCamera.deviceId :
-        videoDevices.value[0].deviceId;
+      const realSenseCamera = videoDevices.value.find(device =>
+        device.label && device.label.toLowerCase().includes('realsense')  && device.label.toLowerCase().includes('rgb')
+      );
+
+
+
+      if (realSenseCamera) {
+        selectedDeviceId.value = realSenseCamera.deviceId;
+      } else if (faceTimeCamera) {
+        selectedDeviceId.value = faceTimeCamera.deviceId;
+      } else {
+        selectedDeviceId.value = videoDevices.value[0].deviceId;
+      }
     }
   } catch (error) {
     console.error("Error getting video devices:", error);
