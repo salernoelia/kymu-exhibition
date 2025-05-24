@@ -56,19 +56,27 @@ export const useExerciseStateMachine = () => {
                 console.log('Error logging user:', e);
             }
 
-            console.log(
-                'STARTING EXPERIENCE:',
-                appState.value,
-                'is experience state and user key is',
-                exerciseStore.userKey
-            );
-
-            const firstExerciseId = exercises.value[0].id;
-            await navigateTo(`/${firstExerciseId}/instruction`, { replace: true });
+            const firstExercise = exercises.value[0];
+            // Ensure firstExercise and its id are valid
+            if (firstExercise && typeof firstExercise.id === 'string' && firstExercise.id.trim() !== '') {
+                const firstExerciseId = firstExercise.id;
+                const targetPath = `/${firstExerciseId}/instruction`;
+                console.log(
+                    'STARTING EXPERIENCE: Navigating to',
+                    targetPath,
+                    'App state:', appState.value,
+                    'User key:', exerciseStore.userKey
+                );
+                await navigateTo(targetPath, { replace: true });
+            } else {
+                console.error('Error starting experience: Invalid first exercise or missing ID.', firstExercise);
+             
+                //await resetExperience(); 
+            }
         }
     };
 
-    const resetExperience = async () => {
+ const resetExperience = async () => {
         if (exercises.value.length > 0) {
             appState.value = 'start';
 
@@ -87,18 +95,19 @@ export const useExerciseStateMachine = () => {
 
             currentExerciseIndex.value = 0;
 
-            console.log(
-                'RESET EXPERIENCE:',
-                appState.value,
-                'is experience state (reset) and user key is',
-                exerciseStore.userKey
-            );
+            // Wait for Vue to process state updates before navigating
+            await nextTick();
 
-            await navigateTo('/', { replace: true });
-            window.location.reload();
+            try {
+                console.log('Attempting navigation to / after state reset and nextTick');
+                await navigateTo('/', { replace: true });
+            } catch (e) {
+                console.error('Error navigating to / on resetExperience:', e);
+                // Fallback to full page reload if navigateTo fails
+                window.location.href = '/';
+            }
         }
     };
-
     const showResults = () => {
         appState.value = 'results';
     };

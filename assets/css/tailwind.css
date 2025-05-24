@@ -104,6 +104,12 @@
     --color-inactiveDarkActive: #3b3b3b;
     --color-inactiveDarker: #2e2e2e;
 }
+
+* {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
 /* Base Styles
    -------------------------------------------------------------------------- */
 

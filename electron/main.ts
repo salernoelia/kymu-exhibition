@@ -2,6 +2,11 @@ import { app, BrowserWindow, session } from 'electron'
 import * as path from 'path'
 
 app.whenReady().then(() => {
+  session.defaultSession.setPermissionRequestHandler((webContents, permission, callback, details) => {
+    if (permission === 'media') {
+        callback(true) 
+    }
+  })
   const mainWindow = new BrowserWindow({
     fullscreen: true,
     frame: false,
@@ -14,6 +19,8 @@ app.whenReady().then(() => {
       webSecurity: true
     }
   })
+
+  mainWindow.webContents.openDevTools({ mode: 'detach' })
   
   // Set relaxed Content-Security-Policy for local exhibition
   session.defaultSession.webRequest.onHeadersReceived((details, callback) => {

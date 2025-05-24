@@ -18,9 +18,8 @@ type Exercise = {
     repetitions_goal: number | null;
     duration_seconds_goal: number | null;
     type: string;
-    inherited_default_exercise: null;
-    therapist_added_image_urls: null;
-    therapist_added_video_urls: null;
+    therapist_added_image_urls: string[] | null;
+    therapist_added_video_urls: string[] | null;
     family_scene_adjustment_access: boolean;
     results: ExerciseResults;
     status: ExerciseStatus;

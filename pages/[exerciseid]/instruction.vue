@@ -67,10 +67,29 @@ watch(
     () => remoteKey.value,
     (newKey) => {
         if (newKey === "ok") {
-            navigateTo("/" + route.params?.exerciseid + "/exercise")
+            const currentExerciseId = route.params.exerciseid;
+
+            console.log(`Attempting navigation from instruction page. Exercise ID from route.params: '${currentExerciseId}'`);
+
+            if (typeof currentExerciseId === 'string' && currentExerciseId.trim() !== '') {
+                const targetPath = `/${currentExerciseId}/exercise`;
+                console.log(`Navigating to: ${targetPath}`);
+                navigateTo(targetPath);
+            } else {
+                console.error('Error: exerciseid is invalid or missing from route.params when "ok" key pressed.', route.params);
+                // Fallback or error handling, e.g., navigate to home or show a message
+                // navigateTo('/'); 
+            }
         }
     }
 );
+
+onMounted(() => {
+    console.log('Instruction page mounted. Initial route.params:', route.params);
+    if (!route.params.exerciseid) {
+        console.warn('Warning: exerciseid is missing from route.params on mount.');
+    }
+});
 </script>
 
 <style scoped>
