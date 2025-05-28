@@ -7,49 +7,20 @@
           ref="source"
           class="input_video"
         />
-        <canvas
-          ref="canvas"
-          class="output_canvas"
-          :class="{ loading_canvas: loadingCanvas, inactive_canvas: !isPersonVisibleState }"
-          :width="canvasWidth"
-          :height="canvasHeight"
-        />
-        <img
-          v-if="!isPersonVisibleState"
-          src="/public/images/overlay_white.png"
-          class="absolute h-full output_canvas overlay"
-        >
-        <motion.div
-          v-if="isPersonVisibleState && showCheckIcon"
-          :initial="{ opacity: 0, scale: 0 }"
-          :animate="{ opacity: 1, scale: 1 }"
-          :exit="{ opacity: 0, scale: 0 }"
-          :transition="{ duration: 0.3, exit: { duration: 0.15 } }"
-          class="absolute flex items-center justify-center z-20 dot"
-        >
-          <Icon
-            name="material-symbols-light:check-rounded"
-            class="text-white h-8 w-8 icon-centered"
-          />
-        </motion.div>
         <div
           ref="landmarkContainer"
           class="landmark-grid-container"
         />
       </div>
     </div>
-    <!-- Display the angle information -->
+    <!-- Display debug information -->
     <div
       v-if="exerciseDevmode"
-      class="angle-display"
+      class="debug-display"
     >
-      <h2>Exercise: {{ currentExercise?.name }}</h2>
-      <h2>Current Angle: {{ currentAngle.toFixed(2) }}</h2>
-      <h2>Reference Angle: {{ referenceAngle.toFixed(0) }}</h2>
-      <h2>Target Angle: {{ targetAngle }}</h2>
-      <h2>Threshold: ±{{ thresholdDeg }}°</h2>
+      <h2>Left Hand: {{ leftHand.x.toFixed(2) }}, {{ leftHand.y.toFixed(2) }}</h2>
+      <h2>Right Hand: {{ rightHand.x.toFixed(2) }}, {{ rightHand.y.toFixed(2) }}</h2>
       <h2>Position Valid: {{ isPersonVisibleState ? 'Yes' : 'No' }}</h2>
-      <h2>Pain Moments: {{ exerciseStore.painMomentAngles }}</h2>
 
       <div class="camera-controls">
         <select
@@ -76,189 +47,97 @@ import { useStorage } from '@vueuse/core'
 import { PoseService } from "~/shared/utils/pose_service";
 import type { Results } from "@mediapipe/pose";
 import type { NormalizedLandmarkList } from "@mediapipe/drawing_utils";
-import PoseCombinations from '~/assets/pose_config.json'
-import { motion } from 'motion-v'
 
 const exerciseDevmode = useStorage('exercise-devmode', false)
 const personDetectedTimeout = ref<ReturnType<typeof setTimeout> | null>(null)
 const isPersonVisibleState = ref(false)
-const showCheckIcon = ref(false)
-
-const canvasWidth = computed(() =>
-  Math.min(window.innerWidth, window.innerHeight * (16 / 9))
-);
-const canvasHeight = computed(() =>
-  Math.min(window.innerHeight * 0.9, canvasWidth.value * (9 / 16))
-);
-
-const exerciseStore = useExerciseStore();
-const soundPlayer = useSoundPlayer();
-
-const currentExercise = computed(() => exerciseStore.currentExercise);
-
-const props = defineProps<{
-  romCombination: string;
-}>();
-
-
 
 const source = ref<HTMLVideoElement | null>(null);
-const canvas = ref<HTMLCanvasElement | null>(null);
 const landmarkContainer = ref<HTMLDivElement | null>(null);
 const loadingCanvas = ref(true);
+
 const mediapipeResults = ref<Results | null>(null);
-const exerciseInitialNormalizedLandmarks = ref<NormalizedLandmarkList | null>(
-  null
-);
+const exerciseInitialNormalizedLandmarks = ref<NormalizedLandmarkList | null>(null);
 
+// Hand positions (normalized coordinates 0-1)
+const leftHand = ref({ x: 0, y: 0, visible: false });
+const rightHand = ref({ x: 0, y: 0, visible: false });
+
+// Dummy refs for PoseService compatibility
 const currentAngle = ref(0);
-
 const pivotIndex = ref(14);
 const movableIndex = ref(16);
-const referenceIndex = ref(23);
-
-const thresholdDeg = ref(25);
-const targetAngle = ref(0)
-
-const toneForRom = useToneForRom(currentAngle);
-
-const referenceAngle = computed(() => {
-  if (!mediapipeResults.value ||
-    !mediapipeResults.value.poseWorldLandmarks ||
-    !mediapipeResults.value.poseWorldLandmarks.length) {
-    return 0;
-  }
-
-  const A = mediapipeResults.value.poseWorldLandmarks[movableIndex.value];
-  const B = mediapipeResults.value.poseWorldLandmarks[pivotIndex.value];
-  const C = mediapipeResults.value.poseWorldLandmarks[referenceIndex.value];
-
-  if (!A || !B || !C) return 0;
-
-  const ab = { x: A.x - B.x, y: A.y - B.y };
-  const cb = { x: C.x - B.x, y: C.y - B.y };
-  const dot = ab.x * cb.x + ab.y * cb.y;
-  const magAB = Math.hypot(ab.x, ab.y);
-  const magCB = Math.hypot(cb.x, cb.y);
-  const angleRad = Math.acos(dot / (magAB * magCB));
-  return angleRad * (180 / Math.PI);
-});
 
 const isPersonVisible = computed((): boolean => {
   if (
     !mediapipeResults.value ||
-    !mediapipeResults.value.poseWorldLandmarks ||
-    !mediapipeResults.value.poseWorldLandmarks.length ||
-    !mediapipeResults.value.poseWorldLandmarks[movableIndex.value] ||
-    !mediapipeResults.value.poseWorldLandmarks[pivotIndex.value] ||
-    !mediapipeResults.value.poseWorldLandmarks[referenceIndex.value] ||
-    mediapipeResults.value.poseWorldLandmarks[movableIndex.value]
-      ?.visibility === undefined ||
-    (mediapipeResults.value.poseWorldLandmarks[movableIndex.value]
-      ?.visibility ?? 0) < 0.6
+    !mediapipeResults.value.poseLandmarks ||
+    !mediapipeResults.value.poseLandmarks.length
   ) {
     return false;
   }
 
-  const A = mediapipeResults.value.poseWorldLandmarks[movableIndex.value];
-  const B = mediapipeResults.value.poseWorldLandmarks[pivotIndex.value];
-  const C = mediapipeResults.value.poseWorldLandmarks[referenceIndex.value];
+  // Check if key landmarks are visible (shoulders, hips)
+  const leftShoulder = mediapipeResults.value.poseLandmarks[11];
+  const rightShoulder = mediapipeResults.value.poseLandmarks[12];
+  
+  if (!leftShoulder || !rightShoulder) return false;
+  
+  return (leftShoulder.visibility ?? 0) > 0.5 && (rightShoulder.visibility ?? 0) > 0.5;
+});
 
-  if (!A || !B || !C) return false;
+// Update hand positions when pose results change
+watch(mediapipeResults, (results) => {
+  if (results && results.poseLandmarks) {
+    // Left hand (index 19 is left pinky, 15 is left wrist)
+    const leftWrist = results.poseLandmarks[15];
+    if (leftWrist && (leftWrist.visibility ?? 0) > 0.5) {
+      leftHand.value = {
+        x: leftWrist.x,
+        y: leftWrist.y,
+        visible: true
+      };
+    } else {
+      leftHand.value.visible = false;
+    }
 
-  const angleDifference = Math.abs(referenceAngle.value - targetAngle.value);
-
-  return angleDifference <= thresholdDeg.value || exerciseStore.startedRecording;
+    // Right hand (index 20 is right pinky, 16 is right wrist)
+    const rightWrist = results.poseLandmarks[16];
+    if (rightWrist && (rightWrist.visibility ?? 0) > 0.5) {
+      rightHand.value = {
+        x: rightWrist.x,
+        y: rightWrist.y,
+        visible: true
+      };
+    } else {
+      rightHand.value.visible = false;
+    }
+  }
 });
 
 watch(isPersonVisible, (visible) => {
   isPersonVisibleState.value = visible;
-
-  if (visible) {
-    soundPlayer.playDetectedSound();
-    toneForRom.startTone();
-    showCheckIcon.value = true;
-
-    if (personDetectedTimeout.value) {
-      clearTimeout(personDetectedTimeout.value);
-    }
-
-    personDetectedTimeout.value = setTimeout(() => {
-      showCheckIcon.value = false;
-    }, 500);
-  } else {
-    console.log(`Out of reference: current ${referenceAngle.value.toFixed(2)}° vs target ${targetAngle.value}°`);
-    toneForRom.stopTone();
-    cleanup();
-  }
 }, { immediate: true });
-
-watch(
-  () => props.romCombination,
-  (newCombination) => {
-    if (
-      newCombination &&
-      PoseCombinations[newCombination as keyof typeof PoseCombinations]
-    ) {
-      updateROMCombination(newCombination as keyof typeof PoseCombinations);
-    }
-  },
-  { immediate: true }
-);
-
-
-function updateROMCombination(combination: keyof typeof PoseCombinations) {
-  const { pivot, movable, reference, threshold, targetAngle: configTargetAngle } = PoseCombinations[combination];
-  pivotIndex.value = pivot;
-  movableIndex.value = movable;
-  referenceIndex.value = reference;
-  thresholdDeg.value = threshold;
-  targetAngle.value = configTargetAngle || 0;
-}
-
-function saveLandmarks() {
-  exerciseInitialNormalizedLandmarks.value =
-    mediapipeResults.value?.poseLandmarks ?? null;
-  console.log("Landmarks saved");
-  exerciseStore.startedRecording = true;
-}
-
-function calculateAngle() {
-  console.log("calculateVectorAngle");
-  exerciseStore.resultAngle = currentAngle.value;
-}
-
-function markPainMoment() {
-  console.log("marked pain moment at", currentAngle.value);
-  exerciseStore.painMomentAngles.push(currentAngle.value);
-  exerciseStore.painMomentAngles.sort((a, b) => a - b);
-}
-
-function cleanup() {
-  currentAngle.value = 0;
-  exerciseStore.resultAngle = 0;
-  exerciseStore.painMomentAngles = [];
-  exerciseInitialNormalizedLandmarks.value = null;
-  console.log("cleanup done");
-  exerciseStore.startedRecording = false;
-}
 
 onMounted(async () => {
   await getAvailableVideoDevices();
-  if (canvas.value && source.value && landmarkContainer.value) {
+  if (source.value && landmarkContainer.value) {
     source.value.onloadedmetadata = async () => {
-      if (!canvas.value || !source.value || !landmarkContainer.value) {
-        console.log("canvas, source or landmark container missing")
+      if (!source.value || !landmarkContainer.value) {
+        console.log("source or landmark container missing")
         return;
       }
-      canvas.value.width = source.value.videoWidth;
-      canvas.value.height = source.value.videoHeight;
+
+      // Create a dummy canvas for PoseService
+      const dummyCanvas = document.createElement('canvas');
+      dummyCanvas.width = source.value.videoWidth;
+      dummyCanvas.height = source.value.videoHeight;
 
       await new PoseService(
-        canvas.value,
+        dummyCanvas,
         source.value,
-        canvas.value.width,
-        canvas.value.height,
+        dummyCanvas.width,
+        dummyCanvas.height,
         landmarkContainer.value,
         loadingCanvas,
         mediapipeResults,
@@ -269,10 +148,10 @@ onMounted(async () => {
       ).setOptions({
         modelComplexity: 2,
         smoothLandmarks: true,
-        enableSegmentation: true,
-        smoothSegmentation: true,
-        minDetectionConfidence: 0.3,
-        minTrackingConfidence: 0.3,
+        enableSegmentation: false,
+        smoothSegmentation: false,
+        minDetectionConfidence: 0.5,
+        minTrackingConfidence: 0.5,
         selfieMode: true,
       });
       await startCamera();
@@ -285,13 +164,6 @@ onMounted(async () => {
     } catch (err) {
       console.error("Error accessing camera:", err);
     }
-  }
-
-
-
-  if (!props.romCombination) {
-    console.warn("No ROM combination provided");
-    toneForRom.stopTone();
   }
 });
 
@@ -309,10 +181,8 @@ async function getAvailableVideoDevices() {
       );
 
       const realSenseCamera = videoDevices.value.find(device =>
-        device.label && device.label.toLowerCase().includes('realsense')  && device.label.toLowerCase().includes('rgb')
+        device.label && device.label.toLowerCase().includes('realsense') && device.label.toLowerCase().includes('rgb')
       );
-
-
 
       if (realSenseCamera) {
         selectedDeviceId.value = realSenseCamera.deviceId;
@@ -350,94 +220,16 @@ async function startCamera() {
   }
 }
 
-
-
-onBeforeUnmount(() => {
-  toneForRom.stopTone();
-});
-
-onUnmounted(() => {
-  toneForRom.stopTone();
-});
-
-
-
+// Expose hand positions for parent components
 defineExpose({
-  saveLandmarks,
-  calculateAngle,
-  cleanup,
-  markPainMoment,
+  leftHand: readonly(leftHand),
+  rightHand: readonly(rightHand),
+  isPersonVisible: readonly(isPersonVisibleState)
 });
 </script>
 
 <style scoped>
-.pose {
-  align-items: center;
-  text-align: center;
-  margin: 1.5rem 1.5rem;
-}
-
-.pose h1 {
-  margin: 1.5rem 1.5rem;
-}
-
-.loading_canvas {
-  background: url("https://media.giphy.com/media/8agqybiK5LW8qrG3vJ/giphy.gif") center no-repeat;
-}
-
-.icon-centered {
-  display: flex;
-  line-height: 0;
-  vertical-align: middle;
-}
-
-.dot {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: var(--color-successNormal);
-}
-
-.line-svg {
-  display: block;
-}
-
-/* .output_canvas {
-  translate: 0 -10px;
-} */
-
-.output_canvas {
-  object-fit: contain;
-  width: 100%;
-  height: 100%;
-  max-width: 100vw;
-  max-height: calc(100vh - 120px);
-}
-
-.inactive_canvas {
-  filter: brightness(0.5);
-}
-
-.overlay {
-  transform: scale(0.8) translateY(10%);
-  opacity: 0.5;
-  filter: brightness(20) saturate(100%) invert(21%) sepia(92%) saturate(500%) hue-rotate(180deg) brightness(95%) contrast(85%);
-}
-
-.canvas-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  position: relative;
-}
-
-.angle-display {
+.debug-display {
   position: absolute;
   bottom: 1rem;
   right: 1rem;
@@ -448,21 +240,16 @@ defineExpose({
   font-weight: bold;
   text-align: left;
   width: 15%;
-
 }
 
+.camera-controls {
+  margin-top: 10px;
+}
 
-
-
-
-@media (min-width: 1024px) {
-  .pose {
-    margin: 3rem 3rem;
-  }
-
-  .input_video,
-  .output_canvas {
-    margin: 1rem 0;
-  }
+.camera-selector {
+  width: 100%;
+  padding: 5px;
+  border-radius: 3px;
+  border: 1px solid #ccc;
 }
 </style>
