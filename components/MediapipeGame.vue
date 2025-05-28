@@ -2,38 +2,19 @@
   <div class="w-full h-full flex flex-col">
     <div class="flex flex-row w-full flex-grow overflow-hidden">
       <div class="flex flex-col w-full h-full justify-center items-center overflow-hidden">
-        <video
-          v-show="false"
-          ref="source"
-          class="input_video"
-        />
-        <div
-          ref="landmarkContainer"
-          class="landmark-grid-container"
-        />
+        <video v-show="false" ref="source" class="input_video" />
+        <div ref="landmarkContainer" class="landmark-grid-container" />
       </div>
     </div>
     <!-- Display debug information -->
-    <div
-      v-if="exerciseDevmode"
-      class="debug-display"
-    >
+    <div v-if="exerciseDevmode" class="debug-display">
       <h2>Left Hand: {{ leftHand.x.toFixed(2) }}, {{ leftHand.y.toFixed(2) }}</h2>
       <h2>Right Hand: {{ rightHand.x.toFixed(2) }}, {{ rightHand.y.toFixed(2) }}</h2>
       <h2>Position Valid: {{ isPersonVisibleState ? 'Yes' : 'No' }}</h2>
 
       <div class="camera-controls">
-        <select
-          v-if="videoDevices.length > 1"
-          v-model="selectedDeviceId"
-          class="camera-selector"
-          @change="startCamera"
-        >
-          <option
-            v-for="device in videoDevices"
-            :key="device.deviceId"
-            :value="device.deviceId"
-          >
+        <select v-if="videoDevices.length > 1" v-model="selectedDeviceId" class="camera-selector" @change="startCamera">
+          <option v-for="device in videoDevices" :key="device.deviceId" :value="device.deviceId">
             {{ device.label || `Camera ${videoDevices.indexOf(device) + 1}` }}
           </option>
         </select>
@@ -59,11 +40,9 @@ const loadingCanvas = ref(true);
 const mediapipeResults = ref<Results | null>(null);
 const exerciseInitialNormalizedLandmarks = ref<NormalizedLandmarkList | null>(null);
 
-// Hand positions (normalized coordinates 0-1)
 const leftHand = ref({ x: 0, y: 0, visible: false });
 const rightHand = ref({ x: 0, y: 0, visible: false });
 
-// Dummy refs for PoseService compatibility
 const currentAngle = ref(0);
 const pivotIndex = ref(14);
 const movableIndex = ref(16);
@@ -77,19 +56,17 @@ const isPersonVisible = computed((): boolean => {
     return false;
   }
 
-  // Check if key landmarks are visible (shoulders, hips)
+
   const leftShoulder = mediapipeResults.value.poseLandmarks[11];
   const rightShoulder = mediapipeResults.value.poseLandmarks[12];
-  
+
   if (!leftShoulder || !rightShoulder) return false;
-  
+
   return (leftShoulder.visibility ?? 0) > 0.5 && (rightShoulder.visibility ?? 0) > 0.5;
 });
 
-// Update hand positions when pose results change
 watch(mediapipeResults, (results) => {
   if (results && results.poseLandmarks) {
-    // Left hand (index 19 is left pinky, 15 is left wrist)
     const leftWrist = results.poseLandmarks[15];
     if (leftWrist && (leftWrist.visibility ?? 0) > 0.5) {
       leftHand.value = {
@@ -101,7 +78,7 @@ watch(mediapipeResults, (results) => {
       leftHand.value.visible = false;
     }
 
-    // Right hand (index 20 is right pinky, 16 is right wrist)
+
     const rightWrist = results.poseLandmarks[16];
     if (rightWrist && (rightWrist.visibility ?? 0) > 0.5) {
       rightHand.value = {
@@ -128,7 +105,7 @@ onMounted(async () => {
         return;
       }
 
-      // Create a dummy canvas for PoseService
+
       const dummyCanvas = document.createElement('canvas');
       dummyCanvas.width = source.value.videoWidth;
       dummyCanvas.height = source.value.videoHeight;
@@ -220,7 +197,6 @@ async function startCamera() {
   }
 }
 
-// Expose hand positions for parent components
 defineExpose({
   leftHand: readonly(leftHand),
   rightHand: readonly(rightHand),

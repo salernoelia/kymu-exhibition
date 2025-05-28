@@ -2,7 +2,12 @@
   <div class="w-full h-full relative">
     <MediapipeGame ref="mediapipeRef" />
 
-    <div class="absolute inset-0">
+    <!-- Video feed overlay -->
+    <div class="absolute top-20 right-4 w-48 h-36 bg-black/20 rounded-lg overflow-hidden border-2 border-white/30">
+      <video ref="videoFeed" class="w-full h-full object-cover opacity-30" autoplay muted playsinline />
+    </div>
+
+    <div class="absolute inset-0 pt-20">
       <P5Wrapper :sketch="sketch" />
     </div>
   </div>
@@ -11,12 +16,16 @@
 <script setup lang="ts">
 import p5 from "p5"
 
-const GAME_DURATION = 1200;
+const GAME_DURATION = 1800;
 const SPEED_INCREASE_INTERVAL = 400;
 const INITIAL_SPEED_MULTIPLIER = 1;
 const SPEED_INCREMENT = 0.3;
 const BUCKET_WIDTH = 200;
-const CANVAS_SIZE = 800;
+
+const CANVAS_WIDTH = ref(800);
+const CANVAS_HEIGHT = ref(600);
+const HAND_SIZE = 80;
+const MAGNETIC_RADIUS = 100;
 
 const speeds = [1.5, 1.8, 2, 2.1, 2.3];
 const obstacleDiameters = [30, 50, 75];
@@ -55,19 +64,53 @@ const mediapipeRef = ref<{
   isPersonVisible: boolean;
 } | null>(null);
 
+const videoFeed = ref<HTMLVideoElement | null>(null);
+
+
+const updateCanvasSize = () => {
+  if (typeof window !== 'undefined') {
+    CANVAS_WIDTH.value = window.innerWidth;
+    CANVAS_HEIGHT.value = window.innerHeight - 80;
+  }
+};
+
+onMounted(() => {
+  updateCanvasSize();
+  window.addEventListener('resize', updateCanvasSize);
+
+
+  if (videoFeed.value) {
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then(stream => {
+        if (videoFeed.value) {
+          videoFeed.value.srcObject = stream;
+        }
+      })
+      .catch(err => console.log('Video feed error:', err));
+  }
+});
+
+onUnmounted(() => {
+  if (typeof window !== 'undefined') {
+    window.removeEventListener('resize', updateCanvasSize);
+  }
+});
+
 watch(() => mediapipeRef.value?.leftHand, (newPos) => {
   if (newPos) {
-    leftHandX = newPos.x * CANVAS_SIZE;
-    leftHandY = newPos.y * CANVAS_SIZE;
-    leftHandVisible = newPos.visible;
+
+    rightHandX = newPos.x * CANVAS_WIDTH.value;
+    rightHandY = newPos.y * CANVAS_HEIGHT.value;
+    rightHandVisible = newPos.visible;
   }
 }, { deep: true });
 
 watch(() => mediapipeRef.value?.rightHand, (newPos) => {
   if (newPos) {
-    rightHandX = newPos.x * CANVAS_SIZE;
-    rightHandY = newPos.y * CANVAS_SIZE;
-    rightHandVisible = newPos.visible;
+
+    leftHandX = newPos.x * CANVAS_WIDTH.value;
+    leftHandY = newPos.y * CANVAS_HEIGHT.value;
+    leftHandVisible = newPos.visible;
   }
 }, { deep: true });
 
@@ -110,7 +153,7 @@ class Obstacle {
   isHandOver(handX: number, handY: number) {
     const dx = handX - this.horizontalPosition;
     const dy = handY - this.y;
-    return dx * dx + dy * dy < this.radius * this.radius;
+    return dx * dx + dy * dy < (MAGNETIC_RADIUS * MAGNETIC_RADIUS);
   }
 
   isInBucket() {
@@ -127,7 +170,7 @@ const sketch = (p: p5) => {
   }
 
   p.setup = () => {
-    p.createCanvas(CANVAS_SIZE, CANVAS_SIZE);
+    p.createCanvas(CANVAS_WIDTH.value, CANVAS_HEIGHT.value);
     p.frameRate(60);
     bucketX = p.width * 0.5;
     bucketY = p.height * 0.5;
@@ -144,6 +187,12 @@ const sketch = (p: p5) => {
 
   p.draw = () => {
     p.background(240);
+
+    if (p.width !== CANVAS_WIDTH.value || p.height !== CANVAS_HEIGHT.value) {
+      p.resizeCanvas(CANVAS_WIDTH.value, CANVAS_HEIGHT.value);
+      bucketX = p.width * 0.5;
+      bucketY = p.height * 0.5;
+    }
 
     if (gameState === "playing") {
       updateGame(p);
@@ -203,7 +252,7 @@ const sketch = (p: p5) => {
       } else if (o.y > p.height) {
         obstacles.splice(i, 1);
         if (o.grabbed) activeHand = null;
-        score -= 2;
+        // Removed penalty: score -= 2;
         emit('scoreChanged', score);
       }
     }
@@ -218,28 +267,41 @@ const sketch = (p: p5) => {
       obstacle.show(p);
     }
 
+    // Draw magnetic field around hands
     if (leftHandVisible) {
+      // Magnetic field
+      p.fill(100, 200, 100, 30);
+      p.noStroke();
+      p.ellipse(leftHandX, leftHandY, MAGNETIC_RADIUS * 2, MAGNETIC_RADIUS * 2);
+
+      // Hand indicator
       p.fill(100, 200, 100, 150);
       p.stroke(100, 200, 100);
       p.strokeWeight(3);
-      p.ellipse(leftHandX, leftHandY, 40, 40);
+      p.ellipse(leftHandX, leftHandY, HAND_SIZE, HAND_SIZE);
       p.noStroke();
       p.fill(255);
       p.textAlign(p.CENTER);
-      p.textSize(12);
-      p.text("L", leftHandX, leftHandY + 5);
+      p.textSize(16);
+      p.text("L", leftHandX, leftHandY + 6);
     }
 
     if (rightHandVisible) {
+      // Magnetic 
+      p.fill(200, 100, 100, 30);
+      p.noStroke();
+      p.ellipse(rightHandX, rightHandY, MAGNETIC_RADIUS * 2, MAGNETIC_RADIUS * 2);
+
+      // Hand 
       p.fill(200, 100, 100, 150);
       p.stroke(200, 100, 100);
       p.strokeWeight(3);
-      p.ellipse(rightHandX, rightHandY, 40, 40);
+      p.ellipse(rightHandX, rightHandY, HAND_SIZE, HAND_SIZE);
       p.noStroke();
       p.fill(255);
       p.textAlign(p.CENTER);
-      p.textSize(12);
-      p.text("R", rightHandX, rightHandY + 5);
+      p.textSize(16);
+      p.text("R", rightHandX, rightHandY + 6);
     }
 
     p.fill(0);
@@ -317,12 +379,4 @@ defineExpose({
 });
 </script>
 
-<style scoped>
-:deep(.landmark-grid-container) {
-  display: none;
-}
-
-:deep(.input_video) {
-  display: none;
-}
-</style>
+<style scoped></style>
