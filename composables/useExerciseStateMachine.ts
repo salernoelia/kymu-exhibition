@@ -57,7 +57,7 @@ export const useExerciseStateMachine = () => {
             }
 
             const firstExercise = exercises.value[0];
-            // Ensure firstExercise and its id are valid
+         
             if (firstExercise && typeof firstExercise.id === 'string' && firstExercise.id.trim() !== '') {
                 const firstExerciseId = firstExercise.id;
                 const targetPath = `/${firstExerciseId}/instruction`;
@@ -95,7 +95,7 @@ export const useExerciseStateMachine = () => {
 
             currentExerciseIndex.value = 0;
 
-            // Wait for Vue to process state updates before navigating
+
             await nextTick();
 
             try {
@@ -103,7 +103,6 @@ export const useExerciseStateMachine = () => {
                 await navigateTo('/', { replace: true });
             } catch (e) {
                 console.error('Error navigating to / on resetExperience:', e);
-                // Fallback to full page reload if navigateTo fails
                 window.location.href = '/';
             }
         }

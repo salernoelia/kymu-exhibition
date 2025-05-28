@@ -1,9 +1,7 @@
 <template>
   <div class="w-full h-full relative">
-    <!-- MediaPipe tracking component -->
     <MediapipeGame ref="mediapipeRef" />
-    
-    <!-- P5 Game Canvas -->
+
     <div class="absolute inset-0">
       <P5Wrapper :sketch="sketch" />
     </div>
@@ -22,7 +20,17 @@ const CANVAS_SIZE = 800;
 
 const speeds = [1.5, 1.8, 2, 2.1, 2.3];
 const obstacleDiameters = [30, 50, 75];
-
+const emit = defineEmits<{
+  gameStarted: [data: { timestamp: number }]
+  gameCompleted: [results: {
+    score: number;
+    highScore: number;
+    duration: number;
+    accuracy: number;
+    handsDetected: boolean;
+  }]
+  scoreChanged: [score: number]
+}>()
 
 let gameState = "playing";
 let obstacles: Obstacle[] = [];
@@ -33,20 +41,20 @@ let score = 0;
 let highScore = 0;
 let offsetX: number, offsetY: number;
 let speedMultiplier = INITIAL_SPEED_MULTIPLIER;
+let gameStartTime = 0;
+let totalObstacles = 0;
+let successfulCatches = 0;
 
-// Hand tracking
 let leftHandX = 0, leftHandY = 0, leftHandVisible = false;
 let rightHandX = 0, rightHandY = 0, rightHandVisible = false;
 let activeHand: 'left' | 'right' | null = null;
 
-// Reference to MediapipeGame component
 const mediapipeRef = ref<{
   leftHand: { x: number, y: number, visible: boolean };
   rightHand: { x: number, y: number, visible: boolean };
   isPersonVisible: boolean;
 } | null>(null);
 
-// Watch for hand position updates from MediapipeGame
 watch(() => mediapipeRef.value?.leftHand, (newPos) => {
   if (newPos) {
     leftHandX = newPos.x * CANVAS_SIZE;
@@ -84,7 +92,6 @@ class Obstacle {
     if (!this.grabbed) {
       this.y += this.velocity;
     } else {
-      // Use active hand position
       if (activeHand === 'left' && leftHandVisible) {
         this.horizontalPosition = leftHandX + offsetX;
         this.y = leftHandY + offsetY;
@@ -105,12 +112,12 @@ class Obstacle {
     const dy = handY - this.y;
     return dx * dx + dy * dy < this.radius * this.radius;
   }
-  
+
   isInBucket() {
     return this.horizontalPosition > bucketX - bucketWidth * 0.5 &&
-           this.horizontalPosition < bucketX + bucketWidth * 0.5 &&
-           this.y > bucketY - bucketHeight * 0.5 &&
-           this.y < bucketY + bucketHeight * 0.5;
+      this.horizontalPosition < bucketX + bucketWidth * 0.5 &&
+      this.y > bucketY - bucketHeight * 0.5 &&
+      this.y < bucketY + bucketHeight * 0.5;
   }
 }
 
@@ -126,16 +133,18 @@ const sketch = (p: p5) => {
     bucketY = p.height * 0.5;
     bucketWidth = BUCKET_WIDTH;
     bucketHeight = bucketWidth / (bucketImage.width / bucketImage.height);
-    
-    // Handle localStorage safely in browser environment
+
     if (typeof window !== 'undefined') {
-      highScore = parseInt(localStorage.getItem('highScore') || '0');
+      highScore = parseInt(localStorage.getItem('feedPandaHighScore') || '0');
     }
+
+    gameStartTime = Date.now();
+    emit('gameStarted', { timestamp: gameStartTime });
   }
 
   p.draw = () => {
     p.background(240);
-    
+
     if (gameState === "playing") {
       updateGame(p);
       drawGame(p);
@@ -163,12 +172,12 @@ const sketch = (p: p5) => {
 
     if (p.frameCount % obstacle_spawn_rate === 0) {
       obstacles.push(new Obstacle(obstacleDiameters[p.int(p.random(obstacleDiameters.length))], p));
+      totalObstacles++;
     }
 
     for (let i = obstacles.length - 1; i >= 0; i--) {
       const o = obstacles[i];
-      
-      // Check for hand interaction
+
       if (!o.grabbed) {
         if (leftHandVisible && o.isHandOver(leftHandX, leftHandY)) {
           offsetX = o.horizontalPosition - leftHandX;
@@ -182,17 +191,20 @@ const sketch = (p: p5) => {
           activeHand = 'right';
         }
       }
-      
+
       o.update(p);
-      
+
       if (o.grabbed && o.isInBucket()) {
         obstacles.splice(i, 1);
         score++;
+        successfulCatches++;
         activeHand = null;
+        emit('scoreChanged', score);
       } else if (o.y > p.height) {
         obstacles.splice(i, 1);
         if (o.grabbed) activeHand = null;
         score -= 2;
+        emit('scoreChanged', score);
       }
     }
   }
@@ -206,7 +218,6 @@ const sketch = (p: p5) => {
       obstacle.show(p);
     }
 
-    // Draw hand cursors
     if (leftHandVisible) {
       p.fill(100, 200, 100, 150);
       p.stroke(100, 200, 100);
@@ -216,7 +227,7 @@ const sketch = (p: p5) => {
       p.fill(255);
       p.textAlign(p.CENTER);
       p.textSize(12);
-      p.text("R", leftHandX, leftHandY + 5);
+      p.text("L", leftHandX, leftHandY + 5);
     }
 
     if (rightHandVisible) {
@@ -228,14 +239,14 @@ const sketch = (p: p5) => {
       p.fill(255);
       p.textAlign(p.CENTER);
       p.textSize(12);
-      p.text("L", rightHandX, rightHandY + 5);
+      p.text("R", rightHandX, rightHandY + 5);
     }
 
     p.fill(0);
     p.textAlign(p.CENTER);
     p.textSize(24);
     p.text("Score: " + score, bucketX, bucketY + bucketHeight * 0.5 + 30);
-    
+
     p.textAlign(p.LEFT);
     p.textSize(16);
     p.text("Time: " + (20 - p.int(p.frameCount / 60)), 20, 30);
@@ -248,37 +259,65 @@ const sketch = (p: p5) => {
     p.textAlign(p.CENTER);
     p.textSize(48);
     p.text("Game Over!", p.width * 0.5, p.height * 0.4);
-    
+
     p.textSize(32);
     p.text("Final Score: " + score, p.width * 0.5, p.height * 0.5);
     p.text("High Score: " + highScore, p.width * 0.5, p.height * 0.55);
-    
+
     p.textSize(20);
     p.text("Press R to restart", p.width * 0.5, p.height * 0.7);
   }
 
   function endGame() {
     gameState = "gameOver";
+    const gameDuration = Date.now() - gameStartTime;
+    const accuracy = totalObstacles > 0 ? Math.round((successfulCatches / totalObstacles) * 100) : 0;
+
     if (score > highScore) {
       highScore = score;
       if (typeof window !== 'undefined') {
-        localStorage.setItem('highScore', highScore.toString());
+        localStorage.setItem('feedPandaHighScore', highScore.toString());
       }
     }
+
+    emit('gameCompleted', {
+      score,
+      highScore,
+      duration: gameDuration,
+      accuracy,
+      handsDetected: leftHandVisible || rightHandVisible
+    });
   }
 
   function restartGame() {
     gameState = "playing";
     obstacles = [];
     score = 0;
+    totalObstacles = 0;
+    successfulCatches = 0;
     speedMultiplier = INITIAL_SPEED_MULTIPLIER;
     activeHand = null;
+    gameStartTime = Date.now();
+    emit('gameStarted', { timestamp: gameStartTime });
   }
 }
+
+defineExpose({
+  restartGame: () => {
+    gameState = "playing";
+    obstacles = [];
+    score = 0;
+    totalObstacles = 0;
+    successfulCatches = 0;
+    speedMultiplier = INITIAL_SPEED_MULTIPLIER;
+    activeHand = null;
+  },
+  getCurrentScore: () => score,
+  getGameState: () => gameState
+});
 </script>
 
 <style scoped>
-/* Ensure the MediaPipe component is hidden but still functional */
 :deep(.landmark-grid-container) {
   display: none;
 }

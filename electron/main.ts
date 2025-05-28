@@ -37,12 +37,8 @@ app.whenReady().then(() => {
     }
   })
 
-  // Only open DevTools in development
-
-    mainWindow.webContents.openDevTools({ mode: 'detach' })
   
   
-  // Set relaxed Content-Security-Policy for local exhibition
   session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
     callback({
       responseHeaders: {
@@ -60,16 +56,13 @@ app.whenReady().then(() => {
   })
 
   if (app.isPackaged) {
-    // base folder (one level up from __dirname)
     const baseDir = path.join(__dirname, '..')
     console.log('Base directory:', baseDir)
 
-    // list everything in the base folder
     fs.readdirSync(baseDir, { withFileTypes: true }).forEach(dirent => {
       console.log(`- ${dirent.name}`, dirent.isDirectory() ? '(dir)' : '(file)')
     })
 
-    // check for .output, dist, and index.html
     const outputDir = path.join(baseDir, '.output')
     console.log('.output exists?', fs.existsSync(outputDir))
 
@@ -79,7 +72,6 @@ app.whenReady().then(() => {
     const indexFile = path.join(distDir, 'index.html')
     console.log('index.html exists?', fs.existsSync(indexFile))
 
-    // load the file if it’s there
     if (fs.existsSync(indexFile)) {
       mainWindow.loadFile(indexFile)
     } else {
@@ -90,7 +82,6 @@ app.whenReady().then(() => {
   }
 })
 
-// Quit when all windows are closed
 app.on('window-all-closed', () => {
   app.quit()
 })

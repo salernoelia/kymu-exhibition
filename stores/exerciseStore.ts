@@ -1,6 +1,6 @@
 import { useStorage } from '@vueuse/core';
 import type { InsertResult } from '../db/results';
-import { defineStore } from 'pinia'
+import { defineStore } from 'pinia';
 
 export const useExerciseStore = defineStore('exerciseStore', () => {
     const isLoading = ref(false);
@@ -12,6 +12,14 @@ export const useExerciseStore = defineStore('exerciseStore', () => {
     const route = useRoute();
     const userKey = useStorage('user-key', '');
 
+    const gameResults = ref<{
+        score: number;
+        highScore: number;
+        duration: number;
+        accuracy: number;
+        handsDetected: boolean;
+    } | null>(null);
+
     const exerciseStateMachine = useExerciseStateMachine();
 
     const exercises = computed(() => exerciseStateMachine.exercises.value);
@@ -19,6 +27,16 @@ export const useExerciseStore = defineStore('exerciseStore', () => {
     const currentExercise = computed(() => exerciseStateMachine.currentExercise.value);
     const exercisesCount = computed(() => exerciseStateMachine.exerciseCount.value);
     const exerciseProgress = computed(() => exerciseStateMachine.progress.value);
+
+    const setGameResults = (results: {
+        score: number;
+        highScore: number;
+        duration: number;
+        accuracy: number;
+        handsDetected: boolean;
+    }) => {
+        gameResults.value = results;
+    };
 
     const saveExerciseResults = async () => {
         try {
@@ -98,25 +116,50 @@ export const useExerciseStore = defineStore('exerciseStore', () => {
         }
     };
 
-    const completeCurrentExercise = () => {
+   const completeCurrentExercise = () => {
         if (currentExercise.value) {
-            const results: ExerciseResults = {
-                exercise_id: currentExercise.value.id,
-                achieved_angle: resultAngle.value,
-                pain_angles_deg: painMomentAngles.value,
-            };
-            resultAnglePreviousExercise.value = resultAngle.value;
+            let results: ExerciseResults;
 
-            currentExercise.value.status = 'completed';
-            startedRecording.value = false;
-            painMomentAngles.value = [];
-            resultAngle.value = 0;
-            if (results) {
-                currentExercise.value.results = results;
-                saveExerciseResults();
+            if (currentExercise.value.type === 'p5_game' && gameResults.value) {
+        
+                results = {
+                    exercise_id: currentExercise.value.id,
+                    achieved_score: gameResults.value.score,
+                    achieved_accuracy: gameResults.value.accuracy,
+                    game_duration: gameResults.value.duration,
+                    hands_detected: gameResults.value.handsDetected,
+                };
+        
+                resultAnglePreviousExercise.value = gameResults.value.score;
+            } else {
+    
+                results = {
+                    exercise_id: currentExercise.value.id,
+                    achieved_angle: resultAngle.value,
+                    pain_angles_deg: painMomentAngles.value,
+                };
+        
+                resultAnglePreviousExercise.value = resultAngle.value;
             }
-        }
+
+
+            currentExercise.value.results = results;
+            currentExercise.value.status = 'completed';
+
+            // Save to API
+            saveExerciseResults();
+
+            // Reset the local state AFTER saving (but keep resultAnglePreviousExercise for progress page)
+            if (currentExercise.value.type === 'p5_game') {
+                gameResults.value = null;
+            } else {
+                resultAngle.value = 0;
+                painMomentAngles.value = [];
+            }
+            startedRecording.value = false;
+            }
     };
+
 
     const skipCurrentExercise = () => {
         if (currentExercise.value) {
@@ -146,6 +189,8 @@ export const useExerciseStore = defineStore('exerciseStore', () => {
         isLoading,
         error,
         userKey,
+        gameResults,
+        setGameResults,
         exercises,
         exercisesCount,
         getExerciseById,

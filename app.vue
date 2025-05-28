@@ -1,9 +1,6 @@
 <template>
   <div>
-    <SlideTransition
-      :active="isTransitioning"
-      :text="transitionText"
-    />
+    <SlideTransition :active="isTransitioning" :text="transitionText" />
 
     <div class="parent">
       <Transition appear>
@@ -12,12 +9,7 @@
             <h3>
               Exercise Developer Mode
             </h3>
-            <input
-              id="exerciseDevmode"
-              v-model="exerciseDevmode"
-              type="checkbox"
-              name="exerciseDevmode"
-            >
+            <input id="exerciseDevmode" v-model="exerciseDevmode" type="checkbox" name="exerciseDevmode">
 
           </div>
         </Menu>
@@ -25,10 +17,7 @@
 
       <TopBar />
       <main class="pl-4 pr-4 w-full h-full">
-        <NuxtPage
-          @page-leave="onPageLeave"
-          @page-enter="onPageEnter"
-        />
+        <NuxtPage @page-leave="onPageLeave" @page-enter="onPageEnter" />
       </main>
 
     </div>

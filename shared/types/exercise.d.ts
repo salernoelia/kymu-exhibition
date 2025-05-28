@@ -4,7 +4,11 @@ type ExerciseResults = {
     exercise_id: text;
     achieved_repetitions?: number;
     achieved_seconds?: number;
-    achieved_angle: number;
+    achieved_angle?: number;
+    achieved_accuracy?: number;
+    achieved_score?: number;
+    game_duration?: number;
+    hands_detected?: boolean;
     pain_angles_deg?: number[];
 };
 
