@@ -23,7 +23,6 @@ const CANVAS_SIZE = 800;
 const speeds = [1.5, 1.8, 2, 2.1, 2.3];
 const obstacleDiameters = [30, 50, 75];
 
-const defineEmits()
 
 let gameState = "playing";
 let obstacles: Obstacle[] = [];
