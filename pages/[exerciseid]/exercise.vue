@@ -3,9 +3,14 @@
 
         <div class="w-full h-full flex flex-col items-center justify-start mt-2">
             <MediapipeRom
-                v-if="exerciseStore.currentExercise?.category"
+                v-if="exerciseStore.currentExercise?.category && exerciseStore.currentExercise?.type == 'range-of-motion'"
                 ref="romComponent"
                 :rom-combination="exerciseStore.currentExercise?.category"
+            />
+
+            <FeedPanda
+                v-if="exerciseStore.currentExercise?.type == 'p5_game'"
+                ref="gameComponent"
             />
 
         </div>

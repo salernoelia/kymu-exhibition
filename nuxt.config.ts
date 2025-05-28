@@ -2,14 +2,14 @@
 export default defineNuxtConfig({
     devtools: { enabled: false },
     ssr: false,
-    electron: {
-        build: [
-          {
+    // electron: {
+    //     build: [
+    //       {
 
-            entry: 'electron/main.ts',
-          },
-        ],
-      },
+    //         entry: 'electron/main.ts',
+    //       },
+    //     ],
+    //   },
     css: ['~/assets/css/main.css', '~/assets/css/reset.css', '~/assets/css/tailwind.css'],
 
     imports: {
@@ -25,7 +25,7 @@ export default defineNuxtConfig({
       '@nuxt/eslint',
       'motion-v/nuxt',
       'nuxt-mcp',
-      'nuxt-electron',
+      //'nuxt-electron',
     ],
 
     pinia: {

@@ -1,5 +1,6 @@
 import { useStorage } from '@vueuse/core';
 import type { InsertResult } from '../db/results';
+import { defineStore } from 'pinia'
 
 export const useExerciseStore = defineStore('exerciseStore', () => {
     const isLoading = ref(false);

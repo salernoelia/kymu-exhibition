@@ -4,6 +4,21 @@
     "exercises": [
         {
             "id": "exercise_0",
+            "name": "Feed the Panda Game",
+            "results": null,
+            "category": "feed_the_panda",
+            "description": "A test to assess the flexibility of the left arm",
+            "exercise_type": "assessment_screen",
+            "goal_type": "repetitions_goal",
+            "repetitions_goal": 3,
+            "duration_seconds_goal": null,
+            "type": "p5_game",
+            "therapist_added_image_urls": ["static", "left_arm_180"],
+            "therapist_added_video_urls": null,
+            "family_scene_adjustment_access": false
+        },
+        {
+            "id": "exercise_1",
             "name": "Left Arm",
             "results": null,
             "category": "shoulder_abduction_left",
@@ -18,7 +33,7 @@
             "family_scene_adjustment_access": false
         },
         {
-            "id": "exercise_1",
+            "id": "exercise_2",
             "name": "Right Leg",
             "results": null,
             "category": "leg_abduction_right",
@@ -33,7 +48,7 @@
             "family_scene_adjustment_access": true
         },
         {
-            "id": "exercise_2",
+            "id": "exercise_3",
             "name": "Left Elbow",
             "results": null,
             "category": "elbow_flexion_left",

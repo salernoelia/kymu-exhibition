@@ -3,7 +3,6 @@ import * as path from 'path'
 import * as fs from 'fs'
 
 app.whenReady().then(() => {
-  // Register protocol handler for serving files with correct MIME types
   protocol.registerFileProtocol('file', (request, callback) => {
     const filePath = request.url.replace('file:///', '');
     
@@ -15,12 +14,11 @@ app.whenReady().then(() => {
     }
   });
 
-  // Set up permission handling
   session.defaultSession.setPermissionRequestHandler((webContents, permission, callback, details) => {
     if (permission === 'media') {
       callback(true) 
     } else {
-      // Accept other permissions if needed
+
       callback(true)
     }
   })
