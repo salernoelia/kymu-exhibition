@@ -44,20 +44,10 @@ export const useExerciseStateMachine = () => {
             console.log('=========================');
             console.log('Experience has started', exerciseStore.userKey);
             console.log('=========================');
-            try {
-                await $fetch('/api/users', {
-                    method: 'POST',
-                    body: {
-                        key: exerciseStore.userKey,
-                        state: 'started',
-                    },
-                });
-            } catch (e: any) {
-                console.log('Error logging user:', e);
-            }
+
 
             const firstExercise = exercises.value[0];
-         
+
             if (firstExercise && typeof firstExercise.id === 'string' && firstExercise.id.trim() !== '') {
                 const firstExerciseId = firstExercise.id;
                 const targetPath = `/${firstExerciseId}/instruction`;
@@ -70,13 +60,13 @@ export const useExerciseStateMachine = () => {
                 await navigateTo(targetPath, { replace: true });
             } else {
                 console.error('Error starting experience: Invalid first exercise or missing ID.', firstExercise);
-             
+
                 //await resetExperience(); 
             }
         }
     };
 
- const resetExperience = async () => {
+    const resetExperience = async () => {
         if (exercises.value.length > 0) {
             appState.value = 'start';
 

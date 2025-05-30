@@ -1,5 +1,4 @@
 import { useStorage } from '@vueuse/core';
-import type { InsertResult } from '../db/results';
 import { defineStore } from 'pinia';
 
 export const useExerciseStore = defineStore('exerciseStore', () => {
@@ -38,26 +37,7 @@ export const useExerciseStore = defineStore('exerciseStore', () => {
         gameResults.value = results;
     };
 
-    const saveExerciseResults = async () => {
-        try {
-            if (!currentExercise.value) throw new Error('No current Exercise');
-            if (currentExercise.value.status !== 'completed')
-                throw new Error('Exercise is not yet completed and thus there are no results');
 
-            await $fetch<InsertResult>('/api/results', {
-                method: 'POST',
-                body: {
-                    exerciseId: currentExercise?.value.id,
-                    achievedRepetitions: currentExercise.value.results.achieved_repetitions,
-                    achievedSeconds: currentExercise.value.results.achieved_seconds,
-                    achievedAngle: currentExercise.value.results.achieved_angle,
-                    painAnglesDeg: JSON.stringify(currentExercise.value.results.pain_angles_deg),
-                },
-            });
-        } catch (e: any) {
-            console.log('Error logging user:', e);
-        }
-    };
 
     const finalizeResults = () => {
         exercises.value.forEach((ex) => {
@@ -116,12 +96,12 @@ export const useExerciseStore = defineStore('exerciseStore', () => {
         }
     };
 
-   const completeCurrentExercise = () => {
+    const completeCurrentExercise = () => {
         if (currentExercise.value) {
             let results: ExerciseResults;
 
             if (currentExercise.value.type === 'p5_game' && gameResults.value) {
-        
+
                 results = {
                     exercise_id: currentExercise.value.id,
                     achieved_score: gameResults.value.score,
@@ -129,16 +109,15 @@ export const useExerciseStore = defineStore('exerciseStore', () => {
                     game_duration: gameResults.value.duration,
                     hands_detected: gameResults.value.handsDetected,
                 };
-        
+
                 resultAnglePreviousExercise.value = gameResults.value.score;
             } else {
-    
+
                 results = {
                     exercise_id: currentExercise.value.id,
                     achieved_angle: resultAngle.value,
                     pain_angles_deg: painMomentAngles.value,
                 };
-        
                 resultAnglePreviousExercise.value = resultAngle.value;
             }
 
@@ -146,10 +125,7 @@ export const useExerciseStore = defineStore('exerciseStore', () => {
             currentExercise.value.results = results;
             currentExercise.value.status = 'completed';
 
-            // Save to API
-            saveExerciseResults();
 
-            // Reset the local state AFTER saving (but keep resultAnglePreviousExercise for progress page)
             if (currentExercise.value.type === 'p5_game') {
                 gameResults.value = null;
             } else {
@@ -157,7 +133,7 @@ export const useExerciseStore = defineStore('exerciseStore', () => {
                 painMomentAngles.value = [];
             }
             startedRecording.value = false;
-            }
+        }
     };
 
 
@@ -204,7 +180,6 @@ export const useExerciseStore = defineStore('exerciseStore', () => {
         resultAnglePreviousExercise,
         painMomentAngles,
         startedRecording,
-        saveExerciseResults,
         startCurrentExercise,
         completeCurrentExercise,
         skipCurrentExercise,

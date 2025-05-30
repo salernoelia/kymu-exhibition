@@ -47,7 +47,6 @@
     "anime": "0.1.2",
     "animejs": "4.0.2",
     "better-sqlite3": "11.9.1",
-    "drizzle-orm": "0.43.1",
     "motion-v": "1.0.0",
     "node-abi": "^3.24.0",
     "nuxt-mcp": "0.1.2",
