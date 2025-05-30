@@ -4,7 +4,13 @@
 
     <!-- Video feed overlay -->
     <div class="absolute top-20 right-4 w-48 h-36 bg-black/20 rounded-lg overflow-hidden border-2 border-white/30">
-      <video ref="videoFeed" class="w-full h-full object-cover opacity-30" autoplay muted playsinline />
+      <video
+        ref="videoFeed"
+        class="w-full h-full object-cover opacity-30"
+        autoplay
+        muted
+        playsinline
+      />
     </div>
 
     <div class="absolute inset-0 pt-20">
@@ -16,7 +22,7 @@
 <script setup lang="ts">
 import p5 from "p5"
 
-const GAME_DURATION = 1800;
+const GAME_DURATION = 1200;
 const SPEED_INCREASE_INTERVAL = 400;
 const INITIAL_SPEED_MULTIPLIER = 1;
 const SPEED_INCREMENT = 0.3;

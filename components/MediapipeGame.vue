@@ -2,19 +2,38 @@
   <div class="w-full h-full flex flex-col">
     <div class="flex flex-row w-full flex-grow overflow-hidden">
       <div class="flex flex-col w-full h-full justify-center items-center overflow-hidden">
-        <video v-show="false" ref="source" class="input_video" />
-        <div ref="landmarkContainer" class="landmark-grid-container" />
+        <video
+          v-show="false"
+          ref="source"
+          class="input_video"
+        />
+        <div
+          ref="landmarkContainer"
+          class="landmark-grid-container"
+        />
       </div>
     </div>
     <!-- Display debug information -->
-    <div v-if="exerciseDevmode" class="debug-display">
+    <div
+      v-if="exerciseDevmode"
+      class="debug-display"
+    >
       <h2>Left Hand: {{ leftHand.x.toFixed(2) }}, {{ leftHand.y.toFixed(2) }}</h2>
       <h2>Right Hand: {{ rightHand.x.toFixed(2) }}, {{ rightHand.y.toFixed(2) }}</h2>
       <h2>Position Valid: {{ isPersonVisibleState ? 'Yes' : 'No' }}</h2>
 
       <div class="camera-controls">
-        <select v-if="videoDevices.length > 1" v-model="selectedDeviceId" class="camera-selector" @change="startCamera">
-          <option v-for="device in videoDevices" :key="device.deviceId" :value="device.deviceId">
+        <select
+          v-if="videoDevices.length > 1"
+          v-model="selectedDeviceId"
+          class="camera-selector"
+          @change="startCamera"
+        >
+          <option
+            v-for="device in videoDevices"
+            :key="device.deviceId"
+            :value="device.deviceId"
+          >
             {{ device.label || `Camera ${videoDevices.indexOf(device) + 1}` }}
           </option>
         </select>
