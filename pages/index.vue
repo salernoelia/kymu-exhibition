@@ -39,6 +39,7 @@
             button="ok"
             action="continue"
         />
+
     </div>
 
 
@@ -47,6 +48,7 @@
 <script setup lang="ts">
 import { DotLottieVue } from '@lottiefiles/dotlottie-vue'
 import { animate } from 'animejs';
+const fullscreen = useFullscreen();
 // import { motion } from 'motion-v'
 
 // Text to be animated
@@ -73,9 +75,9 @@ const animateText = () => {
     });
 };
 
-// Run animation after component is mounted
 onMounted(() => {
     animateText();
+    fullscreen.toggle();
 });
 
 const { remoteKey } = useRemoteControl();

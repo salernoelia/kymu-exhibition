@@ -1,19 +1,18 @@
 export function useFullscreen() {
-  const toggleFullscreen = () => {
+  const toggle = () => {
     const elem = document.documentElement;
 
     if (!document.fullscreenElement) {
       if (elem.requestFullscreen) {
         elem.requestFullscreen();
+        console.log("Fullscreen activated");
       }
     } else {
-      if (document.exitFullscreen) {
-        document.exitFullscreen();
-      }
+      console.log("Fullscreen already active, staying in fullscreen");
     }
 
     console.log("Fullscreen toggled");
   };
 
-  return { toggleFullscreen };
+  return { toggle };
 }
