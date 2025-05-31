@@ -1,49 +1,91 @@
 <template>
     <div class="h-full w-full">
         <div class="flex flex-col w-full h-full items-center justify-center cont">
-            <DotLottieVue style="height: 300px; width: 300px" class="absolute top-28" autoplay loop
-                src="/lottifiles/party.lottie" />
+            <DotLottieVue
+                style="height: 300px; width: 300px"
+                class="absolute top-28"
+                autoplay
+                loop
+                src="/lottifiles/party.lottie"
+            />
 
-            <motion.img src="/images/decoration/cloud_1.svg" :initial="{ opacity: 0, scale: 0 }"
-                :animate="{ opacity: 1, scale: 1 }" :transition="{
+            <motion.img
+                src="/images/decoration/cloud_1.svg"
+                :initial="{ opacity: 0, scale: 0 }"
+                :animate="{ opacity: 1, scale: 1 }"
+                :transition="{
                     duration: 0.4,
                     scale: { type: 'spring', stiffness: 110, damping: 20 }
-                }" alt="caution" class="cloud_1 cloud" />
-            <motion.img src="/images/decoration/cloud_2.svg" :initial="{ opacity: 0, scale: 0 }"
-                :animate="{ opacity: 1, scale: 1 }" :transition="{
+                }"
+                alt="caution"
+                class="cloud_1 cloud"
+            />
+            <motion.img
+                src="/images/decoration/cloud_2.svg"
+                :initial="{ opacity: 0, scale: 0 }"
+                :animate="{ opacity: 1, scale: 1 }"
+                :transition="{
                     duration: 0.4,
                     scale: { type: 'spring', stiffness: 110, damping: 20 }
-                }" alt="caution" class="cloud_2 cloud" />
-            <motion.img src="/images/decoration/cloud_3.svg" :initial="{ opacity: 0, scale: 0 }"
-                :animate="{ opacity: 1, scale: 1 }" :transition="{
+                }"
+                alt="caution"
+                class="cloud_2 cloud"
+            />
+            <motion.img
+                src="/images/decoration/cloud_3.svg"
+                :initial="{ opacity: 0, scale: 0 }"
+                :animate="{ opacity: 1, scale: 1 }"
+                :transition="{
                     duration: 0.4,
                     scale: { type: 'spring', stiffness: 110, damping: 20 }
-                }" alt="caution" class="cloud_3 cloud" />
+                }"
+                alt="caution"
+                class="cloud_3 cloud"
+            />
 
 
-            <motion.h1 class="num" v-if="previousExercise?.type === 'range-of-motion'">
+            <motion.h1
+                v-if="previousExercise?.type === 'range-of-motion'"
+                class="num"
+            >
                 {{ countedValue }}°
             </motion.h1>
-            <motion.h1 class="num" v-else-if="previousExercise?.type === 'p5_game'">
+            <motion.h1
+                v-else-if="previousExercise?.type === 'p5_game'"
+                class="num"
+            >
                 {{ countedValue }} pts
             </motion.h1>
-            <motion.h1 class="num" v-else>
+            <motion.h1
+                v-else
+                class="num"
+            >
                 ✓
             </motion.h1>
 
-            <motion.h2 class="mb-12" :initial="{ opacity: 0, scale: 0 }" :animate="{ opacity: 1, scale: 1 }"
+            <motion.h2
+                class="mb-12"
+                :initial="{ opacity: 0, scale: 0 }"
+                :animate="{ opacity: 1, scale: 1 }"
                 :transition="{
                     duration: 0.4,
                     scale: { type: 'spring', visualDuration: 0.4, bounce: 0.5 }
-                }">
+                }"
+            >
                 You are doing great! Only
                 {{ exerciseStore.exercisesCount - exerciseStore.currentExerciseIndex }}
                 more to go!
             </motion.h2>
 
-            <ProgressBar :current="exerciseStore.currentExerciseIndex" :total="exerciseStore.exercisesCount" />
+            <ProgressBar
+                :current="exerciseStore.currentExerciseIndex"
+                :total="exerciseStore.exercisesCount"
+            />
         </div>
-        <KeyInstruction button="ok" action="continue" />
+        <KeyInstruction
+            button="ok"
+            action="continue"
+        />
     </div>
 </template>
 

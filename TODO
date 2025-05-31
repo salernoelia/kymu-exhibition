@@ -6,6 +6,9 @@ Todo General:
   ☐ fix results page styling
   ☐ fix button binding name hints
   ☐ improve the flow of exhibition application for unknowing users
+  ☐ nicer caution page
+  ☐ no-person timeout
+  ☐ person-detection on index
 
 Todo SFX:
   ✔ instrument instead of sine @done(25-05-31 20:34)

@@ -49,7 +49,7 @@ import type { Results } from "@mediapipe/pose";
 import type { NormalizedLandmarkList } from "@mediapipe/drawing_utils";
 
 const exerciseDevmode = useStorage('exercise-devmode', false)
-const personDetectedTimeout = ref<ReturnType<typeof setTimeout> | null>(null)
+// const personDetectedTimeout = ref<ReturnType<typeof setTimeout> | null>(null)
 const isPersonVisibleState = ref(false)
 
 const source = ref<HTMLVideoElement | null>(null);
@@ -116,7 +116,7 @@ watch(isPersonVisible, (visible) => {
 }, { immediate: true });
 
 onMounted(async () => {
-  await getAvailableVideoDevices();
+  await getAvailableVideoDevices(videoDevices, selectedDeviceId);
   if (source.value && landmarkContainer.value) {
     source.value.onloadedmetadata = async () => {
       if (!source.value || !landmarkContainer.value) {
@@ -166,32 +166,7 @@ onMounted(async () => {
 const videoDevices = ref<MediaDeviceInfo[]>([]);
 const selectedDeviceId = ref<string>("");
 
-async function getAvailableVideoDevices() {
-  try {
-    const devices = await navigator.mediaDevices.enumerateDevices();
-    videoDevices.value = devices.filter(device => device.kind === 'videoinput');
 
-    if (videoDevices.value.length > 0) {
-      const faceTimeCamera = videoDevices.value.find(device =>
-        device.label && device.label.toLowerCase().includes('facetime')
-      );
-
-      const realSenseCamera = videoDevices.value.find(device =>
-        device.label && device.label.toLowerCase().includes('realsense') && device.label.toLowerCase().includes('rgb')
-      );
-
-      if (realSenseCamera) {
-        selectedDeviceId.value = realSenseCamera.deviceId;
-      } else if (faceTimeCamera) {
-        selectedDeviceId.value = faceTimeCamera.deviceId;
-      } else {
-        selectedDeviceId.value = videoDevices.value[0].deviceId;
-      }
-    }
-  } catch (error) {
-    console.error("Error getting video devices:", error);
-  }
-}
 
 async function startCamera() {
   if (!source.value) return;
