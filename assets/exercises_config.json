@@ -3,7 +3,7 @@
     "description": "Focus on improving body balance.",
     "exercises": [
         {
-            "id": "exercise_1",
+            "id": "exercise_0",
             "name": "Left Arm",
             "results": null,
             "category": "shoulder_abduction_left",
@@ -21,7 +21,7 @@
             "family_scene_adjustment_access": false
         },
         {
-            "id": "exercise_0",
+            "id": "exercise_1",
             "name": "Feed the Panda Game",
             "results": null,
             "category": "feed_the_panda",

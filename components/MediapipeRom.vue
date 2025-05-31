@@ -73,7 +73,7 @@
 
 <script setup lang="ts">
 import { useStorage } from '@vueuse/core'
-import { PoseService } from "~/shared/utils/pose_service";
+import { PoseService } from "~/utils/pose_service";
 import type { Results } from "@mediapipe/pose";
 import type { NormalizedLandmarkList } from "@mediapipe/drawing_utils";
 import PoseCombinations from '~/assets/pose_config.json'
@@ -309,7 +309,7 @@ async function getAvailableVideoDevices() {
       );
 
       const realSenseCamera = videoDevices.value.find(device =>
-        device.label && device.label.toLowerCase().includes('realsense')  && device.label.toLowerCase().includes('rgb')
+        device.label && device.label.toLowerCase().includes('realsense') && device.label.toLowerCase().includes('rgb')
       );
 
 

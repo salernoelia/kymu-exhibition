@@ -44,7 +44,7 @@
 
 <script setup lang="ts">
 import { useStorage } from '@vueuse/core'
-import { PoseService } from "~/shared/utils/pose_service";
+import { PoseService } from "~/utils/pose_service";
 import type { Results } from "@mediapipe/pose";
 import type { NormalizedLandmarkList } from "@mediapipe/drawing_utils";
 

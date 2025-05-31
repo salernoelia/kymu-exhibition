@@ -3,26 +3,36 @@
         <div class="w-full h-full flex flex-col items-center justify-start mt-2">
             <MediapipeRom
                 v-if="exerciseStore.currentExercise?.category && exerciseStore.currentExercise?.type == 'range-of-motion'"
-                ref="romComponent" :rom-combination="exerciseStore.currentExercise?.category" />
+                ref="romComponent"
+                :rom-combination="exerciseStore.currentExercise?.category"
+            />
 
-            <FeedPanda v-if="exerciseStore.currentExercise?.type == 'p5_game'" ref="gameComponent"
-                @game-started="onGameStarted" @game-completed="onGameCompleted" @score-changed="onScoreChanged" />
+            <FeedPanda
+                v-if="exerciseStore.currentExercise?.type == 'p5_game'"
+                ref="gameComponent"
+                @game-started="onGameStarted"
+                @game-completed="onGameCompleted"
+                @score-changed="onScoreChanged"
+            />
         </div>
 
-        <KeyInstruction class="" :instructions="[
-            {
-                button: 'ok',
-                action: exerciseStore.currentExercise?.type === 'p5_game' ? 'restart' : 'start_exercise'
-            },
-            {
-                button: 'up',
-                action: 'mark_pain'
-            },
-            {
-                button: 'right',
-                action: 'skip'
-            }
-        ]" />
+        <KeyInstruction
+            class=""
+            :instructions="[
+                {
+                    button: 'ok',
+                    action: exerciseStore.currentExercise?.type === 'p5_game' ? 'restart' : 'start_exercise'
+                },
+                {
+                    button: 'up',
+                    action: 'mark_pain'
+                },
+                {
+                    button: 'right',
+                    action: 'skip'
+                }
+            ]"
+        />
     </div>
 </template>
 

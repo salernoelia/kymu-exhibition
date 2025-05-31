@@ -16,7 +16,6 @@
 <script setup>
 const currentAngle = ref(0);
 
-// Pass the ref directly
 const toneForRom = useToneForRom(currentAngle);
 
 watch(currentAngle, (newVal) => {
