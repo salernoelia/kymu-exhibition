@@ -20,7 +20,7 @@
 </template>
 
 <script setup lang="ts">
-import p5 from "p5"
+import type p5 from "p5"
 
 const GAME_DURATION = 1200;
 const SPEED_INCREASE_INTERVAL = 400;
@@ -113,9 +113,16 @@ watch(() => mediapipeRef.value?.leftHand, (newPos) => {
 
 watch(() => mediapipeRef.value?.rightHand, (newPos) => {
   if (newPos) {
+    const smoothingFactor = 0.05;
 
-    leftHandX = newPos.x * CANVAS_WIDTH.value;
-    leftHandY = newPos.y * CANVAS_HEIGHT.value;
+    if (leftHandVisible) {
+      leftHandX = leftHandX + smoothingFactor * (newPos.x * CANVAS_WIDTH.value - leftHandX);
+      leftHandY = leftHandY + smoothingFactor * (newPos.y * CANVAS_HEIGHT.value - leftHandY);
+    } else {
+      leftHandX = newPos.x * CANVAS_WIDTH.value;
+      leftHandY = newPos.y * CANVAS_HEIGHT.value;
+    }
+
     leftHandVisible = newPos.visible;
   }
 }, { deep: true });
@@ -137,7 +144,7 @@ class Obstacle {
     this.grabbed = false;
   }
 
-  update(p: p5) {
+  update() {
     if (!this.grabbed) {
       this.y += this.velocity;
     } else {
@@ -247,7 +254,7 @@ const sketch = (p: p5) => {
         }
       }
 
-      o.update(p);
+      o.update();
 
       if (o.grabbed && o.isInBucket()) {
         obstacles.splice(i, 1);

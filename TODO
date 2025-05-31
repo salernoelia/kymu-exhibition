@@ -1,0 +1,26 @@
+
+Todo General:
+  ☐ improved instruction texts
+  ☐ analyze ux writing
+  ☐ fix ability to see next exercise before transition
+  ☐ fix results page styling
+  ☐ fix button binding name hints
+  ☐ improve the flow of exhibition application for unknowing users
+
+Todo SFX:
+  ✔ instrument instead of sine @done(25-05-31 20:34)
+  ☐ sfx for progress
+  ☐ sfx for results
+  ☐ sfx for transition
+  ☐ Spoken hints
+
+Todo Assesment:
+  ☐ improved start position recognition
+  ☐ add assesment autostart
+  ☐ animated cutouts
+
+Todo Game:
+  ☐ remove panda game small text
+  ☐ add panda game smaller camera box or hinting (canvas) or calibration
+  ☐ white background
+
