@@ -31,6 +31,13 @@
             name="material-symbols-light:check-rounded"
             class="text-white h-8 w-8 icon-centered"
           />
+          <h1
+            v-if="startRecordingUserAssessmentTimeout"
+            class="text-white"
+          >
+            Starting in {{ Math.ceil((USER_DETECTED_START_EXERCISE_TIMEOUT_MS - (Date.now() -
+              startTimeUserDetectedTimeout)) / 1000) }}
+          </h1>
         </motion.div>
         <div
           ref="landmarkContainer"
@@ -79,8 +86,12 @@ import type { NormalizedLandmarkList } from "@mediapipe/drawing_utils";
 import PoseCombinations from '~/assets/pose_config.json'
 import { motion } from 'motion-v'
 
-const exerciseDevmode = useStorage('exercise-devmode', false)
-const personDetectedTimeout = ref<ReturnType<typeof setTimeout> | null>(null)
+const USER_DETECTED_START_EXERCISE_TIMEOUT_MS = 3000;
+
+const exerciseDevmode = useStorage('exercise-devmode', false);
+const personDetectedTimeout = ref<ReturnType<typeof setTimeout> | null>(null);
+const startRecordingUserAssessmentTimeout = ref<ReturnType<typeof setTimeout> | null>(null);
+const startTimeUserDetectedTimeout = ref();
 const isPersonVisibleState = ref(false)
 const showCheckIcon = ref(false)
 
@@ -181,12 +192,30 @@ watch(isPersonVisible, (visible) => {
       clearTimeout(personDetectedTimeout.value);
     }
 
-    personDetectedTimeout.value = setTimeout(() => {
-      showCheckIcon.value = false;
-    }, 500);
+    // personDetectedTimeout.value = setTimeout(() => {
+    //   showCheckIcon.value = false;
+    // }, 500);
+
+    if (startRecordingUserAssessmentTimeout.value) {
+      clearTimeout(startRecordingUserAssessmentTimeout.value);
+    }
+
+    startTimeUserDetectedTimeout.value = Date.now();
+
+    startRecordingUserAssessmentTimeout.value = setTimeout(() => {
+      startRecordingUserAssessment();
+      startRecordingUserAssessmentTimeout.value = null;
+    }, USER_DETECTED_START_EXERCISE_TIMEOUT_MS);
   } else {
+    showCheckIcon.value = false;
     console.log(`Out of reference: current ${referenceAngle.value.toFixed(2)}° vs target ${targetAngle.value}°`);
     toneForRom.stopTone();
+
+    if (startRecordingUserAssessmentTimeout.value) {
+      clearTimeout(startRecordingUserAssessmentTimeout.value);
+      startRecordingUserAssessmentTimeout.value = null;
+    }
+
     cleanup();
   }
 }, { immediate: true });
@@ -214,7 +243,7 @@ function updateROMCombination(combination: keyof typeof PoseCombinations) {
   targetAngle.value = configTargetAngle || 0;
 }
 
-function saveLandmarks() {
+function startRecordingUserAssessment() {
   exerciseInitialNormalizedLandmarks.value =
     mediapipeResults.value?.poseLandmarks ?? null;
   console.log("Landmarks saved");
@@ -330,7 +359,7 @@ onUnmounted(() => {
 });
 
 defineExpose({
-  saveLandmarks,
+  startRecordingUserAssessment,
   calculateAngle,
   cleanup,
   markPainMoment,
@@ -343,6 +372,10 @@ defineExpose({
   align-items: center;
   text-align: center;
   margin: 1.5rem 1.5rem;
+}
+
+h1 {
+  font-size: 3rem;
 }
 
 .pose h1 {

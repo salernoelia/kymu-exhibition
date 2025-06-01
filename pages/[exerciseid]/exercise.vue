@@ -44,7 +44,7 @@ const loadedExercise = exerciseStore.currentExercise;
 
 const romComponent = ref<null | {
     markPainMoment: () => void;
-    saveLandmarks: () => void;
+    startRecordingUserAssessment: () => void;
     calculateAngle: () => void;
     cleanup: () => void;
 }>(null);
@@ -124,13 +124,12 @@ const handleRemoteKey = (newKey: string | null) => {
             navigateTo(`/${exerciseStore.currentExercise?.id}/progress`);
         }
     } else if (newKey === "ok") {
-        if (exerciseStore.currentExercise?.type === 'p5_game') {
-            if (gameComponent.value) {
-                gameComponent.value.restartGame();
-            }
+        if (exerciseStore.currentExercise?.type === 'p5_game' && gameComponent.value) {
+            gameComponent.value.restartGame();
         } else if (romComponent.value) {
             if (exerciseStore.startedRecording) {
                 romComponent.value.calculateAngle();
+                romComponent.value.cleanup();
                 exerciseStore.completeCurrentExercise();
 
                 const isLastExercise = exerciseStore.currentExerciseIndex === exerciseStore.exercisesCount - 1;
@@ -142,9 +141,8 @@ const handleRemoteKey = (newKey: string | null) => {
                     console.log(`Navigating to next exercise: ${exerciseStore.currentExercise?.id}`);
                     navigateTo(`/${exerciseStore.currentExercise?.id}/progress`);
                 }
-                romComponent.value.cleanup();
-            } else if (!exerciseStore.startedRecording) {
-                romComponent.value.saveLandmarks();
+            } else {
+                romComponent.value.startRecordingUserAssessment();
             }
         }
     } else if (newKey === "up") {
