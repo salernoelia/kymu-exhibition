@@ -31,7 +31,8 @@ Todo Game:
   ✔ remove panda game small text @done(25-06-01 12:05)
   ✔ add panda game smaller camera box or hinting (canvas) or calibration @done(25-06-01 12:05)
   ✔ white background @done(25-06-01 12:05)
-  ☐ fix stuck objects
+  ✔ improve camera hand mapping @started(25-06-01 21:41) @done(25-06-01 21:46) @lasted(5m47s)
+  ✔ fix stuck objects @done(25-06-01 21:41)
   ✔ hand model mediapipe @started(25-06-01 14:55) @done(25-06-01 15:11) @lasted(16m3s)
   ✔ properly reset on resetExperience @started(25-06-01 16:59) @done(25-06-01 17:28) @lasted(29m3s)
 

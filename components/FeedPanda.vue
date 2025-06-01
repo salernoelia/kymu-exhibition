@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full h-full relative">
+  <div class="w-full h-full relative flex justify-center">
     <MediapipeGame ref="mediapipeRef" />
 
     <!-- Video feed overlay -->
@@ -13,7 +13,7 @@
       />
     </div>
 
-    <div class="absolute inset-0 pt-20">
+    <div class="absolute w-full flex justify-center inset-0 pt-20">
       <P5Wrapper :sketch="sketch" />
     </div>
   </div>
@@ -73,12 +73,23 @@ const mediapipeRef = ref<{
 } | null>(null);
 
 const videoFeed = ref<HTMLVideoElement | null>(null);
-
+const videoAspectRatio = ref(16 / 9);
 
 const updateCanvasSize = () => {
   if (typeof window !== 'undefined') {
-    CANVAS_WIDTH.value = window.innerWidth;
-    CANVAS_HEIGHT.value = window.innerHeight - 80;
+    const windowWidth = window.innerWidth;
+    const windowHeight = window.innerHeight - 80;
+
+    let canvasWidth = windowWidth;
+    let canvasHeight = windowWidth / videoAspectRatio.value;
+
+    if (canvasHeight > windowHeight) {
+      canvasHeight = windowHeight;
+      canvasWidth = windowHeight * videoAspectRatio.value;
+    }
+
+    CANVAS_WIDTH.value = canvasWidth;
+    CANVAS_HEIGHT.value = canvasHeight;
   }
 };
 
@@ -86,12 +97,18 @@ onMounted(() => {
   updateCanvasSize();
   window.addEventListener('resize', updateCanvasSize);
 
-
   if (videoFeed.value) {
     navigator.mediaDevices.getUserMedia({ video: true })
       .then(stream => {
         if (videoFeed.value) {
           videoFeed.value.srcObject = stream;
+
+          videoFeed.value.addEventListener('loadedmetadata', () => {
+            if (videoFeed.value) {
+              videoAspectRatio.value = videoFeed.value.videoWidth / videoFeed.value.videoHeight;
+              updateCanvasSize();
+            }
+          });
         }
       })
       .catch(err => console.log('Video feed error:', err));
@@ -175,6 +192,13 @@ stopWatchers.push(
       const stream = newRef.getVideoStream();
       if (stream) {
         videoFeed.value.srcObject = stream;
+
+        videoFeed.value.addEventListener('loadedmetadata', () => {
+          if (videoFeed.value) {
+            videoAspectRatio.value = videoFeed.value.videoWidth / videoFeed.value.videoHeight;
+            updateCanvasSize();
+          }
+        });
       }
     }
   }, { immediate: true })
@@ -183,8 +207,8 @@ stopWatchers.push(
 stopWatchers.push(
   watch(() => mediapipeRef.value?.leftHand, (newPos) => {
     if (newPos) {
-      rightHandX = newPos.x * CANVAS_WIDTH.value;
-      rightHandY = newPos.y * CANVAS_HEIGHT.value;
+      rightHandX = ((newPos.x - 0.2) / 0.6) * CANVAS_WIDTH.value;
+      rightHandY = ((newPos.y - 0.2) / 0.6) * CANVAS_HEIGHT.value;
       rightHandVisible = newPos.visible;
     }
   }, { deep: true })
@@ -193,12 +217,13 @@ stopWatchers.push(
 stopWatchers.push(
   watch(() => mediapipeRef.value?.rightHand, (newPos) => {
     if (newPos) {
-      leftHandX = newPos.x * CANVAS_WIDTH.value;
-      leftHandY = newPos.y * CANVAS_HEIGHT.value;
+      leftHandX = ((newPos.x - 0.2) / 0.6) * CANVAS_WIDTH.value;
+      leftHandY = ((newPos.y - 0.2) / 0.6) * CANVAS_HEIGHT.value;
       leftHandVisible = newPos.visible;
     }
   }, { deep: true })
 );
+
 
 class Obstacle {
   diameter: number;
@@ -243,10 +268,15 @@ class Obstacle {
   }
 
   isInBucket() {
-    return this.horizontalPosition > bucketX - bucketWidth * 0.5 &&
-      this.horizontalPosition < bucketX + bucketWidth * 0.5 &&
-      this.y > bucketY - bucketHeight * 0.5 &&
-      this.y < bucketY + bucketHeight * 0.5;
+    const bucketLeft = bucketX - bucketWidth * 0.4;
+    const bucketRight = bucketX + bucketWidth * 0.4;
+    const bucketTop = bucketY - bucketHeight * 0.3;
+    const bucketBottom = bucketY + bucketHeight * 0.4;
+
+    return this.horizontalPosition >= bucketLeft &&
+      this.horizontalPosition <= bucketRight &&
+      this.y >= bucketTop &&
+      this.y <= bucketBottom;
   }
 }
 
@@ -339,13 +369,18 @@ const sketch = (p: p5) => {
 
       o.update();
 
+
       if (o.grabbed && o.isInBucket()) {
         obstacles.splice(i, 1);
         score++;
         successfulCatches++;
         activeHand = null;
         emit('scoreChanged', score);
-      } else if (o.y > p.height) {
+        continue;
+      }
+
+      // Check if obstacle fell off screen
+      if (o.y > p.height + o.radius) {
         obstacles.splice(i, 1);
         if (o.grabbed) activeHand = null;
         emit('scoreChanged', score);
