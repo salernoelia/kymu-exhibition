@@ -1,5 +1,6 @@
 
 Todo General:
+  ☐ more welcoming index
   ☐ improved instruction texts
   ☐ analyze ux writing
   ✔ fix ability to see next exercise before transition @started(25-06-01 02:14) @done(25-06-01 02:14) @lasted(52s)
@@ -20,9 +21,10 @@ Todo SFX:
   ☐ Spoken hints
 
 Todo Assesment:
-  ☐ improved start position recognition
+  ✔ improved start position recognition @done(25-06-01 16:52)
   ✔ add assesment autostart @done(25-06-01 03:06)
   ☐ animated cutouts
+  ✔ prevent 0° and 180°+ @done(25-06-01 16:25)
 
 Todo Game:
   ✔ remove panda game small text @done(25-06-01 12:05)
@@ -30,4 +32,5 @@ Todo Game:
   ✔ white background @done(25-06-01 12:05)
   ☐ fix stuck objects
   ✔ hand model mediapipe @started(25-06-01 14:55) @done(25-06-01 15:11) @lasted(16m3s)
+  ☐ properly reset on resetExperience
 

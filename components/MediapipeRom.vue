@@ -87,13 +87,17 @@ import PoseCombinations from '~/assets/pose_config.json'
 import { motion } from 'motion-v'
 
 const USER_DETECTED_START_EXERCISE_TIMEOUT_MS = 3000;
+const RECORDING_DURATION_MS = 8000;
 
 const exerciseDevmode = useStorage('exercise-devmode', false);
 const personDetectedTimeout = ref<ReturnType<typeof setTimeout> | null>(null);
 const startRecordingUserAssessmentTimeout = ref<ReturnType<typeof setTimeout> | null>(null);
+const recordingTimeout = ref<ReturnType<typeof setTimeout> | null>(null);
 const startTimeUserDetectedTimeout = ref();
+const recordingStartTime = ref<number | null>(null);
 const isPersonVisibleState = ref(false)
 const showCheckIcon = ref(false)
+const maxAngleAchieved = ref(0);
 
 const canvasWidth = computed(() =>
   Math.min(window.innerWidth, window.innerHeight * (16 / 9))
@@ -130,6 +134,7 @@ const thresholdDeg = ref(25);
 const targetAngle = ref(0)
 
 const toneForRom = useToneForRom(currentAngle);
+
 
 const referenceAngle = computed(() => {
   if (!mediapipeResults.value ||
@@ -192,20 +197,19 @@ watch(isPersonVisible, (visible) => {
       clearTimeout(personDetectedTimeout.value);
     }
 
-    // personDetectedTimeout.value = setTimeout(() => {
-    //   showCheckIcon.value = false;
-    // }, 500);
-
     if (startRecordingUserAssessmentTimeout.value) {
       clearTimeout(startRecordingUserAssessmentTimeout.value);
     }
 
-    startTimeUserDetectedTimeout.value = Date.now();
+    // Only start countdown if not already recording
+    if (!exerciseStore.startedRecording) {
+      startTimeUserDetectedTimeout.value = Date.now();
 
-    startRecordingUserAssessmentTimeout.value = setTimeout(() => {
-      startRecordingUserAssessment();
-      startRecordingUserAssessmentTimeout.value = null;
-    }, USER_DETECTED_START_EXERCISE_TIMEOUT_MS);
+      startRecordingUserAssessmentTimeout.value = setTimeout(() => {
+        startRecordingUserAssessment();
+        startRecordingUserAssessmentTimeout.value = null;
+      }, USER_DETECTED_START_EXERCISE_TIMEOUT_MS);
+    }
   } else {
     showCheckIcon.value = false;
     console.log(`Out of reference: current ${referenceAngle.value.toFixed(2)}° vs target ${targetAngle.value}°`);
@@ -216,9 +220,26 @@ watch(isPersonVisible, (visible) => {
       startRecordingUserAssessmentTimeout.value = null;
     }
 
-    cleanup();
+    if (!exerciseStore.startedRecording) {
+      cleanup();
+    }
   }
 }, { immediate: true });
+
+watch(currentAngle, (newAngle) => {
+  if (exerciseStore.startedRecording) {
+    if (newAngle > 180) {
+      console.log('Invalid angle detected:', newAngle, '- resetting recording');
+      resetRecording();
+      return;
+    }
+
+
+    if (newAngle > maxAngleAchieved.value) {
+      maxAngleAchieved.value = newAngle;
+    }
+  }
+});
 
 watch(
   () => props.romCombination,
@@ -246,13 +267,54 @@ function updateROMCombination(combination: keyof typeof PoseCombinations) {
 function startRecordingUserAssessment() {
   exerciseInitialNormalizedLandmarks.value =
     mediapipeResults.value?.poseLandmarks ?? null;
-  console.log("Landmarks saved");
+  console.log("Recording started");
   exerciseStore.startedRecording = true;
+  recordingStartTime.value = Date.now();
+  maxAngleAchieved.value = 0;
+
+  recordingTimeout.value = setTimeout(() => {
+    completeRecording();
+  }, RECORDING_DURATION_MS);
+}
+
+function resetRecording() {
+  console.log("Resetting recording due to invalid angle");
+
+  if (recordingTimeout.value) {
+    clearTimeout(recordingTimeout.value);
+    recordingTimeout.value = null;
+  }
+
+
+  exerciseStore.startedRecording = false;
+  recordingStartTime.value = null;
+  maxAngleAchieved.value = 0;
+}
+
+
+function completeRecording() {
+  console.log("Recording completed - max angle achieved:", maxAngleAchieved.value);
+
+  if (recordingTimeout.value) {
+    clearTimeout(recordingTimeout.value);
+    recordingTimeout.value = null;
+  }
+  exerciseStore.resultAngle = maxAngleAchieved.value;
+  exerciseStore.completeCurrentExercise();
+
+  const isLastExercise = exerciseStore.currentExerciseIndex === exerciseStore.exercisesCount - 1;
+
+  if (isLastExercise) {
+    navigateTo("/results");
+  } else {
+    exerciseStore.nextExercise();
+    navigateTo(`/${exerciseStore.currentExercise?.id}/progress`);
+  }
 }
 
 function calculateAngle() {
   console.log("calculateVectorAngle");
-  exerciseStore.resultAngle = currentAngle.value;
+  exerciseStore.resultAngle = maxAngleAchieved.value;
 }
 
 function markPainMoment() {
@@ -266,6 +328,14 @@ function cleanup() {
   exerciseStore.resultAngle = 0;
   exerciseStore.painMomentAngles = [];
   exerciseInitialNormalizedLandmarks.value = null;
+  maxAngleAchieved.value = 0;
+  recordingStartTime.value = null;
+
+  if (recordingTimeout.value) {
+    clearTimeout(recordingTimeout.value);
+    recordingTimeout.value = null;
+  }
+
   console.log("cleanup done");
   exerciseStore.startedRecording = false;
 }
@@ -352,6 +422,13 @@ async function startCamera() {
 
 onBeforeUnmount(() => {
   toneForRom.stopTone();
+
+  if (startRecordingUserAssessmentTimeout.value) {
+    clearTimeout(startRecordingUserAssessmentTimeout.value);
+  }
+  if (recordingTimeout.value) {
+    clearTimeout(recordingTimeout.value);
+  }
 });
 
 onUnmounted(() => {

@@ -53,7 +53,7 @@ const transitionText = ref('Loading...');
 const exerciseDevmode = useStorage('exercise-devmode', false)
 
 
-const INACTIVITY_TIMEOUT = 120000; // 2 minutes in ms
+const INACTIVITY_TIMEOUT = 240000; // 4 minutes in ms
 let inactivityTimer: NodeJS.Timeout | null = null;
 
 const resetInactivityTimer = () => {
