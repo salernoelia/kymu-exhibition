@@ -142,11 +142,48 @@ async function startCamera() {
   }
 }
 
+onUnmounted(() => {
+  cleanup();
+});
+
+function cleanup() {
+  if (source.value?.srcObject) {
+    const stream = source.value.srcObject as MediaStream;
+    const tracks = stream.getTracks();
+    tracks.forEach(track => {
+      track.stop();
+      console.log('Stopped video track:', track.label);
+    });
+    source.value.srcObject = null;
+  }
+
+  if (handService) {
+    try {
+      handService.cleanup();
+      console.log('HandService cleaned up');
+    } catch (err) {
+      console.error('Error cleaning up HandService:', err);
+    }
+    handService = null;
+  }
+
+  leftHand.value = { x: 0, y: 0, visible: false };
+  rightHand.value = { x: 0, y: 0, visible: false };
+  isPersonVisibleState.value = false;
+  mediapipeResults.value = null;
+
+  videoDevices.value = [];
+  selectedDeviceId.value = "";
+
+  console.log('MediapipeGame cleanup completed');
+}
+
 defineExpose({
   leftHand: readonly(leftHand),
   rightHand: readonly(rightHand),
   isPersonVisible: readonly(isPersonVisibleState),
-  getVideoStream: () => handService?.getVideoStream()
+  getVideoStream: () => handService?.getVideoStream(),
+  cleanup
 });
 </script>
 

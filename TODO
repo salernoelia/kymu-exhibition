@@ -25,6 +25,7 @@ Todo Assesment:
   ✔ add assesment autostart @done(25-06-01 03:06)
   ☐ animated cutouts
   ✔ prevent 0° and 180°+ @done(25-06-01 16:25)
+  ☐ prevent main body-parts of assesments from being allowed to move, to prevent false results
 
 Todo Game:
   ✔ remove panda game small text @done(25-06-01 12:05)
@@ -32,5 +33,5 @@ Todo Game:
   ✔ white background @done(25-06-01 12:05)
   ☐ fix stuck objects
   ✔ hand model mediapipe @started(25-06-01 14:55) @done(25-06-01 15:11) @lasted(16m3s)
-  ☐ properly reset on resetExperience
+  ✔ properly reset on resetExperience @started(25-06-01 16:59) @done(25-06-01 17:28) @lasted(29m3s)
 

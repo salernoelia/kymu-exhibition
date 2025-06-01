@@ -177,4 +177,32 @@ export class HandService extends Camera {
     public getVideoStream(): MediaStream | null {
         return this.source.srcObject as MediaStream | null;
     }
+
+    // Comprehensive cleanup method
+    public cleanup(): void {
+        try {
+            // Stop the camera
+            this.stop();
+
+            // Close the MediaPipe hands instance
+            if (this.pipe) {
+                this.pipe.close();
+            }
+
+            // Reset hand positions
+            this.leftHand.value = { x: 0, y: 0, visible: false };
+            this.rightHand.value = { x: 0, y: 0, visible: false };
+            this.isPersonVisible.value = false;
+            this.mediapipeResults.value = null;
+
+            // Clear canvas
+            if (this.ctx) {
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            }
+
+            console.log('HandService cleanup completed');
+        } catch (error) {
+            console.error('Error during HandService cleanup:', error);
+        }
+    }
 }

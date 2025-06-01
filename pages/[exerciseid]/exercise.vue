@@ -53,6 +53,7 @@ const gameComponent = ref<null | {
     restartGame: () => void;
     getCurrentScore: () => number;
     getGameState: () => string;
+    cleanup: () => void;
 }>(null);
 
 const onGameStarted = (data: { timestamp: number }) => {
@@ -97,6 +98,30 @@ onMounted(() => {
     exerciseStore.startCurrentExercise();
 });
 
+onBeforeUnmount(() => {
+    console.log('Exercise component unmounting, cleaning up...');
+
+    // Cleanup ROM component
+    if (romComponent.value) {
+        try {
+            romComponent.value.cleanup();
+        } catch (err) {
+            console.error('Error cleaning up ROM component:', err);
+        }
+    }
+
+    // Cleanup game component
+    if (gameComponent.value) {
+        try {
+            gameComponent.value.cleanup();
+        } catch (err) {
+            console.error('Error cleaning up game component:', err);
+        }
+    }
+
+    console.log('Exercise component cleanup completed');
+});
+
 setTimeout(() => {
     if (!exerciseStore.currentExercise && useRouter().currentRoute.value.path.includes('/exercise')) {
         console.error("NO EXERCISE FOUND — RESTARTING")
@@ -111,8 +136,12 @@ const handleRemoteKey = (newKey: string | null) => {
         console.log("skipping exercise");
         exerciseStore.skipCurrentExercise();
 
+        // Cleanup current exercise components
         if (romComponent.value) {
             romComponent.value.cleanup();
+        }
+        if (gameComponent.value) {
+            gameComponent.value.cleanup();
         }
 
         const isLastExercise = exerciseStore.currentExerciseIndex === exerciseStore.exercisesCount - 1;

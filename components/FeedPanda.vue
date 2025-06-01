@@ -69,6 +69,7 @@ const mediapipeRef = ref<{
   rightHand: { x: number, y: number, visible: boolean };
   isPersonVisible: boolean;
   getVideoStream: () => MediaStream | null;
+  cleanup: () => void;
 } | null>(null);
 
 const videoFeed = ref<HTMLVideoElement | null>(null);
@@ -101,32 +102,103 @@ onUnmounted(() => {
   if (typeof window !== 'undefined') {
     window.removeEventListener('resize', updateCanvasSize);
   }
+  cleanup();
 });
 
-watch(() => mediapipeRef.value, (newRef) => {
-  if (newRef && videoFeed.value) {
-    const stream = newRef.getVideoStream();
-    if (stream) {
-      videoFeed.value.srcObject = stream;
+function cleanup() {
+  console.log('Starting FeedPanda cleanup...');
+
+  gameState = "playing";
+  obstacles = [];
+  obstacle_spawn_rate = 120;
+  score = 0;
+  offsetX = 0;
+  offsetY = 0;
+  speedMultiplier = INITIAL_SPEED_MULTIPLIER;
+  gameStartTime = 0;
+  totalObstacles = 0;
+  successfulCatches = 0;
+
+  leftHandX = 0;
+  leftHandY = 0;
+  leftHandVisible = false;
+  rightHandX = 0;
+  rightHandY = 0;
+  rightHandVisible = false;
+  activeHand = null;
+
+  if (videoFeed.value?.srcObject) {
+    const stream = videoFeed.value.srcObject as MediaStream;
+    const tracks = stream.getTracks();
+    tracks.forEach(track => {
+      track.stop();
+      console.log('Stopped video feed track:', track.label);
+    });
+    videoFeed.value.srcObject = null;
+  }
+
+  if (mediapipeRef.value) {
+    try {
+      const ref = mediapipeRef.value as { cleanup?: () => void };
+      ref.cleanup?.();
+    } catch (err) {
+      console.error('Error cleaning up MediapipeRef:', err);
     }
   }
-}, { immediate: true });
 
-watch(() => mediapipeRef.value?.leftHand, (newPos) => {
-  if (newPos) {
-    rightHandX = newPos.x * CANVAS_WIDTH.value;
-    rightHandY = newPos.y * CANVAS_HEIGHT.value;
-    rightHandVisible = newPos.visible;
+  if (p5Instance) {
+    try {
+      p5Instance.remove();
+      console.log('P5 instance removed');
+    } catch (err) {
+      console.error('Error removing P5 instance:', err);
+    }
+    p5Instance = null;
   }
-}, { deep: true });
 
-watch(() => mediapipeRef.value?.rightHand, (newPos) => {
-  if (newPos) {
-    leftHandX = newPos.x * CANVAS_WIDTH.value;
-    leftHandY = newPos.y * CANVAS_HEIGHT.value;
-    leftHandVisible = newPos.visible;
-  }
-}, { deep: true });
+  stopWatchers.forEach(stopWatcher => {
+    try {
+      stopWatcher();
+    } catch (err) {
+      console.error('Error stopping watcher:', err);
+    }
+  });
+
+  console.log('FeedPanda cleanup completed');
+}
+
+const stopWatchers: Array<() => void> = [];
+
+stopWatchers.push(
+  watch(() => mediapipeRef.value, (newRef) => {
+    if (newRef && videoFeed.value) {
+      const stream = newRef.getVideoStream();
+      if (stream) {
+        videoFeed.value.srcObject = stream;
+      }
+    }
+  }, { immediate: true })
+);
+
+stopWatchers.push(
+  watch(() => mediapipeRef.value?.leftHand, (newPos) => {
+    if (newPos) {
+      rightHandX = newPos.x * CANVAS_WIDTH.value;
+      rightHandY = newPos.y * CANVAS_HEIGHT.value;
+      rightHandVisible = newPos.visible;
+    }
+  }, { deep: true })
+);
+
+stopWatchers.push(
+  watch(() => mediapipeRef.value?.rightHand, (newPos) => {
+    if (newPos) {
+      leftHandX = newPos.x * CANVAS_WIDTH.value;
+      leftHandY = newPos.y * CANVAS_HEIGHT.value;
+      leftHandVisible = newPos.visible;
+    }
+  }, { deep: true })
+);
 
 class Obstacle {
   diameter: number;
@@ -180,10 +252,13 @@ class Obstacle {
 
 let fontRegular: p5.Font;
 
+let p5Instance: p5 | null = null;
+
 const sketch = (p: p5) => {
+  p5Instance = p;
+
   p.preload = () => {
     bucketImage = p.loadImage('/images/pandas/panda_wink.png');
-    // p.textFont('Poppins');
     fontRegular = p.loadFont('/fonts/Poppins-Light.ttf');
   }
 
@@ -273,7 +348,6 @@ const sketch = (p: p5) => {
       } else if (o.y > p.height) {
         obstacles.splice(i, 1);
         if (o.grabbed) activeHand = null;
-        // Removed penalty: score -= 2;
         emit('scoreChanged', score);
       }
     }
@@ -288,14 +362,12 @@ const sketch = (p: p5) => {
       obstacle.show(p);
     }
 
-    // Draw magnetic field around hands
     if (leftHandVisible) {
-      // Magnetic field
+      // magnet
       p.fill(100, 200, 100, 30);
       p.noStroke();
       p.ellipse(leftHandX, leftHandY, MAGNETIC_RADIUS * 2, MAGNETIC_RADIUS * 2);
 
-      // Hand indicator
       p.fill(100, 200, 100, 150);
       p.stroke(100, 200, 100);
       p.strokeWeight(3);
@@ -308,12 +380,12 @@ const sketch = (p: p5) => {
     }
 
     if (rightHandVisible) {
-      // Magnetic 
+      // magnet 
       p.fill(200, 100, 100, 30);
       p.noStroke();
       p.ellipse(rightHandX, rightHandY, MAGNETIC_RADIUS * 2, MAGNETIC_RADIUS * 2);
 
-      // Hand 
+      // hand 
       p.fill(200, 100, 100, 150);
       p.stroke(200, 100, 100);
       p.strokeWeight(3);
@@ -398,7 +470,8 @@ defineExpose({
     activeHand = null;
   },
   getCurrentScore: () => score,
-  getGameState: () => gameState
+  getGameState: () => gameState,
+  cleanup
 });
 </script>
 
