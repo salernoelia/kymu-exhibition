@@ -7,7 +7,6 @@ export const useExerciseStore = defineStore('exerciseStore', () => {
     const resultAnglePreviousExercise = ref();
     const painMomentAngles = ref<number[]>([]);
     const startedRecording = ref<boolean>(false);
-    const route = useRoute();
 
     const gameResults = ref<{
         score: number;
@@ -16,6 +15,8 @@ export const useExerciseStore = defineStore('exerciseStore', () => {
         accuracy: number;
         handsDetected: boolean;
     } | null>(null);
+
+    const route = useRoute();
 
     const exerciseStateMachine = useExerciseStateMachine();
 
@@ -35,7 +36,14 @@ export const useExerciseStore = defineStore('exerciseStore', () => {
         gameResults.value = results;
     };
 
+    const getExerciseById = (exerciseId: string) => {
+        return exercises.value.find((ex) => ex.id === exerciseId);
+    };
 
+    const getExerciseStatus = (exerciseId: string): Exercise['status'] | null => {
+        const exercise = exercises.value.find((ex) => ex.id === exerciseId);
+        return exercise ? exercise.status : null;
+    };
 
     const finalizeResults = () => {
         exercises.value.forEach((ex) => {
@@ -47,10 +55,6 @@ export const useExerciseStore = defineStore('exerciseStore', () => {
                 };
             }
         });
-    };
-
-    const getExerciseById = (exerciseId: string) => {
-        return exercises.value.find((ex) => ex.id === exerciseId);
     };
 
     const setCurrentExercise = (exerciseId: string) => {
@@ -99,7 +103,6 @@ export const useExerciseStore = defineStore('exerciseStore', () => {
             let results: ExerciseResults;
 
             if (currentExercise.value.type === 'p5_game' && gameResults.value) {
-
                 results = {
                     exercise_id: currentExercise.value.id,
                     achieved_score: gameResults.value.score,
@@ -107,10 +110,8 @@ export const useExerciseStore = defineStore('exerciseStore', () => {
                     game_duration: gameResults.value.duration,
                     hands_detected: gameResults.value.handsDetected,
                 };
-
                 resultAnglePreviousExercise.value = gameResults.value.score;
             } else {
-
                 results = {
                     exercise_id: currentExercise.value.id,
                     achieved_angle: resultAngle.value,
@@ -119,11 +120,10 @@ export const useExerciseStore = defineStore('exerciseStore', () => {
                 resultAnglePreviousExercise.value = resultAngle.value;
             }
 
-
             currentExercise.value.results = results;
             currentExercise.value.status = 'completed';
 
-
+            // Reset exercise-specific state
             if (currentExercise.value.type === 'p5_game') {
                 gameResults.value = null;
             } else {
@@ -134,16 +134,24 @@ export const useExerciseStore = defineStore('exerciseStore', () => {
         }
     };
 
-
     const skipCurrentExercise = () => {
         if (currentExercise.value) {
             currentExercise.value.status = 'skipped';
         }
     };
 
-    const getExerciseStatus = (exerciseId: string): Exercise['status'] | null => {
-        const exercise = exercises.value.find((ex) => ex.id === exerciseId);
-        return exercise ? exercise.status : null;
+    const resetExerciseExecutionState = () => {
+        resultAngle.value = 0;
+        painMomentAngles.value = [];
+        startedRecording.value = false;
+        isLoading.value = false;
+        error.value = null;
+        gameResults.value = null;
+    };
+
+    const resetExperience = async () => {
+        resetExerciseExecutionState();
+        await exerciseStateMachine.resetExperience();
     };
 
     watch(
@@ -160,30 +168,39 @@ export const useExerciseStore = defineStore('exerciseStore', () => {
     );
 
     return {
+        // Exercise execution state
         isLoading,
         error,
-        gameResults,
-        setGameResults,
-        exercises,
-        exercisesCount,
-        getExerciseById,
-        setCurrentExercise,
-        nextExercise,
-        previousExercise,
-        currentExercise,
-        currentExerciseIndex,
-        exerciseProgress,
         resultAngle,
         resultAnglePreviousExercise,
         painMomentAngles,
         startedRecording,
+        gameResults,
+        setGameResults,
+
+        // Exercise data & status
+        exercises,
+        exercisesCount,
+        currentExercise,
+        currentExerciseIndex,
+        exerciseProgress,
+        getExerciseById,
+        getExerciseStatus,
+        finalizeResults,
+
+        // Exercise navigation
+        setCurrentExercise,
+        nextExercise,
+        previousExercise,
+
+        // Exercise lifecycle
         startCurrentExercise,
         completeCurrentExercise,
         skipCurrentExercise,
-        getExerciseStatus,
-        finalizeResults,
+
+        // App state management (delegated to state machine)
         startExperience: exerciseStateMachine.startExperience,
-        resetExperience: exerciseStateMachine.resetExperience,
+        resetExperience,
         showResults: exerciseStateMachine.showResults,
     };
 });

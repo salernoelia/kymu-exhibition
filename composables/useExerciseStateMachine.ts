@@ -1,12 +1,11 @@
 import exercisesConfig from '~/assets/exercises_config.json';
 
-
 export const useExerciseStateMachine = () => {
     const appState = ref<'start' | 'exercises' | 'results'>('start');
     const exercises = ref<ExerciseCollection>([]);
     const currentExerciseIndex = ref<number>(0);
+
     const exerciseCount = computed(() => exercises.value.length);
-    const exerciseStore = useExerciseStore();
 
     const currentExercise = computed<Exercise | null>(() => {
         if (exercises.value.length === 0 || appState.value !== 'exercises') return null;
@@ -35,6 +34,12 @@ export const useExerciseStateMachine = () => {
         appState.value = 'start';
     };
 
+    const goToExercise = (index: number) => {
+        if (index >= 0 && index < exercises.value.length) {
+            currentExerciseIndex.value = index;
+        }
+    };
+
     const startExperience = async () => {
         if (exercises.value.length > 0) {
             appState.value = 'exercises';
@@ -44,9 +49,7 @@ export const useExerciseStateMachine = () => {
             console.log('Experience has started');
             console.log('=========================');
 
-
             const firstExercise = exercises.value[0];
-
             if (firstExercise && typeof firstExercise.id === 'string' && firstExercise.id.trim() !== '') {
                 const firstExerciseId = firstExercise.id;
                 const targetPath = `/${firstExerciseId}/instruction`;
@@ -58,8 +61,6 @@ export const useExerciseStateMachine = () => {
                 await navigateTo(targetPath, { replace: true });
             } else {
                 console.error('Error starting experience: Invalid first exercise or missing ID.', firstExercise);
-
-                //await resetExperience(); 
             }
         }
     };
@@ -68,12 +69,6 @@ export const useExerciseStateMachine = () => {
         if (exercises.value.length > 0) {
             appState.value = 'start';
 
-            exerciseStore.resultAngle = 0;
-            exerciseStore.painMomentAngles = [];
-            exerciseStore.startedRecording = false;
-            exerciseStore.isLoading = false;
-            exerciseStore.error = null;
-
             exercises.value = exercisesConfig.exercises.map((ex) => ({
                 ...ex,
                 status: 'not_started',
@@ -81,8 +76,6 @@ export const useExerciseStateMachine = () => {
             })) as ExerciseCollection;
 
             currentExerciseIndex.value = 0;
-
-
             await nextTick();
 
             try {
@@ -94,16 +87,12 @@ export const useExerciseStateMachine = () => {
             }
         }
     };
+
     const showResults = () => {
         appState.value = 'results';
     };
 
-    const goToExercise = (index: number) => {
-        if (index >= 0 && index < exercises.value.length) {
-            currentExerciseIndex.value = index;
-        }
-    };
-
+    // Initialize
     loadExercises();
 
     return {

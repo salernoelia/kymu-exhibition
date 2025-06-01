@@ -2,7 +2,7 @@
 Todo General:
   ☐ improved instruction texts
   ☐ analyze ux writing
-  ☐ fix ability to see next exercise before transition
+  ✔ fix ability to see next exercise before transition @started(25-06-01 02:14) @done(25-06-01 02:14) @lasted(52s)
   ☐ fix results page styling
   ☐ fix button binding name hints
   ☐ improve the flow of exhibition application for unknowing users
@@ -26,4 +26,5 @@ Todo Game:
   ☐ remove panda game small text
   ☐ add panda game smaller camera box or hinting (canvas) or calibration
   ☐ white background
+  ☐ fix stuck objects
 
