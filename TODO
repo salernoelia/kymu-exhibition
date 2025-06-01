@@ -3,36 +3,40 @@ Todo General:
   ☐ more welcoming index
   ☐ improved instruction texts
   ☐ analyze ux writing
-  ✔ fix ability to see next exercise before transition @started(25-06-01 02:14) @done(25-06-01 02:14) @lasted(52s)
-  ☐ fix results page styling
-  ☐ fix button binding name hints
   ☐ improve the flow of exhibition application for unknowing users
   ☐ nicer caution page
-  ✔ no-person timeout @started(25-06-01 16:10) @done(25-06-01 16:14) @lasted(4m4s)
-  ☐ person-detection on index
-  ✔ always fullscreen fix @started(25-06-01 15:30) @done(25-06-01 15:35) @lasted(5m43s)
-  ✔ endless loop on first screens prevention/ @started(25-06-01 15:22) @done(25-06-01 15:30) @lasted(8m21s)
+  ☐ (person-detection on index)
 
 Todo SFX:
-  ✔ instrument instead of sine @done(25-05-31 20:34)
-  ☐ sfx for progress
-  ☐ sfx for results
-  ☐ sfx for transition
+  ☐ improve progress sfx
+  ☐ improve results sfx
   ☐ Spoken hints
 
 Todo Assesment:
-  ✔ improved start position recognition @done(25-06-01 16:52)
-  ✔ add assesment autostart @done(25-06-01 03:06)
-  ☐ animated cutouts
-  ✔ prevent 0° and 180°+ @done(25-06-01 16:25)
   ☐ prevent main body-parts of assesments from being allowed to move, to prevent false results
+  ☐ animated cutouts
 
 Todo Game:
-  ✔ remove panda game small text @done(25-06-01 12:05)
-  ✔ add panda game smaller camera box or hinting (canvas) or calibration @done(25-06-01 12:05)
-  ✔ white background @done(25-06-01 12:05)
-  ✔ improve camera hand mapping @started(25-06-01 21:41) @done(25-06-01 21:46) @lasted(5m47s)
-  ✔ fix stuck objects @done(25-06-01 21:41)
-  ✔ hand model mediapipe @started(25-06-01 14:55) @done(25-06-01 15:11) @lasted(16m3s)
-  ✔ properly reset on resetExperience @started(25-06-01 16:59) @done(25-06-01 17:28) @lasted(29m3s)
+  ☐ improve placement of texts
 
+Archive:
+  ✔ sfx for progress @started(25-06-01 22:20) @done(25-06-01 22:20) @lasted(49s) @project(Todo SFX)
+  ✔ sfx for results @started(25-06-01 22:20) @done(25-06-01 22:20) @lasted(49s) @project(Todo SFX)
+  ✔ sfx for transition @started(25-06-01 22:20) @done(25-06-01 22:20) @lasted(49s) @project(Todo SFX)
+  ✔ fix results page styling @done(25-06-01 21:49) @project(Todo General)
+  ✔ fix button binding name hints @started(25-06-01 21:49) @done(25-06-01 21:49) @lasted(51s) @project(Todo General)
+  ✔ fix ability to see next exercise before transition @started(25-06-01 02:14) @done(25-06-01 02:14) @lasted(52s) @project(Todo General)
+  ✔ no-person timeout @started(25-06-01 16:10) @done(25-06-01 16:14) @lasted(4m4s) @project(Todo General)
+  ✔ always fullscreen fix @started(25-06-01 15:30) @done(25-06-01 15:35) @lasted(5m43s) @project(Todo General)
+  ✔ endless loop on first screens prevention/ @started(25-06-01 15:22) @done(25-06-01 15:30) @lasted(8m21s) @project(Todo General)
+  ✔ instrument instead of sine @done(25-05-31 20:34) @project(Todo SFX)
+  ✔ improved start position recognition @done(25-06-01 16:52) @project(Todo Assesment)
+  ✔ add assesment autostart @done(25-06-01 03:06) @project(Todo Assesment)
+  ✔ prevent 0° and 180°+ @done(25-06-01 16:25) @project(Todo Assesment)
+  ✔ remove panda game small text @done(25-06-01 12:05) @project(Todo Game)
+  ✔ add panda game smaller camera box or hinting (canvas) or calibration @done(25-06-01 12:05) @project(Todo Game)
+  ✔ white background @done(25-06-01 12:05) @project(Todo Game)
+  ✔ improve camera hand mapping @started(25-06-01 21:41) @done(25-06-01 21:46) @lasted(5m47s) @project(Todo Game)
+  ✔ fix stuck objects @done(25-06-01 21:41) @project(Todo Game)
+  ✔ hand model mediapipe @started(25-06-01 14:55) @done(25-06-01 15:11) @lasted(16m3s) @project(Todo Game)
+  ✔ properly reset on resetExperience @started(25-06-01 16:59) @done(25-06-01 17:28) @lasted(29m3s) @project(Todo Game)

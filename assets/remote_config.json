@@ -2,7 +2,7 @@
   "keyMappings": {
     "w": "up",
     "a": "left",
-    "3": "down",
+    "3": "reset",
     "d": "right",
     "2": "next",
     "1": "back",

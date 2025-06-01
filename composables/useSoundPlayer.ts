@@ -66,14 +66,33 @@ export function useSoundPlayer() {
     const playSuccessSound = () => {
         return playSound('/sfx/success.wav');
     };
+
     const playStartSound = () => {
         return playSound('/sfx/start.wav');
     };
+
     const playTransitionSound = () => {
         return playSound('/sfx/transition.wav');
     };
+
     const playResultsSound = () => {
         return playSound('/sfx/results.wav');
+    };
+
+    const playErrorSound = () => {
+        return playSound('/sfx/error.wav');
+    };
+
+    const playRecordingSound = () => {
+        return playSound('/sfx/recording.wav');
+    };
+
+    const playScoreSound = () => {
+        return playSound('/sfx/score.wav');
+    };
+
+    const playCaughtSaund = () => {
+        return playSound('/sfx/caught.wav');
     };
 
     const playDetectedSound = () => {
@@ -95,6 +114,10 @@ export function useSoundPlayer() {
         playResultsSound,
         playStartSound,
         playTransitionSound,
+        playErrorSound,
+        playRecordingSound,
+        playScoreSound,
         playDetectedSound,
+        playCaughtSaund,
     };
 }

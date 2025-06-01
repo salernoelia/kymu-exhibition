@@ -1,6 +1,6 @@
 type RemoteAction =
   | "up"
-  | "down"
+  | "reset"
   | "left"
   | "right"
   | "next"

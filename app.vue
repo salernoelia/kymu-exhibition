@@ -144,7 +144,7 @@ watch(
       exerciseDevmode.value = !exerciseDevmode.value;
     } else if (newKey === "fullscreen") {
       console.log("Fullscreen button pressed - toggling fullscreen");
-    } else if (newKey === "down") {
+    } else if (newKey === "reset") {
       exerciseStore.resetExperience();
     }
   }

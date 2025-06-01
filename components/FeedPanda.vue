@@ -22,6 +22,8 @@
 <script setup lang="ts">
 import type p5 from "p5"
 
+const soundplayer = useSoundPlayer();
+
 const GAME_DURATION = 1800;
 const SPEED_INCREASE_INTERVAL = 300;
 const INITIAL_SPEED_MULTIPLIER = 1;
@@ -355,11 +357,13 @@ const sketch = (p: p5) => {
 
       if (!o.grabbed) {
         if (leftHandVisible && o.isHandOver(leftHandX, leftHandY)) {
+          soundplayer.playCaughtSaund();
           offsetX = o.horizontalPosition - leftHandX;
           offsetY = o.y - leftHandY;
           o.grabbed = true;
           activeHand = 'left';
         } else if (rightHandVisible && o.isHandOver(rightHandX, rightHandY)) {
+          soundplayer.playCaughtSaund();
           offsetX = o.horizontalPosition - rightHandX;
           offsetY = o.y - rightHandY;
           o.grabbed = true;
@@ -372,6 +376,7 @@ const sketch = (p: p5) => {
 
       if (o.grabbed && o.isInBucket()) {
         obstacles.splice(i, 1);
+        soundplayer.playScoreSound();
         score++;
         successfulCatches++;
         activeHand = null;
@@ -379,7 +384,6 @@ const sketch = (p: p5) => {
         continue;
       }
 
-      // Check if obstacle fell off screen
       if (o.y > p.height + o.radius) {
         obstacles.splice(i, 1);
         if (o.grabbed) activeHand = null;
