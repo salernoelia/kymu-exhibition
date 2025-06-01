@@ -12,15 +12,6 @@
         playsinline
       />
     </div>
-    <!-- <div class="absolute inset-0 flex items-center justify-center bg-black/20 border-2 border-white/30 overflow-hidden">
-      <video
-        ref="videoFeed"
-        class="object-contain w-full h-full max-w-100vw max-h-[calc(100vh-120px)] transform scale-x-[-1] opacity-30"
-        autoplay
-        muted
-        playsinline
-      />
-    </div> -->
 
     <div class="absolute inset-0 pt-20">
       <P5Wrapper :sketch="sketch" />
@@ -77,6 +68,7 @@ const mediapipeRef = ref<{
   leftHand: { x: number, y: number, visible: boolean };
   rightHand: { x: number, y: number, visible: boolean };
   isPersonVisible: boolean;
+  getVideoStream: () => MediaStream | null;
 } | null>(null);
 
 const videoFeed = ref<HTMLVideoElement | null>(null);
@@ -111,9 +103,17 @@ onUnmounted(() => {
   }
 });
 
+watch(() => mediapipeRef.value, (newRef) => {
+  if (newRef && videoFeed.value) {
+    const stream = newRef.getVideoStream();
+    if (stream) {
+      videoFeed.value.srcObject = stream;
+    }
+  }
+}, { immediate: true });
+
 watch(() => mediapipeRef.value?.leftHand, (newPos) => {
   if (newPos) {
-
     rightHandX = newPos.x * CANVAS_WIDTH.value;
     rightHandY = newPos.y * CANVAS_HEIGHT.value;
     rightHandVisible = newPos.visible;
@@ -122,16 +122,8 @@ watch(() => mediapipeRef.value?.leftHand, (newPos) => {
 
 watch(() => mediapipeRef.value?.rightHand, (newPos) => {
   if (newPos) {
-    const smoothingFactor = 0.01;
-
-    if (leftHandVisible) {
-      leftHandX = leftHandX + smoothingFactor * (newPos.x * CANVAS_WIDTH.value - leftHandX);
-      leftHandY = leftHandY + smoothingFactor * (newPos.y * CANVAS_HEIGHT.value - leftHandY);
-    } else {
-      leftHandX = newPos.x * CANVAS_WIDTH.value;
-      leftHandY = newPos.y * CANVAS_HEIGHT.value;
-    }
-
+    leftHandX = newPos.x * CANVAS_WIDTH.value;
+    leftHandY = newPos.y * CANVAS_HEIGHT.value;
     leftHandVisible = newPos.visible;
   }
 }, { deep: true });

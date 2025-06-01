@@ -44,12 +44,11 @@
 
 <script setup lang="ts">
 import { useStorage } from '@vueuse/core'
-import { PoseService } from "~/utils/pose_service";
-import type { Results } from "@mediapipe/pose";
-import type { NormalizedLandmarkList } from "@mediapipe/drawing_utils";
+import { HandService } from "~/utils/hand_service";
+import type { Results } from "@mediapipe/hands";
+import type { HandPosition } from "~/utils/hand_service";
 
 const exerciseDevmode = useStorage('exercise-devmode', false)
-// const personDetectedTimeout = ref<ReturnType<typeof setTimeout> | null>(null)
 const isPersonVisibleState = ref(false)
 
 const source = ref<HTMLVideoElement | null>(null);
@@ -57,58 +56,14 @@ const landmarkContainer = ref<HTMLDivElement | null>(null);
 const loadingCanvas = ref(true);
 
 const mediapipeResults = ref<Results | null>(null);
-const exerciseInitialNormalizedLandmarks = ref<NormalizedLandmarkList | null>(null);
 
-const leftHand = ref({ x: 0, y: 0, visible: false });
-const rightHand = ref({ x: 0, y: 0, visible: false });
+const leftHand = ref<HandPosition>({ x: 0, y: 0, visible: false });
+const rightHand = ref<HandPosition>({ x: 0, y: 0, visible: false });
 
-const currentAngle = ref(0);
-const pivotIndex = ref(14);
-const movableIndex = ref(16);
+let handService: HandService | null = null;
 
 const isPersonVisible = computed((): boolean => {
-  if (
-    !mediapipeResults.value ||
-    !mediapipeResults.value.poseLandmarks ||
-    !mediapipeResults.value.poseLandmarks.length
-  ) {
-    return false;
-  }
-
-
-  const leftShoulder = mediapipeResults.value.poseLandmarks[11];
-  const rightShoulder = mediapipeResults.value.poseLandmarks[12];
-
-  if (!leftShoulder || !rightShoulder) return false;
-
-  return (leftShoulder.visibility ?? 0) > 0.5 && (rightShoulder.visibility ?? 0) > 0.5;
-});
-
-watch(mediapipeResults, (results) => {
-  if (results && results.poseLandmarks) {
-    const leftWrist = results.poseLandmarks[15];
-    if (leftWrist && (leftWrist.visibility ?? 0) > 0.5) {
-      leftHand.value = {
-        x: leftWrist.x,
-        y: leftWrist.y,
-        visible: true
-      };
-    } else {
-      leftHand.value.visible = false;
-    }
-
-
-    const rightWrist = results.poseLandmarks[16];
-    if (rightWrist && (rightWrist.visibility ?? 0) > 0.5) {
-      rightHand.value = {
-        x: rightWrist.x,
-        y: rightWrist.y,
-        visible: true
-      };
-    } else {
-      rightHand.value.visible = false;
-    }
-  }
+  return leftHand.value.visible || rightHand.value.visible;
 });
 
 watch(isPersonVisible, (visible) => {
@@ -124,12 +79,11 @@ onMounted(async () => {
         return;
       }
 
-
       const dummyCanvas = document.createElement('canvas');
       dummyCanvas.width = source.value.videoWidth;
       dummyCanvas.height = source.value.videoHeight;
 
-      await new PoseService(
+      handService = new HandService(
         dummyCanvas,
         source.value,
         dummyCanvas.width,
@@ -137,16 +91,15 @@ onMounted(async () => {
         landmarkContainer.value,
         loadingCanvas,
         mediapipeResults,
-        exerciseInitialNormalizedLandmarks,
-        pivotIndex,
-        movableIndex,
-        currentAngle
-      ).setOptions({
-        modelComplexity: 2,
-        smoothLandmarks: true,
-        enableSegmentation: false,
-        smoothSegmentation: false,
-        minDetectionConfidence: 0.5,
+        leftHand,
+        rightHand,
+        isPersonVisibleState
+      );
+
+      await handService.setOptions({
+        maxNumHands: 2,
+        modelComplexity: 1,
+        minDetectionConfidence: 0.7,
         minTrackingConfidence: 0.5,
         selfieMode: true,
       });
@@ -165,8 +118,6 @@ onMounted(async () => {
 
 const videoDevices = ref<MediaDeviceInfo[]>([]);
 const selectedDeviceId = ref<string>("");
-
-
 
 async function startCamera() {
   if (!source.value) return;
@@ -194,9 +145,11 @@ async function startCamera() {
 defineExpose({
   leftHand: readonly(leftHand),
   rightHand: readonly(rightHand),
-  isPersonVisible: readonly(isPersonVisibleState)
+  isPersonVisible: readonly(isPersonVisibleState),
+  getVideoStream: () => handService?.getVideoStream()
 });
 </script>
+
 
 <style scoped>
 .debug-display {

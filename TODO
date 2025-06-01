@@ -28,5 +28,5 @@ Todo Game:
   ✔ add panda game smaller camera box or hinting (canvas) or calibration @done(25-06-01 12:05)
   ✔ white background @done(25-06-01 12:05)
   ☐ fix stuck objects
-  ☐ hand model mediapipe @started(25-06-01 14:55)
+  ✔ hand model mediapipe @started(25-06-01 14:55) @done(25-06-01 15:11) @lasted(16m3s)
 
