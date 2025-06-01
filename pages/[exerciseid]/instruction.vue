@@ -66,7 +66,7 @@ const route = useRoute();
 watch(
     () => remoteKey.value,
     (newKey) => {
-        if (newKey === "ok") {
+        if (newKey === "next") {
             const currentExerciseId = route.params.exerciseid;
 
             console.log(`Attempting navigation from instruction page. Exercise ID from route.params: '${currentExerciseId}'`);
@@ -76,7 +76,7 @@ watch(
                 console.log(`Navigating to: ${targetPath}`);
                 navigateTo(targetPath);
             } else {
-                console.error('Error: exerciseid is invalid or missing from route.params when "ok" key pressed.', route.params);
+                console.error('Error: exerciseid is invalid or missing from route.params when "next" key pressed.', route.params);
                 // Fallback or error handling, e.g., navigate to home or show a message
                 // navigateTo('/'); 
             }

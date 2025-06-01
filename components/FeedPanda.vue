@@ -3,15 +3,24 @@
     <MediapipeGame ref="mediapipeRef" />
 
     <!-- Video feed overlay -->
-    <div class="absolute top-20 right-4 w-48 h-36 bg-black/20 rounded-lg overflow-hidden border-2 border-white/30">
+    <div class="absolute top-20 right-4 w-48 h-36 overflow-hidden rounded-lg ">
       <video
         ref="videoFeed"
-        class="w-full h-full object-cover opacity-30"
+        class="w-full h-full object-cover opacity-30 transform scale-x-[-1]"
         autoplay
         muted
         playsinline
       />
     </div>
+    <!-- <div class="absolute inset-0 flex items-center justify-center bg-black/20 border-2 border-white/30 overflow-hidden">
+      <video
+        ref="videoFeed"
+        class="object-contain w-full h-full max-w-100vw max-h-[calc(100vh-120px)] transform scale-x-[-1] opacity-30"
+        autoplay
+        muted
+        playsinline
+      />
+    </div> -->
 
     <div class="absolute inset-0 pt-20">
       <P5Wrapper :sketch="sketch" />
@@ -22,10 +31,10 @@
 <script setup lang="ts">
 import type p5 from "p5"
 
-const GAME_DURATION = 1200;
-const SPEED_INCREASE_INTERVAL = 400;
+const GAME_DURATION = 1800;
+const SPEED_INCREASE_INTERVAL = 300;
 const INITIAL_SPEED_MULTIPLIER = 1;
-const SPEED_INCREMENT = 0.3;
+const SPEED_INCREMENT = 0.5;
 const BUCKET_WIDTH = 200;
 
 const CANVAS_WIDTH = ref(800);
@@ -113,7 +122,7 @@ watch(() => mediapipeRef.value?.leftHand, (newPos) => {
 
 watch(() => mediapipeRef.value?.rightHand, (newPos) => {
   if (newPos) {
-    const smoothingFactor = 0.05;
+    const smoothingFactor = 0.01;
 
     if (leftHandVisible) {
       leftHandX = leftHandX + smoothingFactor * (newPos.x * CANVAS_WIDTH.value - leftHandX);
@@ -177,14 +186,20 @@ class Obstacle {
   }
 }
 
+let fontRegular: p5.Font;
+
 const sketch = (p: p5) => {
   p.preload = () => {
     bucketImage = p.loadImage('/images/pandas/panda_wink.png');
+    // p.textFont('Poppins');
+    fontRegular = p.loadFont('/fonts/Poppins-Light.ttf');
   }
 
   p.setup = () => {
     p.createCanvas(CANVAS_WIDTH.value, CANVAS_HEIGHT.value);
     p.frameRate(60);
+    p.textFont(fontRegular);
+
     bucketX = p.width * 0.5;
     bucketY = p.height * 0.5;
     bucketWidth = BUCKET_WIDTH;
@@ -199,7 +214,7 @@ const sketch = (p: p5) => {
   }
 
   p.draw = () => {
-    p.background(240);
+    p.clear();
 
     if (p.width !== CANVAS_WIDTH.value || p.height !== CANVAS_HEIGHT.value) {
       p.resizeCanvas(CANVAS_WIDTH.value, CANVAS_HEIGHT.value);
@@ -211,7 +226,8 @@ const sketch = (p: p5) => {
       updateGame(p);
       drawGame(p);
     } else if (gameState === "gameOver") {
-      drawGameOver(p);
+      // drawGameOver(p);
+      console.log("Game is Over")
     }
   }
 
@@ -292,11 +308,11 @@ const sketch = (p: p5) => {
       p.stroke(100, 200, 100);
       p.strokeWeight(3);
       p.ellipse(leftHandX, leftHandY, HAND_SIZE, HAND_SIZE);
-      p.noStroke();
-      p.fill(255);
-      p.textAlign(p.CENTER);
-      p.textSize(16);
-      p.text("L", leftHandX, leftHandY + 6);
+      // p.noStroke();
+      // p.fill(255);
+      // p.textAlign(p.CENTER);
+      // p.textSize(16);
+      // p.text("L", leftHandX, leftHandY + 6);
     }
 
     if (rightHandVisible) {
@@ -310,38 +326,40 @@ const sketch = (p: p5) => {
       p.stroke(200, 100, 100);
       p.strokeWeight(3);
       p.ellipse(rightHandX, rightHandY, HAND_SIZE, HAND_SIZE);
-      p.noStroke();
-      p.fill(255);
-      p.textAlign(p.CENTER);
-      p.textSize(16);
-      p.text("R", rightHandX, rightHandY + 6);
+      // p.noStroke();
+      // p.fill(255);
+      // p.textAlign(p.CENTER);
+      // p.textSize(16);
+      // p.text("R", rightHandX, rightHandY + 6);
     }
 
     p.fill(0);
     p.textAlign(p.CENTER);
-    p.textSize(24);
-    p.text("Score: " + score, bucketX, bucketY + bucketHeight * 0.5 + 30);
+    p.textSize(48);
+    p.noStroke()
+    // p.text("Score: " + score, bucketX, bucketY + bucketHeight * 0.5 + 30);
+    p.text("Score: " + score, bucketX, bucketY + bucketHeight * 0.5 + 50);
 
     p.textAlign(p.LEFT);
-    p.textSize(16);
-    p.text("Time: " + (20 - p.int(p.frameCount / 60)), 20, 30);
-    p.text("Speed: " + speedMultiplier.toFixed(1) + "x", 20, 50);
-    p.text("Hands: " + (leftHandVisible ? "L" : "") + (rightHandVisible ? "R" : ""), 20, 70);
-  }
-
-  function drawGameOver(p: p5) {
-    p.fill(0);
-    p.textAlign(p.CENTER);
     p.textSize(48);
-    p.text("Game Over!", p.width * 0.5, p.height * 0.4);
-
-    p.textSize(32);
-    p.text("Final Score: " + score, p.width * 0.5, p.height * 0.5);
-    p.text("High Score: " + highScore, p.width * 0.5, p.height * 0.55);
-
-    p.textSize(20);
-    p.text("Press R to restart", p.width * 0.5, p.height * 0.7);
+    p.text("Time Left: " + (30 - p.int(p.frameCount / 60)), 20, CANVAS_HEIGHT.value - 60);
+    // p.text("Speed: " + speedMultiplier.toFixed(1) + "x", 20, 50);
+    // p.text("Hands: " + (leftHandVisible ? "L" : "") + (rightHandVisible ? "R" : ""), 20, 70);
   }
+
+  // function drawGameOver(p: p5) {
+  //   p.fill(0);
+  //   p.textAlign(p.CENTER);
+  //   p.textSize(48);
+  //   p.text("Game Over!", p.width * 0.5, p.height * 0.4);
+
+  //   p.textSize(32);
+  //   p.text("Final Score: " + score, p.width * 0.5, p.height * 0.5);
+  //   p.text("High Score: " + highScore, p.width * 0.5, p.height * 0.55);
+
+  //   p.textSize(20);
+  //   p.text("Press R to restart", p.width * 0.5, p.height * 0.7);
+  // }
 
   function endGame() {
     gameState = "gameOver";

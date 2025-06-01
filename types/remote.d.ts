@@ -3,7 +3,7 @@ type RemoteAction =
   | "down"
   | "left"
   | "right"
-  | "ok"
+  | "next"
   // | "cancel"
   | "back"
   | "menu"

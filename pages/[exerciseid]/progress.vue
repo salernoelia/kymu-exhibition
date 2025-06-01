@@ -83,7 +83,7 @@
             />
         </div>
         <KeyInstruction
-            button="ok"
+            button="next"
             action="continue"
         />
     </div>
@@ -141,7 +141,7 @@ onMounted(() => {
 watch(
     () => remoteKey.value,
     (newKey) => {
-        if (newKey === "ok") {
+        if (newKey === "next") {
             navigateTo("/" + exerciseStore.currentExercise?.id + "/instruction")
         }
     }
@@ -184,9 +184,9 @@ playSuccessSound()
 }
 
 .cloud_3 {
-    left: -20px;
     width: 35vw;
     height: auto;
     left: 0;
+    left: -20px;
 }
 </style>

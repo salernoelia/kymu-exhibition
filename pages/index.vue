@@ -36,7 +36,7 @@
             /> -->
         </div>
         <KeyInstruction
-            button="ok"
+            button="next"
             action="continue"
         />
 
@@ -84,7 +84,7 @@ const { remoteKey } = useRemoteControl();
 watch(
     () => remoteKey.value,
     (newKey) => {
-        if (newKey === "ok") {
+        if (newKey === "next") {
             navigateTo("/caution");
         }
     }

@@ -1,14 +1,14 @@
 import { Camera } from '@mediapipe/camera_utils';
 import {
     drawConnectors,
-    // drawLandmarks,
+    drawLandmarks,
     type NormalizedLandmarkList,
 } from '@mediapipe/drawing_utils';
 import type { Options, Results } from '@mediapipe/pose';
 import { Pose, POSE_CONNECTIONS } from '@mediapipe/pose';
 import { useStorage } from '@vueuse/core';
 
-export class PoseService extends Camera {
+export class HandService extends Camera {
     private readonly pipe = new Pose({
         locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`,
     });
@@ -211,13 +211,7 @@ export class PoseService extends Camera {
                 return;
             }
 
-            const { angle,
-                // angleRad,
-                startAngle,
-                endAngle,
-                vectorA,
-                vectorB
-            } =
+            const { angle, angleRad, startAngle, endAngle, vectorA, vectorB } =
                 this.calculateJointAngle(pivot, pointA, pointB);
 
             const { width, height } = this.canvas;

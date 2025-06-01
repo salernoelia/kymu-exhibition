@@ -34,7 +34,7 @@
         </div>
 
         <KeyInstruction
-            button="ok"
+            button="next"
             action="restart"
         />
     </div>
@@ -49,7 +49,7 @@ const soundPlayer = useSoundPlayer();
 watch(
     () => remoteKey.value,
     (newKey) => {
-        if (newKey === "ok") {
+        if (newKey === "next") {
             navigateTo("/")
         }
     }

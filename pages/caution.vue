@@ -27,7 +27,7 @@
 
 
         <KeyInstruction
-            button="ok"
+            button="next"
             action="continue"
         />
     </div>
@@ -41,7 +41,7 @@ const { remoteKey } = useRemoteControl()
 watch(
     () => remoteKey.value,
     (newKey) => {
-        if (newKey === "ok") {
+        if (newKey === "next") {
             exerciseStore.startExperience()
         }
     }

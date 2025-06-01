@@ -9,6 +9,7 @@ Todo General:
   ☐ nicer caution page
   ☐ no-person timeout
   ☐ person-detection on index
+  ☐ endless loop on first screens prevention/
 
 Todo SFX:
   ✔ instrument instead of sine @done(25-05-31 20:34)
@@ -23,8 +24,9 @@ Todo Assesment:
     ☐ animated cutouts
 
 Todo Game:
-  ☐ remove panda game small text
-  ☐ add panda game smaller camera box or hinting (canvas) or calibration
-  ☐ white background
+  ✔ remove panda game small text @done(25-06-01 12:05)
+  ✔ add panda game smaller camera box or hinting (canvas) or calibration @done(25-06-01 12:05)
+  ✔ white background @done(25-06-01 12:05)
   ☐ fix stuck objects
+  ☐ hand model mediapipe @started(25-06-01 14:55)
 

@@ -123,7 +123,7 @@ const handleRemoteKey = (newKey: string | null) => {
             exerciseStore.nextExercise();
             navigateTo(`/${exerciseStore.currentExercise?.id}/progress`);
         }
-    } else if (newKey === "ok") {
+    } else if (newKey === "next") {
         if (exerciseStore.currentExercise?.type === 'p5_game' && gameComponent.value) {
             gameComponent.value.restartGame();
         } else if (romComponent.value) {

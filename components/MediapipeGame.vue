@@ -210,6 +210,7 @@ defineExpose({
   font-weight: bold;
   text-align: left;
   width: 15%;
+  z-index: 999;
 }
 
 .camera-controls {

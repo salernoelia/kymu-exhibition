@@ -1,16 +1,16 @@
 {
-    "keyMappings": {
-      "w": "up",
-      "a": "left",
-      "3": "down",
-      "d": "right",
-      "2": "ok",
-      "1": "back",
-      "m": "menu",
-      "v": "voice",
-      "p": "shutdown",
-      "f": "fullscreen"
-    },
-    "debounceTime": 300,
-    "keyPressResetTime": 100
-  }
+  "keyMappings": {
+    "w": "up",
+    "a": "left",
+    "3": "down",
+    "d": "right",
+    "2": "next",
+    "1": "back",
+    "m": "menu",
+    "v": "voice",
+    "p": "shutdown",
+    "f": "fullscreen"
+  },
+  "debounceTime": 300,
+  "keyPressResetTime": 100
+}
