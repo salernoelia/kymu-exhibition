@@ -7,7 +7,7 @@ Todo General:
   ☐ fix button binding name hints
   ☐ improve the flow of exhibition application for unknowing users
   ☐ nicer caution page
-  ☐ no-person timeout
+  ✔ no-person timeout @started(25-06-01 16:10) @done(25-06-01 16:14) @lasted(4m4s)
   ☐ person-detection on index
   ✔ always fullscreen fix @started(25-06-01 15:30) @done(25-06-01 15:35) @lasted(5m43s)
   ✔ endless loop on first screens prevention/ @started(25-06-01 15:22) @done(25-06-01 15:30) @lasted(8m21s)
@@ -22,7 +22,7 @@ Todo SFX:
 Todo Assesment:
   ☐ improved start position recognition
   ✔ add assesment autostart @done(25-06-01 03:06)
-    ☐ animated cutouts
+  ☐ animated cutouts
 
 Todo Game:
   ✔ remove panda game small text @done(25-06-01 12:05)
