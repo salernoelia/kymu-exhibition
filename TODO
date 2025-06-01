@@ -9,7 +9,8 @@ Todo General:
   ☐ nicer caution page
   ☐ no-person timeout
   ☐ person-detection on index
-  ☐ endless loop on first screens prevention/
+  ✔ always fullscreen fix @started(25-06-01 15:30) @done(25-06-01 15:35) @lasted(5m43s)
+  ✔ endless loop on first screens prevention/ @started(25-06-01 15:22) @done(25-06-01 15:30) @lasted(8m21s)
 
 Todo SFX:
   ✔ instrument instead of sine @done(25-05-31 20:34)

@@ -40,7 +40,7 @@ import { useStorage } from '@vueuse/core'
 
 const { remoteKey } = useRemoteControl();
 const route = useRoute();
-const router = useRouter();
+// const router = useRouter();eq
 const exerciseStore = useExerciseStore();
 
 const menu = ref(false);
@@ -87,6 +87,7 @@ watch(() => route.path, (newPath, oldPath) => {
 
 
 
+
 watch(
   () => remoteKey.value,
   (newKey) => {
@@ -94,12 +95,6 @@ watch(
       // console.log("Menu button pressed - toggling menu");
       // menu.value = !menu.value;
       exerciseDevmode.value = !exerciseDevmode.value;
-    } else if (newKey === "back") {
-      if (menu.value) {
-        menu.value = false;
-      } else {
-        router.back();
-      }
     } else if (newKey === "fullscreen") {
       console.log("Fullscreen button pressed - toggling fullscreen");
     } else if (newKey === "down") {
