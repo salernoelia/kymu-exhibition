@@ -1,4 +1,3 @@
-import { useStorage } from '@vueuse/core';
 import { defineStore } from 'pinia';
 
 export const useExerciseStore = defineStore('exerciseStore', () => {
@@ -9,7 +8,6 @@ export const useExerciseStore = defineStore('exerciseStore', () => {
     const painMomentAngles = ref<number[]>([]);
     const startedRecording = ref<boolean>(false);
     const route = useRoute();
-    const userKey = useStorage('user-key', '');
 
     const gameResults = ref<{
         score: number;
@@ -164,7 +162,6 @@ export const useExerciseStore = defineStore('exerciseStore', () => {
     return {
         isLoading,
         error,
-        userKey,
         gameResults,
         setGameResults,
         exercises,

@@ -1,6 +1,5 @@
 import exercisesConfig from '~/assets/exercises_config.json';
 
-import { v4 } from 'uuid';
 
 export const useExerciseStateMachine = () => {
     const appState = ref<'start' | 'exercises' | 'results'>('start');
@@ -40,9 +39,9 @@ export const useExerciseStateMachine = () => {
         if (exercises.value.length > 0) {
             appState.value = 'exercises';
             currentExerciseIndex.value = 0;
-            exerciseStore.userKey = v4();
+
             console.log('=========================');
-            console.log('Experience has started', exerciseStore.userKey);
+            console.log('Experience has started');
             console.log('=========================');
 
 
@@ -55,7 +54,6 @@ export const useExerciseStateMachine = () => {
                     'STARTING EXPERIENCE: Navigating to',
                     targetPath,
                     'App state:', appState.value,
-                    'User key:', exerciseStore.userKey
                 );
                 await navigateTo(targetPath, { replace: true });
             } else {
@@ -70,7 +68,6 @@ export const useExerciseStateMachine = () => {
         if (exercises.value.length > 0) {
             appState.value = 'start';
 
-            exerciseStore.userKey = '';
             exerciseStore.resultAngle = 0;
             exerciseStore.painMomentAngles = [];
             exerciseStore.startedRecording = false;
