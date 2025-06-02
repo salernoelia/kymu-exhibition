@@ -371,7 +371,7 @@ const sketch = (p: p5) => {
     for (let i = obstacles.length - 1; i >= 0; i--) {
       const o = obstacles[i];
 
-      if (!o.grabbed) {
+      if (!o.grabbed && activeHand === null) {
         if (leftHandVisible && o.isHandOver(leftHandX, leftHandY)) {
           soundplayer.playCaughtSaund();
           offsetX = o.horizontalPosition - leftHandX;
