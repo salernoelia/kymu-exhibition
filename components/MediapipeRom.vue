@@ -62,6 +62,22 @@
           </div>
         </motion.div>
 
+        <!-- Error Message Display -->
+        <motion.div
+          v-if="errorMessage"
+          :initial="{ opacity: 0, y: 20 }"
+          :animate="{ opacity: 1, y: 0 }"
+          :exit="{ opacity: 0, y: 20 }"
+          :transition="{ duration: 0.3 }"
+          class="absolute flex flex-col items-center justify-center z-100 bg-red-700 text-white px-8 py-4 text-xl rounded-lg shadow-2xl z-50 text-center"
+        >
+          <Icon
+            name="material-symbols:warning-outline-rounded"
+            class="w-7 h-7 mr-3 inline-block "
+          />
+          <span class="">{{ errorMessage }}</span>
+        </motion.div>
+
         <div
           ref="landmarkContainer"
           class="landmark-grid-container"
@@ -109,10 +125,25 @@ import type { NormalizedLandmarkList } from "@mediapipe/drawing_utils";
 import PoseCombinations from '~/assets/pose_config.json'
 import { motion } from 'motion-v'
 
+// Error Message State
+const ERROR_MESSAGE_DURATION_MS = 2500;
+const errorMessage = ref<string | null>(null);
+let errorTimeout: ReturnType<typeof setTimeout> | null = null;
+
+function showErrorMessage(message: string) {
+  errorMessage.value = message;
+  if (errorTimeout) {
+    clearTimeout(errorTimeout);
+  }
+  errorTimeout = setTimeout(() => {
+    errorMessage.value = null;
+  }, ERROR_MESSAGE_DURATION_MS);
+}
 
 //  Recording 
 const USER_DETECTED_START_EXERCISE_TIMEOUT_MS = ref(3000);
 const RECORDING_DURATION_MS = ref(5000);
+const UNEXPECTED_MOVEMENT_THRESHOLD = ref(0.05);
 
 
 const currentTime = ref(Date.now());
@@ -142,7 +173,6 @@ const recordingProgress = computed(() => {
   return Math.min(100, (elapsed / RECORDING_DURATION_MS.value) * 100);
 });
 
-// Start the timer interval
 function startTimer() {
   if (timerInterval) return;
   timerInterval = setInterval(() => {
@@ -157,15 +187,11 @@ function stopTimer() {
   }
 }
 
-const exerciseDevmode = useStorage('exercise-devmode', false);
-const personDetectedTimeout = ref<ReturnType<typeof setTimeout> | null>(null);
-const startRecordingUserAssessmentTimeout = ref<ReturnType<typeof setTimeout> | null>(null);
-const recordingTimeout = ref<ReturnType<typeof setTimeout> | null>(null);
-const startTimeUserDetectedTimeout = ref();
-const recordingStartTime = ref<number | null>(null);
-const isPersonVisibleState = ref(false)
-const showCheckIcon = ref(false)
-const maxAngleAchieved = ref(0);
+// Canvas
+const source = ref<HTMLVideoElement | null>(null);
+const canvas = ref<HTMLCanvasElement | null>(null);
+const landmarkContainer = ref<HTMLDivElement | null>(null);
+const loadingCanvas = ref(true);
 
 const canvasWidth = computed(() =>
   Math.min(window.innerWidth, window.innerHeight * (16 / 9))
@@ -174,8 +200,35 @@ const canvasHeight = computed(() =>
   Math.min(window.innerHeight * 0.9, canvasWidth.value * (9 / 16))
 );
 
+// Angle Recording
+const exerciseDevmode = useStorage('exercise-devmode', false);
+const personDetectedTimeout = ref<ReturnType<typeof setTimeout> | null>(null);
+const startRecordingUserAssessmentTimeout = ref<ReturnType<typeof setTimeout> | null>(null);
+const recordingTimeout = ref<ReturnType<typeof setTimeout> | null>(null);
+const startTimeUserDetectedTimeout = ref();
+const recordingStartTime = ref<number | null>(null);
+const isPersonVisibleState = ref(false)
+const showCheckIcon = ref(false)
+const shouldPlayTone = ref(false);
+const currentAngle = ref(0);
+const maxAngleAchieved = ref(0);
+const pivotIndex = ref(14);
+const movableIndex = ref(16);
+const referenceIndex = ref(23);
+const thresholdDeg = ref(25);
+const targetAngle = ref(0)
+
 const exerciseStore = useExerciseStore();
 const soundPlayer = useSoundPlayer();
+const toneForRom = useToneForRom(currentAngle);
+
+watch(shouldPlayTone, (should) => {
+  if (should && isPersonVisibleState.value) {
+    toneForRom.startTone();
+  } else {
+    toneForRom.stopTone();
+  }
+});
 
 const currentExercise = computed(() => exerciseStore.currentExercise);
 
@@ -183,25 +236,11 @@ const props = defineProps<{
   romCombination: string;
 }>();
 
-const source = ref<HTMLVideoElement | null>(null);
-const canvas = ref<HTMLCanvasElement | null>(null);
-const landmarkContainer = ref<HTMLDivElement | null>(null);
-const loadingCanvas = ref(true);
+
 const mediapipeResults = ref<Results | null>(null);
 const exerciseInitialNormalizedLandmarks = ref<NormalizedLandmarkList | null>(
   null
 );
-
-const currentAngle = ref(0);
-
-const pivotIndex = ref(14);
-const movableIndex = ref(16);
-const referenceIndex = ref(23);
-
-const thresholdDeg = ref(25);
-const targetAngle = ref(0)
-
-const toneForRom = useToneForRom(currentAngle);
 
 const referenceAngle = computed(() => {
   if (!mediapipeResults.value ||
@@ -259,19 +298,20 @@ watch(isPersonVisible, (visible) => {
     soundPlayer.playDetectedSound();
     toneForRom.startTone();
     showCheckIcon.value = true;
-    startTimer(); // Start the reactive timer
+    startTimer();
 
     if (personDetectedTimeout.value) {
       clearTimeout(personDetectedTimeout.value);
-    }
-
-    if (startRecordingUserAssessmentTimeout.value) {
-      clearTimeout(startRecordingUserAssessmentTimeout.value);
+      personDetectedTimeout.value = null;
     }
 
     if (!exerciseStore.startedRecording) {
+
+      if (startRecordingUserAssessmentTimeout.value) {
+        clearTimeout(startRecordingUserAssessmentTimeout.value);
+      }
       startTimeUserDetectedTimeout.value = Date.now();
-      currentTime.value = Date.now(); // Update current time
+      currentTime.value = Date.now();
 
       startRecordingUserAssessmentTimeout.value = setTimeout(() => {
         startRecordingUserAssessment();
@@ -290,10 +330,13 @@ watch(isPersonVisible, (visible) => {
     }
 
     if (exerciseStore.startedRecording) {
+      showErrorMessage('Please stay in the frame to continue.');
       resetRecording();
     } else {
       stopTimer();
-      cleanup();
+      if (!errorTimeout) {
+        cleanup();
+      }
     }
   }
 }, { immediate: true });
@@ -301,11 +344,18 @@ watch(isPersonVisible, (visible) => {
 watch(currentAngle, (newAngle) => {
   if (exerciseStore.startedRecording) {
     if (newAngle > 180) {
+      showErrorMessage('Movement out of range. Please adjust.');
       console.log('Invalid angle detected:', newAngle, '- resetting recording');
       resetRecording();
       return;
     }
 
+    if (hasSubstantialUnexpectedMovement()) {
+      showErrorMessage('Too much body movement. Please try to stay still.');
+      console.log('Substantial unexpected movement detected - resetting recording');
+      resetRecording();
+      return;
+    }
 
     if (newAngle > maxAngleAchieved.value) {
       maxAngleAchieved.value = newAngle;
@@ -334,6 +384,60 @@ function updateROMCombination(combination: keyof typeof PoseCombinations) {
   referenceIndex.value = reference;
   thresholdDeg.value = threshold;
   targetAngle.value = configTargetAngle || 0;
+
+  cleanup();
+
+
+  if (startRecordingUserAssessmentTimeout.value) {
+    clearTimeout(startRecordingUserAssessmentTimeout.value);
+    startRecordingUserAssessmentTimeout.value = null;
+  }
+  if (recordingTimeout.value) {
+    clearTimeout(recordingTimeout.value);
+    recordingTimeout.value = null;
+  }
+
+  maxAngleAchieved.value = 0;
+  currentAngle.value = 0;
+  isPersonVisibleState.value = false;
+  showCheckIcon.value = false;
+  recordingStartTime.value = null;
+
+  console.log(`ROM combination updated to: ${combination} with target angle: ${targetAngle.value}°`);
+}
+
+function hasSubstantialUnexpectedMovement(): boolean {
+  if (!exerciseInitialNormalizedLandmarks.value || !mediapipeResults.value?.poseLandmarks) {
+    console.warn("Cannot assess unexpected movement: initial or current landmarks missing.");
+    return false;
+  }
+
+  const initialLandmarks = exerciseInitialNormalizedLandmarks.value;
+  const currentLandmarks = mediapipeResults.value.poseLandmarks;
+
+  const landmarksToMonitorIndices = [pivotIndex.value, referenceIndex.value];
+
+  for (const index of landmarksToMonitorIndices) {
+    if (index === movableIndex.value) continue;
+
+    const initial = initialLandmarks[index];
+    const current = currentLandmarks[index];
+
+    if (!initial || !current) {
+      console.warn(`Landmark ${index} missing in initial or current set for movement check.`);
+      continue;
+    }
+
+    const dx = current.x - initial.x;
+    const dy = current.y - initial.y;
+    const displacement = Math.sqrt(dx * dx + dy * dy);
+
+    if (displacement > UNEXPECTED_MOVEMENT_THRESHOLD.value) {
+      console.log(`Substantial unexpected movement detected for landmark index ${index}. Displacement: ${displacement.toFixed(3)} > threshold: ${UNEXPECTED_MOVEMENT_THRESHOLD.value}`);
+      return true;
+    }
+  }
+  return false;
 }
 
 function startRecordingUserAssessment() {
@@ -344,20 +448,27 @@ function startRecordingUserAssessment() {
   recordingStartTime.value = Date.now();
   currentTime.value = Date.now();
   maxAngleAchieved.value = 0;
+  shouldPlayTone.value = true;
   startTimer();
 
   recordingTimeout.value = setTimeout(() => {
     if (maxAngleAchieved.value > 5 && maxAngleAchieved.value <= 180) {
       completeRecording();
     } else {
-      return;
+      console.log("Recording timeout reached but insufficient movement detected:", maxAngleAchieved.value);
+      if (maxAngleAchieved.value <= 5) {
+        showErrorMessage('Please perform a larger movement to complete the exercise.');
+      } else {
+        showErrorMessage('Movement out of range. Please try again.');
+      }
+      resetRecording();
     }
   }, RECORDING_DURATION_MS.value);
 }
 
 
 function resetRecording() {
-  console.log("Resetting recording due to invalid angle");
+  console.log("Resetting recording");
 
   if (recordingTimeout.value) {
     clearTimeout(recordingTimeout.value);
@@ -368,7 +479,16 @@ function resetRecording() {
   exerciseStore.startedRecording = false;
   recordingStartTime.value = null;
   maxAngleAchieved.value = 0;
+
+  exerciseInitialNormalizedLandmarks.value = null;
+
+  shouldPlayTone.value = false;
+
+  nextTick(() => {
+    shouldPlayTone.value = true;
+  });
 }
+
 
 
 function completeRecording() {
@@ -419,9 +539,16 @@ function cleanup() {
     recordingTimeout.value = null;
   }
 
+  errorMessage.value = null;
+  if (errorTimeout) {
+    clearTimeout(errorTimeout);
+    errorTimeout = null;
+  }
+
   console.log("cleanup done");
   exerciseStore.startedRecording = false;
 }
+
 
 onMounted(async () => {
   await getAvailableVideoDevices(videoDevices, selectedDeviceId);
@@ -513,11 +640,21 @@ onBeforeUnmount(() => {
   if (recordingTimeout.value) {
     clearTimeout(recordingTimeout.value);
   }
+  errorMessage.value = null;
+  if (errorTimeout) {
+    clearTimeout(errorTimeout);
+    errorTimeout = null;
+  }
 });
 
 onUnmounted(() => {
   toneForRom.stopTone();
   stopTimer();
+  errorMessage.value = null;
+  if (errorTimeout) {
+    clearTimeout(errorTimeout);
+    errorTimeout = null;
+  }
 });
 
 defineExpose({
