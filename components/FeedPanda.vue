@@ -20,7 +20,7 @@
 </template>
 
 <script setup lang="ts">
-import p5 from "p5"
+import type p5 from "p5"
 
 const soundplayer = useSoundPlayer();
 
@@ -28,7 +28,7 @@ const GAME_DURATION = 1800;
 const SPEED_INCREASE_INTERVAL = 300;
 const INITIAL_SPEED_MULTIPLIER = 1;
 const SPEED_INCREMENT = 0.5;
-const BUCKET_WIDTH = 200;
+const BUCKET_WIDTH = 300;
 
 const CANVAS_WIDTH = ref(800);
 const CANVAS_HEIGHT = ref(600);
@@ -51,8 +51,11 @@ const emit = defineEmits<{
 
 let gameState = "playing";
 let obstacles: Obstacle[] = [];
-let obstacle_spawn_rate = 120;
+let obstacle_spawn_rate = 50;
 let bucketImage: p5.Image;
+let bambooImage: p5.Image;
+let cherryImage: p5.Image;
+let figImage: p5.Image;
 let bucketX: number, bucketY: number, bucketWidth: number, bucketHeight: number;
 let score = 0;
 let highScore = 0;
@@ -260,7 +263,17 @@ class Obstacle {
 
   show(p: p5) {
     p.fill(238, 88, 38);
-    p.ellipse(this.horizontalPosition, this.y, this.diameter);
+    let obstacleImage;
+    if (this.diameter === 30) {
+      obstacleImage = cherryImage;
+    } else if (this.diameter === 50) {
+      obstacleImage = bambooImage;
+    } else {
+      obstacleImage = figImage;
+    }
+
+    p.imageMode(p.CENTER);
+    p.image(obstacleImage, this.horizontalPosition, this.y, this.diameter, this.diameter);
   }
 
   isHandOver(handX: number, handY: number) {
@@ -291,6 +304,9 @@ const sketch = (p: p5) => {
 
   p.preload = () => {
     bucketImage = p.loadImage('/images/pandas/panda_wink.png');
+    bambooImage = p.loadImage('/images/obstacles/bamboo.png')
+    cherryImage = p.loadImage('/images/obstacles/cherry.png')
+    figImage = p.loadImage('/images/obstacles/fig.png')
     fontRegular = p.loadFont('/fonts/Poppins-Light.ttf');
   }
 

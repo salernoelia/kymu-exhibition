@@ -3,16 +3,13 @@ Todo General:
   ☐ more welcoming index
   ☐ improved instruction texts
   ☐ analyze ux writing
-  ☐ improve the flow of exhibition application for unknowing users
   ☐ nicer caution page
-  ☐ (person-detection on index)
   ☐ Index page guide
   ☐ css overhaul
 
 Todo SFX:
   ☐ improve progress sfx
-  ☐ improve results sfx
-  ☐ Spoken hints
+  ☐ (Spoken hints)
 
 Todo Assesment:
   ☐ animated cutout
@@ -20,10 +17,15 @@ Todo Assesment:
 
 Todo Game:
   ☐ improve placement of texts
-  ☐ skip with next button
+  ☐ fix not despawning objects
   ☐ better cutout so only person visible
 
 Archive:
+  ✔ implement obstacle illustrations @started(25-06-03 01:15) @done(25-06-03 01:25) @lasted(10m8s) @project(Todo Game)
+  ✘ (person-detection on index) @cancelled(25-06-03 01:14) @project(Todo General)
+  ✔ improve results sfx @done(25-06-03 01:14) @project(Todo SFX)
+  ✔ improve the flow of exhibition application for unknowing users @done(25-06-03 01:13) @project(Todo General)
+  ✔ skip with next button @done(25-06-03 01:13) @project(Todo Game)
   ✔ css fix for countodown @done(25-06-03 00:03) @project(Todo Assesment)
   ✔ improved warning messages @done(25-06-02 23:15) @project(Todo Assesment)
   ✔ prevent main body-parts of assesments from being allowed to move, to prevent false results @done(25-06-02 23:15) @project(Todo Assesment)
