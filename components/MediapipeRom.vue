@@ -111,11 +111,10 @@ import { motion } from 'motion-v'
 
 
 //  Recording 
-
 const USER_DETECTED_START_EXERCISE_TIMEOUT_MS = ref(3000);
 const RECORDING_DURATION_MS = ref(5000);
 
-// Add a reactive timer that updates every 100ms
+
 const currentTime = ref(Date.now());
 let timerInterval: ReturnType<typeof setInterval> | null = null;
 
@@ -204,7 +203,6 @@ const targetAngle = ref(0)
 
 const toneForRom = useToneForRom(currentAngle);
 
-
 const referenceAngle = computed(() => {
   if (!mediapipeResults.value ||
     !mediapipeResults.value.poseWorldLandmarks ||
@@ -288,10 +286,13 @@ watch(isPersonVisible, (visible) => {
     if (startRecordingUserAssessmentTimeout.value) {
       clearTimeout(startRecordingUserAssessmentTimeout.value);
       startRecordingUserAssessmentTimeout.value = null;
+      stopTimer();
     }
 
-    if (!exerciseStore.startedRecording) {
-      stopTimer(); // Stop timer when not visible and not recording
+    if (exerciseStore.startedRecording) {
+      resetRecording();
+    } else {
+      stopTimer();
       cleanup();
     }
   }
@@ -346,7 +347,11 @@ function startRecordingUserAssessment() {
   startTimer();
 
   recordingTimeout.value = setTimeout(() => {
-    completeRecording();
+    if (maxAngleAchieved.value > 5 && maxAngleAchieved.value <= 180) {
+      completeRecording();
+    } else {
+      return;
+    }
   }, RECORDING_DURATION_MS.value);
 }
 
