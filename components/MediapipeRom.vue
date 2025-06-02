@@ -19,26 +19,49 @@
           src="/public/images/overlay_white.png"
           class="absolute h-full output_canvas overlay"
         >
+        <!-- Countdown Timer (before recording starts) -->
         <motion.div
-          v-if="isPersonVisibleState && showCheckIcon"
+          v-if="isPersonVisibleState && showCheckIcon && startRecordingUserAssessmentTimeout"
           :initial="{ opacity: 0, scale: 0 }"
           :animate="{ opacity: 1, scale: 1 }"
           :exit="{ opacity: 0, scale: 0 }"
           :transition="{ duration: 0.3, exit: { duration: 0.15 } }"
-          class="absolute flex items-center justify-center z-20 dot"
+          class="absolute flex flex-col items-end justify-center z-20 timer-container countdown-timer"
         >
           <Icon
             name="material-symbols-light:check-rounded"
-            class="text-white h-8 w-8 icon-centered"
+            class="text-white h-12 w-12 icon-centered mb-2"
           />
-          <h1
-            v-if="startRecordingUserAssessmentTimeout"
-            class="text-white"
-          >
-            Starting in {{ Math.ceil((USER_DETECTED_START_EXERCISE_TIMEOUT_MS - (Date.now() -
-              startTimeUserDetectedTimeout)) / 1000) }}
-          </h1>
+          <div class="timer-circle">
+            <span class="timer-number">{{ countdownSeconds }}</span>
+          </div>
+          <p class="text-white text-lg font-medium mt-2">Get ready...</p>
         </motion.div>
+
+        <!-- Recording Timer (during recording) -->
+        <motion.div
+          v-if="exerciseStore.startedRecording"
+          :initial="{ opacity: 0, scale: 0 }"
+          :animate="{ opacity: 1, scale: 1 }"
+          :exit="{ opacity: 0, scale: 0 }"
+          :transition="{ duration: 0.3, exit: { duration: 0.15 } }"
+          class="absolute flex flex-col items-center justify-center z-20 timer-container recording-timer"
+        >
+          <div class="recording-indicator">
+            <div class="recording-dot" />
+            <span class="text-white text-lg font-medium ml-2">RECORDING</span>
+          </div>
+          <div class="timer-circle recording">
+            <span class="timer-number">{{ recordingSeconds }}</span>
+          </div>
+          <div class="progress-bar">
+            <div
+              class="progress-fill"
+              :style="{ width: recordingProgress + '%' }"
+            />
+          </div>
+        </motion.div>
+
         <div
           ref="landmarkContainer"
           class="landmark-grid-container"
@@ -86,8 +109,54 @@ import type { NormalizedLandmarkList } from "@mediapipe/drawing_utils";
 import PoseCombinations from '~/assets/pose_config.json'
 import { motion } from 'motion-v'
 
-const USER_DETECTED_START_EXERCISE_TIMEOUT_MS = 3000;
-const RECORDING_DURATION_MS = 8000;
+
+//  Recording 
+
+const USER_DETECTED_START_EXERCISE_TIMEOUT_MS = ref(3000);
+const RECORDING_DURATION_MS = ref(5000);
+
+// Add a reactive timer that updates every 100ms
+const currentTime = ref(Date.now());
+let timerInterval: ReturnType<typeof setInterval> | null = null;
+
+const countdownSeconds = computed(() => {
+  if (!startRecordingUserAssessmentTimeout.value || !startTimeUserDetectedTimeout.value) {
+    return 0;
+  }
+  return Math.ceil((USER_DETECTED_START_EXERCISE_TIMEOUT_MS.value - (currentTime.value - startTimeUserDetectedTimeout.value)) / 1000);
+});
+
+const recordingSeconds = computed(() => {
+  if (!exerciseStore.startedRecording || !recordingStartTime.value) {
+    return Math.ceil(RECORDING_DURATION_MS.value / 1000);
+  }
+  const elapsed = currentTime.value - recordingStartTime.value;
+  const remaining = Math.max(0, RECORDING_DURATION_MS.value - elapsed);
+  return Math.ceil(remaining / 1000);
+});
+
+const recordingProgress = computed(() => {
+  if (!exerciseStore.startedRecording || !recordingStartTime.value) {
+    return 0;
+  }
+  const elapsed = currentTime.value - recordingStartTime.value;
+  return Math.min(100, (elapsed / RECORDING_DURATION_MS.value) * 100);
+});
+
+// Start the timer interval
+function startTimer() {
+  if (timerInterval) return;
+  timerInterval = setInterval(() => {
+    currentTime.value = Date.now();
+  }, 100);
+}
+
+function stopTimer() {
+  if (timerInterval) {
+    clearInterval(timerInterval);
+    timerInterval = null;
+  }
+}
 
 const exerciseDevmode = useStorage('exercise-devmode', false);
 const personDetectedTimeout = ref<ReturnType<typeof setTimeout> | null>(null);
@@ -192,6 +261,7 @@ watch(isPersonVisible, (visible) => {
     soundPlayer.playDetectedSound();
     toneForRom.startTone();
     showCheckIcon.value = true;
+    startTimer(); // Start the reactive timer
 
     if (personDetectedTimeout.value) {
       clearTimeout(personDetectedTimeout.value);
@@ -201,14 +271,14 @@ watch(isPersonVisible, (visible) => {
       clearTimeout(startRecordingUserAssessmentTimeout.value);
     }
 
-    // Only start countdown if not already recording
     if (!exerciseStore.startedRecording) {
       startTimeUserDetectedTimeout.value = Date.now();
+      currentTime.value = Date.now(); // Update current time
 
       startRecordingUserAssessmentTimeout.value = setTimeout(() => {
         startRecordingUserAssessment();
         startRecordingUserAssessmentTimeout.value = null;
-      }, USER_DETECTED_START_EXERCISE_TIMEOUT_MS);
+      }, USER_DETECTED_START_EXERCISE_TIMEOUT_MS.value);
     }
   } else {
     showCheckIcon.value = false;
@@ -221,6 +291,7 @@ watch(isPersonVisible, (visible) => {
     }
 
     if (!exerciseStore.startedRecording) {
+      stopTimer(); // Stop timer when not visible and not recording
       cleanup();
     }
   }
@@ -270,12 +341,15 @@ function startRecordingUserAssessment() {
   console.log("Recording started");
   exerciseStore.startedRecording = true;
   recordingStartTime.value = Date.now();
+  currentTime.value = Date.now();
   maxAngleAchieved.value = 0;
+  startTimer();
 
   recordingTimeout.value = setTimeout(() => {
     completeRecording();
-  }, RECORDING_DURATION_MS);
+  }, RECORDING_DURATION_MS.value);
 }
+
 
 function resetRecording() {
   console.log("Resetting recording due to invalid angle");
@@ -285,7 +359,7 @@ function resetRecording() {
     recordingTimeout.value = null;
   }
 
-
+  stopTimer();
   exerciseStore.startedRecording = false;
   recordingStartTime.value = null;
   maxAngleAchieved.value = 0;
@@ -299,6 +373,9 @@ function completeRecording() {
     clearTimeout(recordingTimeout.value);
     recordingTimeout.value = null;
   }
+
+  stopTimer();
+
   exerciseStore.resultAngle = maxAngleAchieved.value;
   exerciseStore.completeCurrentExercise();
 
@@ -330,6 +407,7 @@ function cleanup() {
   exerciseInitialNormalizedLandmarks.value = null;
   maxAngleAchieved.value = 0;
   recordingStartTime.value = null;
+  stopTimer();
 
   if (recordingTimeout.value) {
     clearTimeout(recordingTimeout.value);
@@ -422,6 +500,7 @@ async function startCamera() {
 
 onBeforeUnmount(() => {
   toneForRom.stopTone();
+  stopTimer();
 
   if (startRecordingUserAssessmentTimeout.value) {
     clearTimeout(startRecordingUserAssessmentTimeout.value);
@@ -433,6 +512,7 @@ onBeforeUnmount(() => {
 
 onUnmounted(() => {
   toneForRom.stopTone();
+  stopTimer();
 });
 
 defineExpose({
@@ -529,6 +609,71 @@ h1 {
 
 }
 
+.timer-circle {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background-color: var(--color-successNormal);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 0 20px rgba(var(--color-successNormal), 0.5);
+}
+
+.timer-circle.recording {
+  background-color: #ef4444;
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.5);
+  animation: pulse 1s infinite;
+}
+
+.timer-number {
+  color: white;
+  font-size: 2rem;
+  font-weight: bold;
+  font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+}
+
+.recording-indicator {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.recording-dot {
+  width: 12px;
+  height: 12px;
+  background-color: #ef4444;
+  border-radius: 50%;
+}
+
+.progress-bar {
+  width: 120px;
+  height: 6px;
+  background-color: rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+  margin-top: 12px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background-color: #ef4444;
+  border-radius: 3px;
+  transition: width 0.1s ease-out;
+}
+
+.timer-container {
+  padding: 24px;
+}
+
+.countdown-timer {
+  border-color: var(--color-successNormal);
+}
+
+.recording-timer {
+  border-color: #ef4444;
+}
 
 
 
@@ -541,6 +686,23 @@ h1 {
   .input_video,
   .output_canvas {
     margin: 1rem 0;
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.5);
+  }
+
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 30px rgba(239, 68, 68, 0.8);
+  }
+
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.5);
   }
 }
 </style>
