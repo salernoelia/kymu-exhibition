@@ -20,7 +20,7 @@
 </template>
 
 <script setup lang="ts">
-import type p5 from "p5"
+import p5 from "p5"
 
 const soundplayer = useSoundPlayer();
 
@@ -508,9 +508,30 @@ defineExpose({
     speedMultiplier = INITIAL_SPEED_MULTIPLIER;
     activeHand = null;
   },
+  endGame: () => {
+    gameState = "gameOver";
+    const gameDuration = Date.now() - gameStartTime;
+    const accuracy = totalObstacles > 0 ? Math.round((successfulCatches / totalObstacles) * 100) : 0;
+
+    if (score > highScore) {
+      highScore = score;
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('feedPandaHighScore', highScore.toString());
+      }
+    }
+
+    emit('gameCompleted', {
+      score,
+      highScore,
+      duration: gameDuration,
+      accuracy,
+      handsDetected: leftHandVisible || rightHandVisible
+    });
+    cleanup();
+  },
   getCurrentScore: () => score,
   getGameState: () => gameState,
-  cleanup
+  cleanup,
 });
 </script>
 

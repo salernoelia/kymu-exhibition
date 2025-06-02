@@ -47,13 +47,11 @@ export function useSoundPlayer() {
      */
     const playSound = async (path: string, volume = 1.0): Promise<void> => {
         try {
-            // If not preloaded, try to load it now
             if (!audioCache.value[path]) {
                 await preloadSound(path);
             }
-
             const audio = audioCache.value[path];
-            // Reset to beginning if it was played before
+
             audio.currentTime = 0;
             audio.volume = Math.min(Math.max(volume, 0), 1);
 
@@ -63,7 +61,23 @@ export function useSoundPlayer() {
         }
     };
 
-    const playSuccessSound = () => {
+    /**
+     * Plays multiple sound files simultaneously
+     *
+     * @param sounds Array of sound configurations with path and optional volume
+     * @returns Promise that resolves when all sounds start playing
+     */
+    const playSounds = async (sounds: Array<{ path: string; volume?: number }>): Promise<void> => {
+        const playPromises = sounds.map(({ path, volume = 1.0 }) => {
+            return playSound(path, volume);
+        });
+
+        await Promise.all(playPromises);
+    };
+
+
+
+    const playSuccessSound = async () => {
         return playSound('/sfx/success.wav');
     };
 
@@ -75,8 +89,11 @@ export function useSoundPlayer() {
         return playSound('/sfx/transition.wav');
     };
 
-    const playResultsSound = () => {
-        return playSound('/sfx/results.wav');
+    const playResultsSound = async () => {
+        return await playSounds([
+            { path: '/sfx/results.wav', volume: 1 },
+            { path: '/sfx/applause.wav', volume: 0.5 },
+        ]);
     };
 
     const playErrorSound = () => {
@@ -110,6 +127,7 @@ export function useSoundPlayer() {
     return {
         preloadSound,
         playSound,
+        playSounds,
         playSuccessSound,
         playResultsSound,
         playStartSound,

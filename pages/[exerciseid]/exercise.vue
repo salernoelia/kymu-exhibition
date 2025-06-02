@@ -42,6 +42,7 @@ const gameComponent = ref<null | {
     getCurrentScore: () => number;
     getGameState: () => string;
     cleanup: () => void;
+    endGame: () => void;
 }>(null);
 
 const onGameStarted = (data: { timestamp: number }) => {
@@ -142,7 +143,7 @@ const handleRemoteKey = (newKey: string | null) => {
         }
     } else if (newKey === "next") {
         if (exerciseStore.currentExercise?.type === 'p5_game' && gameComponent.value) {
-            gameComponent.value.restartGame();
+            gameComponent.value.endGame();
         } else if (romComponent.value) {
             if (exerciseStore.startedRecording) {
                 romComponent.value.calculateAngle();
