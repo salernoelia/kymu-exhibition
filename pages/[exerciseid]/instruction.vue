@@ -49,8 +49,8 @@
         </div>
 
         <KeyInstruction :instructions="[
-            { button: 'Enter', action: 'continue' },
-            { button: 'Esc', action: 'cancel' }
+            { button: 'reset', action: 'reset' },
+            { button: 'next', action: 'continue' }
         ]" />
     </div>
 </template>

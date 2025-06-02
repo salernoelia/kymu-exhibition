@@ -7,6 +7,7 @@ Todo General:
   ☐ nicer caution page
   ☐ (person-detection on index)
   ☐ Index page guide
+  ☐ css overhaul
 
 Todo SFX:
   ☐ improve progress sfx
@@ -16,13 +17,14 @@ Todo SFX:
 Todo Assesment:
   ☐ prevent main body-parts of assesments from being allowed to move, to prevent false results
   ☐ animated cutouts
-  ☐ improved countdown ui for recognition
-  ☐ improved countdown ui for recording
 
 Todo Game:
   ☐ improve placement of texts
+  ☐ skip with next button
 
 Archive:
+  ✔ improved countdown ui for recognition @done(25-06-02 15:02) @project(Todo Assesment)
+  ✔ improved countdown ui for recording @done(25-06-02 15:02) @project(Todo Assesment)
   ✔ sfx for progress @started(25-06-01 22:20) @done(25-06-01 22:20) @lasted(49s) @project(Todo SFX)
   ✔ sfx for results @started(25-06-01 22:20) @done(25-06-01 22:20) @lasted(49s) @project(Todo SFX)
   ✔ sfx for transition @started(25-06-01 22:20) @done(25-06-01 22:20) @lasted(49s) @project(Todo SFX)

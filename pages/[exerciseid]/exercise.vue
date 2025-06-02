@@ -16,23 +16,11 @@
             />
         </div>
 
-        <KeyInstruction
-            class=""
-            :instructions="[
-                {
-                    button: 'ok',
-                    action: loadedExercise?.type === 'p5_game' ? 'restart' : 'start_exercise'
-                },
-                {
-                    button: 'up',
-                    action: 'mark_pain'
-                },
-                {
-                    button: 'right',
-                    action: 'skip'
-                }
-            ]"
-        />
+
+        <KeyInstruction :instructions="[
+            { button: 'reset', action: 'reset' },
+            { button: 'next', action: 'skip' }
+        ]" />
     </div>
 </template>
 

@@ -7,8 +7,20 @@
             >
                 <div class="instruction">
                     <span class="text">
-                        <span class="button-label">{{ instruction.button }}</span> to {{
-                            getActionText(instruction.action) }}
+                        Press
+                        <span
+                            v-if="instruction.button == 'next'"
+                            class="button-label"
+                        >
+                            <Icon name="ic:baseline-arrow-forward" />
+                        </span>
+                        <span
+                            v-if="instruction.button == 'reset'"
+                            class="button-label"
+                        >
+                            <Icon name="ic:baseline-close" />
+                        </span>
+                        to {{ getActionText(instruction.action) }}
                     </span>
                 </div>
                 <div
@@ -23,10 +35,11 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 
-type Actions = "continue" | "skip" | "cancel" | "retry" | "start_exercise" | "mark_pain" | "restart";
+type Actions = "continue" | "reset";
+type Buttons = "next" | "reset";
 
 interface Instruction {
-    button: string;
+    button: Buttons;
     action: Actions;
 }
 
@@ -42,7 +55,7 @@ const instructions = computed(() => {
     }
 
     if (props.button && props.action) {
-        return [{ button: props.button, action: props.action }];
+        return [{ button: props.button as Buttons, action: props.action }];
     }
 
     return [];
@@ -51,6 +64,7 @@ const instructions = computed(() => {
 const getActionText = (action: Actions) => {
     const actionTexts = {
         continue: "continue",
+        reset: "reset",
         skip: "skip this step",
         cancel: "cancel the operation",
         retry: "try again",
@@ -62,6 +76,7 @@ const getActionText = (action: Actions) => {
     return actionTexts[action] || "continue";
 };
 </script>
+
 
 <style scoped>
 .c {
@@ -85,7 +100,9 @@ const getActionText = (action: Actions) => {
 }
 
 .button-label {
-    display: inline-block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     background-color: var(--color-primaryNormal);
     color: var(--color-primaryLight);
     padding: 0.2rem 0.6rem;
