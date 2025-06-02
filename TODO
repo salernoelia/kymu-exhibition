@@ -17,10 +17,10 @@ Todo Assesment:
 
 Todo Game:
   ☐ improve placement of texts
-  ☐ fix not despawning objects @started(25-06-03 01:26)
   ☐ better cutout so only person visible
 
 Archive:
+  ✔ fix not despawning objects @started(25-06-03 01:26) @done(25-06-03 01:45) @lasted(19m42s) @project(Todo Game)
   ✔ implement obstacle illustrations @started(25-06-03 01:15) @done(25-06-03 01:25) @lasted(10m8s) @project(Todo Game)
   ✘ (person-detection on index) @cancelled(25-06-03 01:14) @project(Todo General)
   ✔ improve results sfx @done(25-06-03 01:14) @project(Todo SFX)

@@ -15,6 +15,18 @@
 
     <div class="absolute w-full flex justify-center inset-0 pt-20">
       <P5Wrapper :sketch="sketch" />
+      <div
+        v-if="userTriesToGrabSecondObject"
+        class="absolute flex flex-row items-center gap-4 z-20 bottom-20 p-6 bg-[--color-warningNormal] rounded-lg"
+      >
+        <Icon
+          name="ic:baseline-info"
+          class="text-3xl"
+        />
+        <h2 class="text-black">
+          {{ USER_TRIES_GETTING_MULTIPLE_OBSTACLES_WARNING_NOTICE }}
+        </h2>
+      </div>
     </div>
   </div>
 </template>
@@ -64,6 +76,9 @@ let speedMultiplier = INITIAL_SPEED_MULTIPLIER;
 let gameStartTime = 0;
 let totalObstacles = 0;
 let successfulCatches = 0;
+
+const userTriesToGrabSecondObject = ref(false);
+const USER_TRIES_GETTING_MULTIPLE_OBSTACLES_WARNING_NOTICE = "Drag the food to the panda to score!"
 
 let leftHandX = 0, leftHandY = 0, leftHandVisible = false;
 let rightHandX = 0, rightHandY = 0, rightHandVisible = false;
@@ -374,16 +389,27 @@ const sketch = (p: p5) => {
       if (!o.grabbed && activeHand === null) {
         if (leftHandVisible && o.isHandOver(leftHandX, leftHandY)) {
           soundplayer.playCaughtSaund();
+          // userTriesToGrabSecondObject.value = false;
           offsetX = o.horizontalPosition - leftHandX;
           offsetY = o.y - leftHandY;
           o.grabbed = true;
           activeHand = 'left';
         } else if (rightHandVisible && o.isHandOver(rightHandX, rightHandY)) {
           soundplayer.playCaughtSaund();
+          // userTriesToGrabSecondObject.value = false;
           offsetX = o.horizontalPosition - rightHandX;
           offsetY = o.y - rightHandY;
           o.grabbed = true;
           activeHand = 'right';
+        }
+      } else if (!o.grabbed && activeHand !== null) {
+        // User tries to grab another while already carrying one
+        if (
+          (leftHandVisible && o.isHandOver(leftHandX, leftHandY)) ||
+          (rightHandVisible && o.isHandOver(rightHandX, rightHandY))
+        ) {
+          userTriesToGrabSecondObject.value = true;
+          console.warn("You can only carry one object at a time!");
         }
       }
 
@@ -394,6 +420,7 @@ const sketch = (p: p5) => {
         obstacles.splice(i, 1);
         soundplayer.playScoreSound();
         score++;
+        userTriesToGrabSecondObject.value = false
         successfulCatches++;
         activeHand = null;
         emit('scoreChanged', score);
