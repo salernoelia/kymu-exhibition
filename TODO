@@ -16,7 +16,7 @@ Todo SFX:
 
 Todo Assesment:
   ☐ animated cutout
-  ☐ css overhaul
+  ☐ more instructions
 
 Todo Game:
   ☐ improve placement of texts
@@ -24,6 +24,7 @@ Todo Game:
   ☐ better cutout so only person visible
 
 Archive:
+  ✔ css fix for countodown @done(25-06-03 00:03) @project(Todo Assesment)
   ✔ improved warning messages @done(25-06-02 23:15) @project(Todo Assesment)
   ✔ prevent main body-parts of assesments from being allowed to move, to prevent false results @done(25-06-02 23:15) @project(Todo Assesment)
   ✔ improved countdown ui for recognition @done(25-06-02 15:02) @project(Todo Assesment)
