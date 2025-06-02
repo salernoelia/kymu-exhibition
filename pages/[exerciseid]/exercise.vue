@@ -19,7 +19,7 @@
 
         <KeyInstruction :instructions="[
             { button: 'reset', action: 'reset' },
-            { button: 'next', action: 'skip' }
+            { button: 'next', action: 'reset' }
         ]" />
     </div>
 </template>
@@ -31,7 +31,7 @@ const { remoteKey } = useRemoteControl();
 const loadedExercise = exerciseStore.currentExercise;
 
 const romComponent = ref<null | {
-    markPainMoment: () => void;
+
     startRecordingUserAssessment: () => void;
     calculateAngle: () => void;
     cleanup: () => void;
@@ -161,10 +161,6 @@ const handleRemoteKey = (newKey: string | null) => {
             } else {
                 romComponent.value.startRecordingUserAssessment();
             }
-        }
-    } else if (newKey === "up") {
-        if (romComponent.value) {
-            romComponent.value.markPainMoment();
         }
     }
 

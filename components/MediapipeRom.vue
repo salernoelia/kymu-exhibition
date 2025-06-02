@@ -26,16 +26,14 @@
           :animate="{ opacity: 1, scale: 1 }"
           :exit="{ opacity: 0, scale: 0 }"
           :transition="{ duration: 0.3, exit: { duration: 0.15 } }"
-          class="absolute flex flex-col items-end justify-center z-20 timer-container countdown-timer"
+          class="absolute flex flex-col items-center justify-center z-20 timer-container countdown-timer"
         >
-          <Icon
-            name="material-symbols-light:check-rounded"
-            class="text-white h-12 w-12 icon-centered mb-2"
-          />
           <div class="timer-circle">
-            <span class="timer-number">{{ countdownSeconds }}</span>
+            <span class="timer-number">
+              {{ countdownSeconds }}
+            </span>
           </div>
-          <p class="text-white text-lg font-medium mt-2">Get ready...</p>
+          <h2 class="text-white">Stay still</h2>
         </motion.div>
 
         <!-- Recording Timer (during recording) -->
@@ -47,19 +45,12 @@
           :transition="{ duration: 0.3, exit: { duration: 0.15 } }"
           class="absolute flex flex-col items-center justify-center z-20 timer-container recording-timer"
         >
-          <div class="recording-indicator">
-            <div class="recording-dot" />
-            <span class="text-white text-lg font-medium ml-2">RECORDING</span>
-          </div>
+
           <div class="timer-circle recording">
             <span class="timer-number">{{ recordingSeconds }}</span>
           </div>
-          <div class="progress-bar">
-            <div
-              class="progress-fill"
-              :style="{ width: recordingProgress + '%' }"
-            />
-          </div>
+          <h2 class="text-white">Follow Assesment</h2>
+
         </motion.div>
 
         <!-- Error Message Display -->
@@ -69,7 +60,7 @@
           :animate="{ opacity: 1, y: 0 }"
           :exit="{ opacity: 0, y: 20 }"
           :transition="{ duration: 0.3 }"
-          class="absolute flex flex-col items-center justify-center z-100 bg-red-700 text-white px-8 py-4 text-xl rounded-lg shadow-2xl z-50 text-center"
+          class="absolute flex flex-col items-center justify-center z-100 bg-[--color-dangerNormal] text-white px-8 py-4 text-xl rounded-lg shadow-2xl z-50 text-center"
         >
           <Icon
             name="material-symbols:warning-outline-rounded"
@@ -165,13 +156,6 @@ const recordingSeconds = computed(() => {
   return Math.ceil(remaining / 1000);
 });
 
-const recordingProgress = computed(() => {
-  if (!exerciseStore.startedRecording || !recordingStartTime.value) {
-    return 0;
-  }
-  const elapsed = currentTime.value - recordingStartTime.value;
-  return Math.min(100, (elapsed / RECORDING_DURATION_MS.value) * 100);
-});
 
 function startTimer() {
   if (timerInterval) return;
@@ -187,7 +171,7 @@ function stopTimer() {
   }
 }
 
-// Canvas
+// Canvas & Camera
 const source = ref<HTMLVideoElement | null>(null);
 const canvas = ref<HTMLCanvasElement | null>(null);
 const landmarkContainer = ref<HTMLDivElement | null>(null);
@@ -199,6 +183,32 @@ const canvasWidth = computed(() =>
 const canvasHeight = computed(() =>
   Math.min(window.innerHeight * 0.9, canvasWidth.value * (9 / 16))
 );
+
+const videoDevices = ref<MediaDeviceInfo[]>([]);
+const selectedDeviceId = ref<string>("");
+
+async function startCamera() {
+  if (!source.value) return;
+
+  try {
+    if (source.value.srcObject) {
+      const tracks = (source.value.srcObject as MediaStream).getTracks();
+      tracks.forEach(track => track.stop());
+    }
+
+    const constraints = {
+      video: selectedDeviceId.value
+        ? { deviceId: { exact: selectedDeviceId.value } }
+        : true
+    };
+
+    const stream = await navigator.mediaDevices.getUserMedia(constraints);
+    source.value.srcObject = stream;
+    source.value.play();
+  } catch (err) {
+    console.error("Error accessing camera:", err);
+  }
+}
 
 // Angle Recording
 const exerciseDevmode = useStorage('exercise-devmode', false);
@@ -221,6 +231,12 @@ const targetAngle = ref(0)
 const exerciseStore = useExerciseStore();
 const soundPlayer = useSoundPlayer();
 const toneForRom = useToneForRom(currentAngle);
+
+function calculateAngle() {
+  console.log("calculateVectorAngle");
+  exerciseStore.resultAngle = maxAngleAchieved.value;
+}
+
 
 watch(shouldPlayTone, (should) => {
   if (should && isPersonVisibleState.value) {
@@ -331,7 +347,7 @@ watch(isPersonVisible, (visible) => {
 
     if (exerciseStore.startedRecording) {
       showErrorMessage('Please stay in the frame to continue.');
-      resetRecording();
+      resetRecordingUserAssessment();
     } else {
       stopTimer();
       if (!errorTimeout) {
@@ -346,14 +362,14 @@ watch(currentAngle, (newAngle) => {
     if (newAngle > 180) {
       showErrorMessage('Movement out of range. Please adjust.');
       console.log('Invalid angle detected:', newAngle, '- resetting recording');
-      resetRecording();
+      resetRecordingUserAssessment();
       return;
     }
 
     if (hasSubstantialUnexpectedMovement()) {
       showErrorMessage('Too much body movement. Please try to stay still.');
       console.log('Substantial unexpected movement detected - resetting recording');
-      resetRecording();
+      resetRecordingUserAssessment();
       return;
     }
 
@@ -453,7 +469,7 @@ function startRecordingUserAssessment() {
 
   recordingTimeout.value = setTimeout(() => {
     if (maxAngleAchieved.value > 5 && maxAngleAchieved.value <= 180) {
-      completeRecording();
+      completeRecordingUserAssessment();
     } else {
       console.log("Recording timeout reached but insufficient movement detected:", maxAngleAchieved.value);
       if (maxAngleAchieved.value <= 5) {
@@ -461,13 +477,13 @@ function startRecordingUserAssessment() {
       } else {
         showErrorMessage('Movement out of range. Please try again.');
       }
-      resetRecording();
+      resetRecordingUserAssessment();
     }
   }, RECORDING_DURATION_MS.value);
 }
 
 
-function resetRecording() {
+function resetRecordingUserAssessment() {
   console.log("Resetting recording");
 
   if (recordingTimeout.value) {
@@ -479,19 +495,14 @@ function resetRecording() {
   exerciseStore.startedRecording = false;
   recordingStartTime.value = null;
   maxAngleAchieved.value = 0;
-
   exerciseInitialNormalizedLandmarks.value = null;
-
   shouldPlayTone.value = false;
-
   nextTick(() => {
     shouldPlayTone.value = true;
   });
 }
 
-
-
-function completeRecording() {
+function completeRecordingUserAssessment() {
   console.log("Recording completed - max angle achieved:", maxAngleAchieved.value);
 
   if (recordingTimeout.value) {
@@ -512,41 +523,6 @@ function completeRecording() {
     exerciseStore.nextExercise();
     navigateTo(`/${exerciseStore.currentExercise?.id}/progress`);
   }
-}
-
-function calculateAngle() {
-  console.log("calculateVectorAngle");
-  exerciseStore.resultAngle = maxAngleAchieved.value;
-}
-
-function markPainMoment() {
-  console.log("marked pain moment at", currentAngle.value);
-  exerciseStore.painMomentAngles.push(currentAngle.value);
-  exerciseStore.painMomentAngles.sort((a, b) => a - b);
-}
-
-function cleanup() {
-  currentAngle.value = 0;
-  exerciseStore.resultAngle = 0;
-  exerciseStore.painMomentAngles = [];
-  exerciseInitialNormalizedLandmarks.value = null;
-  maxAngleAchieved.value = 0;
-  recordingStartTime.value = null;
-  stopTimer();
-
-  if (recordingTimeout.value) {
-    clearTimeout(recordingTimeout.value);
-    recordingTimeout.value = null;
-  }
-
-  errorMessage.value = null;
-  if (errorTimeout) {
-    clearTimeout(errorTimeout);
-    errorTimeout = null;
-  }
-
-  console.log("cleanup done");
-  exerciseStore.startedRecording = false;
 }
 
 
@@ -594,41 +570,11 @@ onMounted(async () => {
     }
   }
 
-
-
   if (!props.romCombination) {
     console.warn("No ROM combination provided");
     toneForRom.stopTone();
   }
 });
-
-const videoDevices = ref<MediaDeviceInfo[]>([]);
-const selectedDeviceId = ref<string>("");
-
-async function startCamera() {
-  if (!source.value) return;
-
-  try {
-    if (source.value.srcObject) {
-      const tracks = (source.value.srcObject as MediaStream).getTracks();
-      tracks.forEach(track => track.stop());
-    }
-
-    const constraints = {
-      video: selectedDeviceId.value
-        ? { deviceId: { exact: selectedDeviceId.value } }
-        : true
-    };
-
-    const stream = await navigator.mediaDevices.getUserMedia(constraints);
-    source.value.srcObject = stream;
-    source.value.play();
-  } catch (err) {
-    console.error("Error accessing camera:", err);
-  }
-}
-
-
 
 onBeforeUnmount(() => {
   toneForRom.stopTone();
@@ -657,11 +603,35 @@ onUnmounted(() => {
   }
 });
 
+
+function cleanup() {
+  currentAngle.value = 0;
+  exerciseStore.resultAngle = 0;
+  exerciseStore.painMomentAngles = [];
+  exerciseInitialNormalizedLandmarks.value = null;
+  maxAngleAchieved.value = 0;
+  recordingStartTime.value = null;
+  stopTimer();
+
+  if (recordingTimeout.value) {
+    clearTimeout(recordingTimeout.value);
+    recordingTimeout.value = null;
+  }
+
+  errorMessage.value = null;
+  if (errorTimeout) {
+    clearTimeout(errorTimeout);
+    errorTimeout = null;
+  }
+
+  console.log("cleanup done");
+  exerciseStore.startedRecording = false;
+}
+
 defineExpose({
   startRecordingUserAssessment,
   calculateAngle,
   cleanup,
-  markPainMoment,
 });
 
 </script>
@@ -705,9 +675,7 @@ h1 {
   display: block;
 }
 
-/* .output_canvas {
-  translate: 0 -10px;
-} */
+
 
 .output_canvas {
   object-fit: contain;
@@ -764,7 +732,7 @@ h1 {
 }
 
 .timer-circle.recording {
-  background-color: #ef4444;
+  background-color: var(--color-dangerNormal);
   box-shadow: 0 0 20px rgba(239, 68, 68, 0.5);
   animation: pulse 1s infinite;
 }
@@ -782,28 +750,11 @@ h1 {
   margin-bottom: 12px;
 }
 
-.recording-dot {
-  width: 12px;
-  height: 12px;
-  background-color: #ef4444;
-  border-radius: 50%;
-}
 
-.progress-bar {
-  width: 120px;
-  height: 6px;
-  background-color: rgba(255, 255, 255, 0.3);
-  border-radius: 3px;
-  margin-top: 12px;
-  overflow: hidden;
-}
 
-.progress-fill {
-  height: 100%;
-  background-color: #ef4444;
-  border-radius: 3px;
-  transition: width 0.1s ease-out;
-}
+
+
+
 
 .timer-container {
   padding: 24px;
@@ -814,7 +765,7 @@ h1 {
 }
 
 .recording-timer {
-  border-color: #ef4444;
+  border-color: var(--color-dangerNormal);
 }
 
 
