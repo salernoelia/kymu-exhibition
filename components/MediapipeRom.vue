@@ -606,7 +606,6 @@ onUnmounted(() => {
 function cleanup() {
   currentAngle.value = 0;
   exerciseStore.resultAngle = 0;
-  exerciseStore.painMomentAngles = [];
   exerciseInitialNormalizedLandmarks.value = null;
   maxAngleAchieved.value = 0;
   recordingStartTime.value = null;
@@ -730,12 +729,11 @@ h1 {
   justify-content: center;
   align-items: center;
   border: 3px solid rgba(255, 255, 255, 0.3);
-  box-shadow: 0 0 20px rgba(var(--color-successNormal), 0.5);
+  // box-shadow: 0 0 20px rgba(var(--color-successNormal), 0.5);
 }
 
 .timer-circle.recording {
   background-color: var(--color-dangerNormal);
-  box-shadow: 0 0 20px rgba(239, 68, 68, 0.5);
   animation: pulse 1s infinite;
 }
 
@@ -751,9 +749,6 @@ h1 {
   align-items: center;
   margin-bottom: 12px;
 }
-
-
-
 
 
 
@@ -787,17 +782,17 @@ h1 {
 @keyframes pulse {
   0% {
     transform: scale(1);
-    box-shadow: 0 0 20px rgba(239, 68, 68, 0.5);
+    // box-shadow: 0 0 20px rgba(239, 68, 68, 0.5);
   }
 
   50% {
     transform: scale(1.05);
-    box-shadow: 0 0 30px rgba(239, 68, 68, 0.8);
+    // box-shadow: 0 0 30px rgba(239, 68, 68, 0.8);
   }
 
   100% {
     transform: scale(1);
-    box-shadow: 0 0 20px rgba(239, 68, 68, 0.5);
+    // box-shadow: 0 0 20px rgba(239, 68, 68, 0.5);
   }
 }
 </style>

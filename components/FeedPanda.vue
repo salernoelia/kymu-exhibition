@@ -27,6 +27,13 @@
           {{ USER_TRIES_GETTING_MULTIPLE_OBSTACLES_WARNING_NOTICE }}
         </h2>
       </div>
+
+      <h1
+        v-if="gameState === 'playing'"
+        class="absolute bottom-10 left-6 text-left"
+      >
+        Time Left: {{ Math.max(0, 30 - Math.floor(frameCount / 60)) }}s
+      </h1>
     </div>
   </div>
 </template>
@@ -46,6 +53,8 @@ const CANVAS_WIDTH = ref(800);
 const CANVAS_HEIGHT = ref(600);
 const HAND_SIZE = 80;
 const MAGNETIC_RADIUS = 100;
+
+const frameCount = ref(0)
 
 const speeds = [1.5, 1.8, 2, 2.1, 2.3];
 const obstacleDiameters = [30, 50, 75];
@@ -368,6 +377,7 @@ const sketch = (p: p5) => {
   }
 
   function updateGame(p: p5) {
+    frameCount.value = p.frameCount;
     if (p.frameCount >= GAME_DURATION) {
       endGame();
       return;
@@ -486,9 +496,7 @@ const sketch = (p: p5) => {
     // p.text("Score: " + score, bucketX, bucketY + bucketHeight * 0.5 + 30);
     p.text("Score: " + score, bucketX, bucketY + bucketHeight * 0.5 + 50);
 
-    p.textAlign(p.LEFT);
-    p.textSize(48);
-    p.text("Time Left: " + (30 - p.int(p.frameCount / 60)), 20, CANVAS_HEIGHT.value - 60);
+
     // p.text("Speed: " + speedMultiplier.toFixed(1) + "x", 20, 50);
     // p.text("Hands: " + (leftHandVisible ? "L" : "") + (rightHandVisible ? "R" : ""), 20, 70);
   }

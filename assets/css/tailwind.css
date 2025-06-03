@@ -136,7 +136,7 @@ body {
 }
 
 h1 {
-    font-weight: 300;
+    font-weight: 200;
     margin: 0;
     padding: 0;
     font-size: 4rem;
@@ -163,6 +163,10 @@ h4 {
 }
 
 .main-text {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     position: absolute;
     bottom: 4rem;
 }

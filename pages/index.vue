@@ -11,6 +11,7 @@
 
 
 
+
             <div class="title flex flex-col gap-12">
                 <h1 class="title-text flex flex-row gap-1 centered square-grid">
                     <span
@@ -113,7 +114,6 @@ h2 {
 }
 
 .title-text {
-
     font-weight: 300;
     margin: 0;
     padding: 0;

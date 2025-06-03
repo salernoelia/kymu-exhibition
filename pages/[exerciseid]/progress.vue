@@ -58,9 +58,9 @@
             </motion.h1>
             <motion.h1
                 v-else
-                class="num"
+                class="num text-[--color-dangerNormal]"
             >
-                ✓
+                Reset Required
             </motion.h1>
 
             <motion.h2

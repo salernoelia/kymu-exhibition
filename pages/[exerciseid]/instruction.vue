@@ -1,6 +1,10 @@
 <template>
     <div class="w-full h-full">
         <div class="center-full">
+            <ExerciseTypeLabel
+                v-if="exerciseStore.currentExercise?.type"
+                :type="exerciseStore.currentExercise?.type"
+            />
             <div
                 v-if="exerciseStore.currentExercise?.therapist_added_image_urls"
                 class="flex flex-row c items-center"
@@ -44,8 +48,10 @@
                     </motion.div>
                 </template>
             </div>
-            <h1>{{ exerciseStore.currentExercise?.name }}</h1>
-            <h2>{{ exerciseStore.currentExercise?.description }}</h2>
+            <div class="main-text">
+                <h1>{{ exerciseStore.currentExercise?.name }}</h1>
+                <h2>{{ exerciseStore.currentExercise?.description }}</h2>
+            </div>
         </div>
 
         <KeyInstruction :instructions="[
@@ -93,6 +99,10 @@ onMounted(() => {
 </script>
 
 <style scoped>
+.c {
+    transform: translateY(-6rem);
+}
+
 .img {
     width: 32vh;
     aspect-ratio: 1/2;
