@@ -8,17 +8,16 @@
                 loop
                 src="/lottifiles/clouds.lottie"
             /> -->
-
-
-
-
             <div class="title flex flex-col gap-12">
                 <h1 class="title-text flex flex-row gap-1 centered square-grid">
                     <span
                         v-for="(char, index) in textChars"
                         :key="index"
                         class="text-char animated-char"
-                    >{{ char }}</span>
+                    >
+                        <template v-if="char === ' '">&nbsp;</template>
+                        <template v-else>{{ char }}</template>
+                    </span>
                 </h1>
                 <h2>
                     Stand on
@@ -59,7 +58,6 @@
 
 
 </template>
-
 <script setup lang="ts">
 import { DotLottieVue } from '@lottiefiles/dotlottie-vue'
 import { animate } from 'animejs';
@@ -67,7 +65,7 @@ const fullscreen = useFullscreen();
 // import { motion } from 'motion-v'
 
 
-const text = "Welcome to Kymu!";
+const text = "Welcome to Kymu";
 const textChars = ref([...text]);
 
 const animateText = () => {

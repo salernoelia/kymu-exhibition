@@ -6,7 +6,7 @@
                 :type="exerciseStore.currentExercise?.type"
             />
             <div
-                v-if="exerciseStore.currentExercise?.therapist_added_image_urls"
+                v-if="exerciseStore.currentExercise"
                 class="flex flex-row c items-center"
             >
                 <!-- <template

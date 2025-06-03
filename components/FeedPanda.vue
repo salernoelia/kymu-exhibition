@@ -520,7 +520,7 @@ const sketch = (p: p5) => {
     p.textSize(48);
     p.noStroke()
     // p.text("Score: " + score, bucketX, bucketY + bucketHeight * 0.5 + 30);
-    p.text("Score: " + score, bucketX, bucketY + bucketHeight * 0.5 + 50);
+    p.text(score, bucketX, bucketY + bucketHeight * 0.21 + 50);
 
 
     // p.text("Speed: " + speedMultiplier.toFixed(1) + "x", 20, 50);

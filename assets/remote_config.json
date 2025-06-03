@@ -1,15 +1,7 @@
 {
   "keyMappings": {
-    "w": "up",
-    "a": "left",
     "3": "reset",
-    "d": "right",
-    "2": "next",
-    "1": "back",
-    "m": "menu",
-    "v": "voice",
-    "p": "shutdown",
-    "f": "fullscreen"
+    "2": "next"
   },
   "debounceTime": 300,
   "keyPressResetTime": 100

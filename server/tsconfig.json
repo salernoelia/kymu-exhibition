@@ -1,13 +1,4 @@
 //server/tsconfig.json
 {
     "extends": "../.nuxt/tsconfig.server.json",
-    "compilerOptions": {
-        "allowSyntheticDefaultImports": true,
-        "baseUrl": ".",
-        "paths": {
-            "~/*": ["./src/*"]
-        }
-    },
-    "include": ["src"],
-    "exclude": ["node_modules"]
 }

@@ -12,13 +12,7 @@
             "goal_type": "repetitions_goal",
             "repetitions_goal": 3,
             "duration_seconds_goal": null,
-            "type": "range-of-motion",
-            "therapist_added_image_urls": [
-                "static",
-                "left_arm_180"
-            ],
-            "therapist_added_video_urls": null,
-            "family_scene_adjustment_access": false
+            "type": "range-of-motion"
         },
         {
             "id": "exercise_1",
@@ -30,13 +24,7 @@
             "goal_type": "repetitions_goal",
             "repetitions_goal": 3,
             "duration_seconds_goal": null,
-            "type": "p5_game",
-            "therapist_added_image_urls": [
-                "static",
-                "left_arm_180"
-            ],
-            "therapist_added_video_urls": null,
-            "family_scene_adjustment_access": false
+            "type": "p5_game"
         },
         {
             "id": "exercise_2",
@@ -48,13 +36,7 @@
             "goal_type": "repetitions_goal",
             "repetitions_goal": 5,
             "duration_seconds_goal": null,
-            "type": "range-of-motion",
-            "therapist_added_image_urls": [
-                "left_arm_90",
-                "left_elbow_90"
-            ],
-            "therapist_added_video_urls": null,
-            "family_scene_adjustment_access": false
+            "type": "range-of-motion"
         }
     ]
 }

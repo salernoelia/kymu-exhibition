@@ -1,12 +1,11 @@
 
 Todo General:
   ☐ analyze ux writing
+  ☐ exhibition startup script
   ☐ Index page guide
-  ☐ css overhaul
   ☐ install poppins font on exhibition mac mini
 
 Todo SFX:
-  ☐ improve progress sfx
   ☐ (Spoken hints)
 
 Todo Assesment:
@@ -14,12 +13,14 @@ Todo Assesment:
   ☐ improved instruction texts
 
 Todo Game:
-  ☐ improve placement of texts
-  ☐ better cutout so only person visible
   ☐ animation to show that ostacles can be collected
-  ☐ improved instruction texts
+  ☐ improved instruction text
 
 Archive:
+  ✔ improve placement of texts @done(25-06-03 22:46) @project(Todo Game)
+  ✔ better cutout so only person visible @done(25-06-03 22:44) @project(Todo Game)
+  ✔ css overhaul @done(25-06-03 22:43) @project(Todo General)
+  ✔ improve progress sfx @done(25-06-03 22:37) @project(Todo SFX)
   ✔ nicer caution page @started(25-06-03 21:01) @done(25-06-03 21:41) @lasted(40m29s) @project(Todo General)
   ✔ sfx for caution screen @started(25-06-03 21:01) @done(25-06-03 21:41) @lasted(40m31s) @project(Todo General)
   ✔ eating sfx @started(25-06-03 20:48) @done(25-06-03 20:54) @lasted(6m44s) @project(Todo Assesment)
