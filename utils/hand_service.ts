@@ -29,7 +29,6 @@ export class HandService extends Camera {
     private readonly exerciseDevmode = useStorage('exercise-devmode', false);
     private lastFrameTime = performance.now();
     public fps = 0;
-    public zoom = 1.0;
     private _lowFpsStartTime: null | number = null;
     private readonly LOW_FPS_THRESHOLD = 12;
     private readonly LOW_FPS_TIMEOUT_MS = 4000;
@@ -143,21 +142,15 @@ export class HandService extends Camera {
             this.ctx.save();
             this.ctx.clearRect(0, 0, width, height);
 
-            // ZOOM LOGIC 
-            const zoom = this.zoom || 1.0;
-            const cx = width / 2;
-            const cy = height / 2;
-            this.ctx.translate(cx, cy);
-            this.ctx.scale(zoom, zoom);
-            this.ctx.translate(-cx, -cy);
-
             this.ctx.drawImage(results.image, 0, 0, width, height);
+
 
             if (this.exerciseDevmode.value && results.multiHandLandmarks && results.multiHandedness) {
                 for (let index = 0; index < results.multiHandLandmarks.length; index++) {
                     const classification = results.multiHandedness[index];
                     const isRightHand = classification.label === 'Right';
                     const landmarks = results.multiHandLandmarks[index];
+
 
                     drawConnectors(this.ctx, landmarks, HAND_CONNECTIONS, {
                         color: isRightHand ? '#00FF00' : '#FF0000',
@@ -246,9 +239,5 @@ export class HandService extends Camera {
         this.ctx.textAlign = 'left';
         this.ctx.fillText(`FPS: ${this.fps.toFixed(1)}`, 10, 30);
         this.ctx.restore();
-    }
-
-    public setZoom(factor: number) {
-        this.zoom = Math.max(1, factor); // Prevent zoom < 1
     }
 }

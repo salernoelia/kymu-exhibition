@@ -38,17 +38,6 @@
             {{ device.label || `Camera ${videoDevices.indexOf(device) + 1}` }}
           </option>
         </select>
-        <div class="zoom-controls">
-          <label>Zoom: {{ zoom.toFixed(2) }}</label>
-          <input
-            v-model.number="zoom"
-            type="range"
-            min="1"
-            max="2"
-            step="0.01"
-            @input="updateZoom"
-          >
-        </div>
       </div>
     </div>
   </div>
@@ -74,13 +63,7 @@ const rightHand = ref<HandPosition>({ x: 0, y: 0, visible: false });
 
 let handService: HandService | null = null;
 
-const zoom = useStorage('zoom-factor', 1.0);
 
-function updateZoom() {
-  if (handService) {
-    handService.setZoom(zoom.value);
-  }
-}
 
 const isPersonVisible = computed((): boolean => {
   return leftHand.value.visible || rightHand.value.visible;
@@ -231,9 +214,5 @@ defineExpose({
   padding: 5px;
   border-radius: 3px;
   border: 1px solid #ccc;
-}
-
-.zoom-controls {
-  margin-top: 10px;
 }
 </style>
