@@ -4,6 +4,10 @@ export default defineNuxtConfig({
     devtools: { enabled: false },
     ssr: false,
 
+    typescript: {
+        strict: true
+    },
+
     css: ['~/assets/css/main.css', '~/assets/css/reset.css', '~/assets/css/tailwind.css'],
 
     imports: {

@@ -32,7 +32,7 @@
         v-if="gameState === 'playing'"
         class="absolute bottom-10 left-6 text-left"
       >
-        Time Left: {{ Math.max(0, 30 - Math.floor(frameCount / 60)) }}s
+        Time Left: {{ Math.max(0, 20 - Math.floor(frameCount / 60)) }}s
       </h1>
     </div>
   </div>
@@ -43,7 +43,7 @@ import type p5 from "p5"
 
 const soundplayer = useSoundPlayer();
 
-const GAME_DURATION = 1800;
+const GAME_DURATION = 1200;
 const SPEED_INCREASE_INTERVAL = 300;
 const INITIAL_SPEED_MULTIPLIER = 1;
 const SPEED_INCREMENT = 0.5;

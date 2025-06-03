@@ -9,8 +9,8 @@
         :initial="{ opacity: 0, scale: 0 }"
         :animate="{ opacity: 1, scale: 1 }"
         :transition="{
-          duration: 0.4,
-          delay: index * 0.3, // Sequential delay based on index
+          duration: 0.8,
+          delay: index * 0.5,
           scale: { type: 'spring', stiffness: 120, damping: 10 }
         }"
         :class="[
@@ -66,8 +66,9 @@
 
 <script setup lang="ts">
 import { motion } from 'motion-v'
+const soundPlayer = useSoundPlayer();
 
-defineProps({
+const props = defineProps({
   current: {
     type: Number,
     default: 0,
@@ -78,6 +79,15 @@ defineProps({
     default: 5,
   },
 });
+
+setTimeout(() => {
+  for (let i = 0; i < props.current; i++) {
+    setTimeout(() => {
+      soundPlayer.playProgressSound();
+    }, i * 500);
+  }
+}, 600);
+
 </script>
 
 <style scoped lang="scss">

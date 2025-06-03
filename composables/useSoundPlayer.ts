@@ -116,6 +116,10 @@ export function useSoundPlayer() {
         return playSound('/sfx/score.wav');
     };
 
+    const playProgressSound = () => {
+        return playSound('/sfx/progress.wav');
+    };
+
     const playWarningSound = () => {
         return playSound('/sfx/recognized.wav');
     };
@@ -155,6 +159,7 @@ export function useSoundPlayer() {
         playWarningSound,
         playSuccessSound,
         playResultsSound,
+        playProgressSound,
         playStartSound,
         playTransitionSound,
         playErrorSound,

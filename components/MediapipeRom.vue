@@ -133,8 +133,8 @@ function showErrorMessage(message: string) {
 
 //  Recording 
 const USER_DETECTED_START_EXERCISE_TIMEOUT_MS = ref(3000);
-const RECORDING_DURATION_MS = ref(5000);
-const UNEXPECTED_MOVEMENT_THRESHOLD = ref(0.05);
+const RECORDING_DURATION_MS = ref(4000);
+const UNEXPECTED_MOVEMENT_THRESHOLD = ref(0.1);
 
 
 const currentTime = ref(Date.now());
@@ -731,7 +731,6 @@ h1 {
   display: flex;
   justify-content: center;
   align-items: center;
-  border: 3px solid rgba(255, 255, 255, 0.3);
   // box-shadow: 0 0 20px rgba(var(--color-successNormal), 0.5);
 }
 
@@ -742,9 +741,8 @@ h1 {
 
 .timer-number {
   color: white;
-  font-size: 2rem;
-  font-weight: bold;
-  font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+  font-size: 3rem;
+  font-weight: 200;
 }
 
 .recording-indicator {
