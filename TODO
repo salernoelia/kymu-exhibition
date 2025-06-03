@@ -1,11 +1,9 @@
 
 Todo General:
   ☐ analyze ux writing
-  ☐ nicer caution page
   ☐ Index page guide
   ☐ css overhaul
   ☐ install poppins font on exhibition mac mini
-  ☐ sfx for caution screen
 
 Todo SFX:
   ☐ improve progress sfx
@@ -22,6 +20,8 @@ Todo Game:
   ☐ improved instruction texts
 
 Archive:
+  ✔ nicer caution page @started(25-06-03 21:01) @done(25-06-03 21:41) @lasted(40m29s) @project(Todo General)
+  ✔ sfx for caution screen @started(25-06-03 21:01) @done(25-06-03 21:41) @lasted(40m31s) @project(Todo General)
   ✔ eating sfx @started(25-06-03 20:48) @done(25-06-03 20:54) @lasted(6m44s) @project(Todo Assesment)
   ✔ panda eating animation @started(25-06-03 20:38) @done(25-06-03 20:41) @lasted(3m8s) @project(Todo Game)
   ✔ fix hitbox of panda @done(25-06-03 20:37) @project(Todo Assesment)

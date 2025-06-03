@@ -23,19 +23,14 @@
                     <h1 v-if="e.type === 'range-of-motion'">{{ e.results.achieved_angle || 0 }}°</h1>
                     <h1 v-else-if="e.type === 'p5_game'">{{ e.results.achieved_score || 0 }} pts</h1>
                     <h3>{{ e.name }}</h3>
-                    <p
-                        v-if="e.type === 'p5_game' && e.results.achieved_accuracy"
-                        class="text-sm"
-                    >
-                        {{ e.results.achieved_accuracy }}% accuracy
-                    </p>
+
                 </div>
             </div>
         </div>
 
         <KeyInstruction
             button="next"
-            action="restart"
+            action="reset"
         />
     </div>
 </template>

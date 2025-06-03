@@ -121,6 +121,7 @@ const errorMessage = ref<string | null>(null);
 let errorTimeout: ReturnType<typeof setTimeout> | null = null;
 
 function showErrorMessage(message: string) {
+  soundPlayer.playWarningSound()
   errorMessage.value = message;
   if (errorTimeout) {
     clearTimeout(errorTimeout);
@@ -456,6 +457,7 @@ function hasSubstantialUnexpectedMovement(): boolean {
 }
 
 function startRecordingUserAssessment() {
+  soundPlayer.playRecordingSound();
   exerciseInitialNormalizedLandmarks.value =
     mediapipeResults.value?.poseLandmarks ?? null;
   console.log("Recording started");

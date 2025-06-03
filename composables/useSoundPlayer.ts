@@ -100,12 +100,24 @@ export function useSoundPlayer() {
         return playSound('/sfx/error.wav');
     };
 
+    const playCautionSound = () => {
+        return playSound('/sfx/caution.wav', 0.6);
+    };
+
+    const playInstructionSound = () => {
+        return playSound('/sfx/instruction.wav');
+    };
+
     const playRecordingSound = () => {
         return playSound('/sfx/recording.wav');
     };
 
     const playScoreSound = () => {
         return playSound('/sfx/score.wav');
+    };
+
+    const playWarningSound = () => {
+        return playSound('/sfx/recognized.wav');
     };
 
     const playCaughtSaund = () => {
@@ -120,7 +132,7 @@ export function useSoundPlayer() {
     };
 
     const playDetectedSound = () => {
-        const path = '/sfx/detected.wav';
+        const path = '/sfx/recognized.wav';
         const now = Date.now();
         const lastPlayed = lastPlayedTimestamps.value[path] || 0;
 
@@ -137,7 +149,10 @@ export function useSoundPlayer() {
     return {
         preloadSound,
         playSound,
+        playCautionSound,
         playSounds,
+        playInstructionSound,
+        playWarningSound,
         playSuccessSound,
         playResultsSound,
         playStartSound,

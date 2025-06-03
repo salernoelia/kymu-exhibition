@@ -89,6 +89,7 @@ import { DotLottieVue } from '@lottiefiles/dotlottie-vue'
 
 const exerciseStore = useExerciseStore();
 const { remoteKey } = useRemoteControl();
+const soundPlayer = useSoundPlayer();
 
 const route = useRoute();
 
@@ -115,6 +116,7 @@ watch(
 
 onMounted(() => {
     console.log('Instruction page mounted. Initial route.params:', route.params);
+    soundPlayer.playRecordingSound();
     if (!route.params.exerciseid) {
         console.warn('Warning: exerciseid is missing from route.params on mount.');
     }
