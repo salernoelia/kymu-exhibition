@@ -19,10 +19,11 @@ Todo Game:
   ☐ improve placement of texts
   ☐ better cutout so only person visible
   ☐ animation to show that ostacles can be collected
-  ☐ panda eating animation
   ☐ improved instruction texts
 
 Archive:
+  ✔ eating sfx @started(25-06-03 20:48) @done(25-06-03 20:54) @lasted(6m44s) @project(Todo Assesment)
+  ✔ panda eating animation @started(25-06-03 20:38) @done(25-06-03 20:41) @lasted(3m8s) @project(Todo Game)
   ✔ fix hitbox of panda @done(25-06-03 20:37) @project(Todo Assesment)
   ✔ more instructions @done(25-06-03 20:34) @project(Todo Assesment)
   ✔ more welcoming index @done(25-06-03 10:20) @project(Todo General)

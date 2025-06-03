@@ -112,6 +112,13 @@ export function useSoundPlayer() {
         return playSound('/sfx/caught.wav');
     };
 
+    const playEatingSoundOne = () => {
+        return playSound('/sfx/eating_1.wav')
+    };
+    const playEatingSoundTwo = () => {
+        return playSound('/sfx/eating_2.wav')
+    };
+
     const playDetectedSound = () => {
         const path = '/sfx/detected.wav';
         const now = Date.now();
@@ -124,6 +131,9 @@ export function useSoundPlayer() {
         return Promise.resolve();
     };
 
+
+
+
     return {
         preloadSound,
         playSound,
@@ -135,6 +145,8 @@ export function useSoundPlayer() {
         playErrorSound,
         playRecordingSound,
         playScoreSound,
+        playEatingSoundOne,
+        playEatingSoundTwo,
         playDetectedSound,
         playCaughtSaund,
     };

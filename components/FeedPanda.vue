@@ -437,8 +437,20 @@ const sketch = (p: p5) => {
 
 
       if (o.grabbed && o.isInBucket()) {
+        if (Math.random() < 0.5) {
+          soundplayer.playEatingSoundOne();
+        } else {
+          soundplayer.playEatingSoundTwo();
+        }
+
+
+
+        kymuIsEating.value = true;
+        setTimeout(() => {
+          kymuIsEating.value = false;
+        }, 2000);
         obstacles.splice(i, 1);
-        soundplayer.playScoreSound();
+        // soundplayer.playScoreSound();
         score++;
         userTriesToGrabSecondObject.value = false
         successfulCatches++;
