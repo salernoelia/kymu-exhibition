@@ -681,6 +681,7 @@ h1 {
   height: 100%;
   max-width: 100vw;
   max-height: calc(100vh - 120px);
+  transform: translateY(1rem);
 }
 
 .inactive_canvas {

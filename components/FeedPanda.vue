@@ -43,11 +43,11 @@ import type p5 from "p5"
 
 const soundplayer = useSoundPlayer();
 
-const GAME_DURATION = 1800;
+const GAME_DURATION = 180000; // og 1800
 const SPEED_INCREASE_INTERVAL = 300;
 const INITIAL_SPEED_MULTIPLIER = 1;
 const SPEED_INCREMENT = 0.5;
-const BUCKET_WIDTH = 300;
+const BUCKET_WIDTH = 600;
 
 const CANVAS_WIDTH = ref(800);
 const CANVAS_HEIGHT = ref(600);
@@ -73,11 +73,14 @@ const emit = defineEmits<{
 let gameState = "playing";
 let obstacles: Obstacle[] = [];
 let obstacle_spawn_rate = 50;
-let bucketImage: p5.Image;
 let bambooImage: p5.Image;
 let cherryImage: p5.Image;
 let figImage: p5.Image;
-let bucketX: number, bucketY: number, bucketWidth: number, bucketHeight: number;
+
+let kymuEats: p5.Image;
+let kymuIdle: p5.Image;
+
+; let bucketX: number, bucketY: number, bucketWidth: number, bucketHeight: number;
 let score = 0;
 let highScore = 0;
 let offsetX: number, offsetY: number;
@@ -85,6 +88,7 @@ let speedMultiplier = INITIAL_SPEED_MULTIPLIER;
 let gameStartTime = 0;
 let totalObstacles = 0;
 let successfulCatches = 0;
+const kymuIsEating = ref(false)
 
 const userTriesToGrabSecondObject = ref(false);
 const USER_TRIES_GETTING_MULTIPLE_OBSTACLES_WARNING_NOTICE = "Drag the food to the panda to score!"
@@ -307,10 +311,14 @@ class Obstacle {
   }
 
   isInBucket() {
-    const bucketLeft = bucketX - bucketWidth * 0.4;
-    const bucketRight = bucketX + bucketWidth * 0.4;
-    const bucketTop = bucketY - bucketHeight * 0.3;
-    const bucketBottom = bucketY + bucketHeight * 0.4;
+    // const bucketLeft = bucketX - bucketWidth * 0.4;
+    // const bucketRight = bucketX + bucketWidth * 0.4;
+    // const bucketTop = bucketY - bucketHeight * 0.3;
+    // const bucketBottom = bucketY + bucketHeight * 0.4;
+    const bucketLeft = bucketX - bucketWidth * 0.25;
+    const bucketRight = bucketX + bucketWidth * 0.25;
+    const bucketTop = bucketY - bucketHeight * 0.15;
+    const bucketBottom = bucketY + bucketHeight * 0.25;
 
     return this.horizontalPosition >= bucketLeft &&
       this.horizontalPosition <= bucketRight &&
@@ -327,11 +335,13 @@ const sketch = (p: p5) => {
   p5Instance = p;
 
   p.preload = () => {
-    bucketImage = p.loadImage('/images/pandas/panda_wink.png');
-    bambooImage = p.loadImage('/images/obstacles/bamboo.png')
-    cherryImage = p.loadImage('/images/obstacles/cherry.png')
-    figImage = p.loadImage('/images/obstacles/fig.png')
+    // bucketImage = p.loadImage('/images/pandas/panda_wink.png');
+    bambooImage = p.loadImage('/images/obstacles/bamboo.png');
+    cherryImage = p.loadImage('/images/obstacles/cherry.png');
+    figImage = p.loadImage('/images/obstacles/fig.png');
     fontRegular = p.loadFont('/fonts/Poppins-Light.ttf');
+    kymuEats = p.loadImage('/lottifiles/instructions/kymu_eats.gif');
+    kymuIdle = p.loadImage('/lottifiles/instructions/kymu_idle.gif');
   }
 
   p.setup = () => {
@@ -342,7 +352,7 @@ const sketch = (p: p5) => {
     bucketX = p.width * 0.5;
     bucketY = p.height * 0.5;
     bucketWidth = BUCKET_WIDTH;
-    bucketHeight = bucketWidth / (bucketImage.width / bucketImage.height);
+    bucketHeight = bucketWidth / (kymuIdle.width / kymuIdle.height);
 
     if (typeof window !== 'undefined') {
       highScore = parseInt(localStorage.getItem('feedPandaHighScore') || '0');
@@ -448,7 +458,11 @@ const sketch = (p: p5) => {
   function drawGame(p: p5) {
     p.noStroke();
     p.imageMode(p.CENTER);
-    p.image(bucketImage, bucketX, bucketY, bucketWidth, bucketHeight);
+    if (kymuIsEating.value) {
+      p.image(kymuEats, bucketX, bucketY, bucketWidth, bucketHeight);
+    } else {
+      p.image(kymuIdle, bucketX, bucketY, bucketWidth, bucketHeight);
+    }
 
     for (const obstacle of obstacles) {
       obstacle.show(p);

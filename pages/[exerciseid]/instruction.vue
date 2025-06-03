@@ -9,11 +9,33 @@
                 v-if="exerciseStore.currentExercise?.therapist_added_image_urls"
                 class="flex flex-row c items-center"
             >
-                <template
+                <!-- <template
                     v-for="(image, index) in exerciseStore.currentExercise?.therapist_added_image_urls"
                     :key="index"
-                >
-                    <motion.div
+                > -->
+                <DotLottieVue
+                    v-if="exerciseStore.currentExercise?.id == 'exercise_0'"
+                    style="height: 800px; width: 800px"
+                    autoplay
+                    loop
+                    src="/lottifiles/instructions/explanation_shoulder.lottie"
+                />
+                <DotLottieVue
+                    v-if="exerciseStore.currentExercise?.id == 'exercise_1'"
+                    style="height: 1200px; width: 1200px"
+                    autoplay
+                    loop
+                    src="/lottifiles/instructions/explanation_panda_game.lottie"
+                />
+                <DotLottieVue
+                    v-if="exerciseStore.currentExercise?.id == 'exercise_2'"
+                    style="height: 800px; width: 800px"
+                    autoplay
+                    loop
+                    src="/lottifiles/instructions/explanation_elbow.lottie"
+                />
+
+                <!-- <motion.div
                         :initial="{ opacity: 0, scale: 0 }"
                         :animate="{ opacity: 1, scale: 1 }"
                         :transition="{
@@ -45,8 +67,8 @@
                             style="color: var(--color-inactiveNormal);"
                             class="icon"
                         />
-                    </motion.div>
-                </template>
+                    </motion.div> -->
+                <!-- </template> -->
             </div>
             <div class="main-text">
                 <h1>{{ exerciseStore.currentExercise?.name }}</h1>
@@ -62,7 +84,8 @@
 </template>
 
 <script setup lang="ts">
-import { motion } from 'motion-v';
+import { DotLottieVue } from '@lottiefiles/dotlottie-vue'
+// import { motion } from 'motion-v';
 
 const exerciseStore = useExerciseStore();
 const { remoteKey } = useRemoteControl();

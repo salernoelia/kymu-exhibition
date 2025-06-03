@@ -1,18 +1,18 @@
 
 Todo General:
-
   ☐ analyze ux writing
   ☐ nicer caution page
   ☐ Index page guide
   ☐ css overhaul
+  ☐ install poppins font on exhibition mac mini
+  ☐ sfx for caution screen
 
 Todo SFX:
   ☐ improve progress sfx
   ☐ (Spoken hints)
 
 Todo Assesment:
-  ☐ animated cutout
-  ☐ more instructions
+  ☐ animated cutouts
   ☐ improved instruction texts
 
 Todo Game:
@@ -23,6 +23,8 @@ Todo Game:
   ☐ improved instruction texts
 
 Archive:
+  ✔ fix hitbox of panda @done(25-06-03 20:37) @project(Todo Assesment)
+  ✔ more instructions @done(25-06-03 20:34) @project(Todo Assesment)
   ✔ more welcoming index @done(25-06-03 10:20) @project(Todo General)
   ✔ fix not despawning objects @started(25-06-03 01:26) @done(25-06-03 01:45) @lasted(19m42s) @project(Todo Game)
   ✔ implement obstacle illustrations @started(25-06-03 01:15) @done(25-06-03 01:25) @lasted(10m8s) @project(Todo Game)
