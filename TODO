@@ -2,21 +2,21 @@
 Todo General:
   ☐ analyze ux writing
   ☐ exhibition startup script
-  ☐ Index page guide
   ☐ install poppins font on exhibition mac mini
+  ☐ (Index page guide for general usage)
 
 Todo SFX:
   ☐ (Spoken hints)
 
 Todo Assesment:
   ☐ animated cutouts
-  ☐ improved instruction texts
+  ☐ add instruction texts for step-by-step
 
 Todo Game:
   ☐ animation to show that ostacles can be collected
-  ☐ improved instruction text
 
 Archive:
+  ✔ improved instruction text @done(25-06-04 00:24) @project(Todo Game)
   ✔ improve placement of texts @done(25-06-03 22:46) @project(Todo Game)
   ✔ better cutout so only person visible @done(25-06-03 22:44) @project(Todo Game)
   ✔ css overhaul @done(25-06-03 22:43) @project(Todo General)

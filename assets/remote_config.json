@@ -1,8 +1,8 @@
 {
   "keyMappings": {
     "1": "menu",
-    "3": "reset",
-    "2": "next"
+    "2": "next",
+    "3": "reset"
   },
   "debounceTime": 300,
   "keyPressResetTime": 100

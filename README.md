@@ -105,6 +105,11 @@ macOS
   --app=http://localhost:3000
 ```
 
+```sh
+# make START_EXHIBITION.sh executable
+chmod +x START_EXHIBITION.sh
+```
+
 Windows (Terminal)
 
 ```sh
