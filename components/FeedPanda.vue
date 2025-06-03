@@ -34,6 +34,15 @@
       >
         Time Left: {{ Math.max(0, (GAME_DURATION / 60) - Math.floor(frameCount / 60)) }}s
       </h1>
+
+      <div
+        v-if="gameState === 'playing'"
+        class="score-container absolute bg-[--color-primaryNormal] bottom-10 right-6"
+      >
+        <h1 class=" text-[--color-primaryLight] text-right">
+          {{ score }}
+        </h1>
+      </div>
     </div>
   </div>
 </template>
@@ -43,11 +52,11 @@ import type p5 from "p5"
 
 const soundplayer = useSoundPlayer();
 
-const GAME_DURATION = 1200;
-const SPEED_INCREASE_INTERVAL = 300;
-const INITIAL_SPEED_MULTIPLIER = 1;
-const SPEED_INCREMENT = 0.5;
-const BUCKET_WIDTH = 600;
+const GAME_DURATION = 1200 as const;
+const SPEED_INCREASE_INTERVAL = 300 as const;
+const INITIAL_SPEED_MULTIPLIER = 1 as const;
+const SPEED_INCREMENT = 0.5 as const;
+const BUCKET_WIDTH = 600 as const;
 
 const CANVAS_WIDTH = ref(800);
 const CANVAS_HEIGHT = ref(600);
@@ -57,7 +66,7 @@ const MAGNETIC_RADIUS = 100;
 const frameCount = ref(0)
 
 const speeds = [1.5, 1.8, 2, 2.1, 2.3];
-const obstacleDiameters = [30, 50, 75];
+const obstacleDiameters = [50, 70, 120];
 const emit = defineEmits<{
   gameStarted: [data: { timestamp: number }]
   gameCompleted: [results: {
@@ -81,7 +90,7 @@ let kymuEats: p5.Image;
 let kymuIdle: p5.Image;
 
 ; let bucketX: number, bucketY: number, bucketWidth: number, bucketHeight: number;
-let score = 0;
+const score = ref(0);
 let highScore = 0;
 let offsetX: number, offsetY: number;
 let speedMultiplier = INITIAL_SPEED_MULTIPLIER;
@@ -161,7 +170,7 @@ function cleanup() {
   gameState = "playing";
   obstacles = [];
   obstacle_spawn_rate = 120;
-  score = 0;
+  score.value = 0;
   offsetX = 0;
   offsetY = 0;
   speedMultiplier = INITIAL_SPEED_MULTIPLIER;
@@ -265,6 +274,8 @@ class Obstacle {
   y: number;
   velocity: number;
   grabbed: boolean;
+  rotation: number;
+  rotationSpeed: number;
 
   constructor(diameter: number, p: p5) {
     this.diameter = diameter;
@@ -273,11 +284,14 @@ class Obstacle {
     this.y = 0;
     this.velocity = speeds[p.int(p.random(speeds.length))] * speedMultiplier;
     this.grabbed = false;
+    this.rotation = 0;
+    this.rotationSpeed = p.random(0.02, 0.08);
   }
 
   update() {
     if (!this.grabbed) {
       this.y += this.velocity;
+      this.rotation += this.rotationSpeed;
     } else {
       if (activeHand === 'left' && leftHandVisible) {
         this.horizontalPosition = leftHandX + offsetX;
@@ -301,9 +315,12 @@ class Obstacle {
     }
 
     p.imageMode(p.CENTER);
-    p.image(obstacleImage, this.horizontalPosition, this.y, this.diameter, this.diameter);
+    p.push();
+    p.translate(this.horizontalPosition, this.y);
+    p.rotate(this.rotation);
+    p.image(obstacleImage, 0, 0, this.diameter, this.diameter);
+    p.pop();
   }
-
   isHandOver(handX: number, handY: number) {
     const dx = handX - this.horizontalPosition;
     const dy = handY - this.y;
@@ -311,10 +328,6 @@ class Obstacle {
   }
 
   isInBucket() {
-    // const bucketLeft = bucketX - bucketWidth * 0.4;
-    // const bucketRight = bucketX + bucketWidth * 0.4;
-    // const bucketTop = bucketY - bucketHeight * 0.3;
-    // const bucketBottom = bucketY + bucketHeight * 0.4;
     const bucketLeft = bucketX - bucketWidth * 0.25;
     const bucketRight = bucketX + bucketWidth * 0.25;
     const bucketTop = bucketY - bucketHeight * 0.15;
@@ -451,18 +464,18 @@ const sketch = (p: p5) => {
         }, 2000);
         obstacles.splice(i, 1);
         // soundplayer.playScoreSound();
-        score++;
+        score.value++;
         userTriesToGrabSecondObject.value = false
         successfulCatches++;
         activeHand = null;
-        emit('scoreChanged', score);
+        emit('scoreChanged', score.value);
         continue;
       }
 
       if (o.y > p.height + o.radius) {
         obstacles.splice(i, 1);
         if (o.grabbed) activeHand = null;
-        emit('scoreChanged', score);
+        emit('scoreChanged', score.value);
       }
     }
   }
@@ -490,11 +503,6 @@ const sketch = (p: p5) => {
       p.stroke(100, 200, 100);
       p.strokeWeight(3);
       p.ellipse(leftHandX, leftHandY, HAND_SIZE, HAND_SIZE);
-      // p.noStroke();
-      // p.fill(255);
-      // p.textAlign(p.CENTER);
-      // p.textSize(16);
-      // p.text("L", leftHandX, leftHandY + 6);
     }
 
     if (rightHandVisible) {
@@ -508,53 +516,30 @@ const sketch = (p: p5) => {
       p.stroke(200, 100, 100);
       p.strokeWeight(3);
       p.ellipse(rightHandX, rightHandY, HAND_SIZE, HAND_SIZE);
-      // p.noStroke();
-      // p.fill(255);
-      // p.textAlign(p.CENTER);
-      // p.textSize(16);
-      // p.text("R", rightHandX, rightHandY + 6);
     }
 
     p.fill(0);
     p.textAlign(p.CENTER);
     p.textSize(48);
     p.noStroke()
-    // p.text("Score: " + score, bucketX, bucketY + bucketHeight * 0.5 + 30);
-    p.text(score, bucketX, bucketY + bucketHeight * 0.21 + 50);
-
-
-    // p.text("Speed: " + speedMultiplier.toFixed(1) + "x", 20, 50);
-    // p.text("Hands: " + (leftHandVisible ? "L" : "") + (rightHandVisible ? "R" : ""), 20, 70);
   }
 
-  // function drawGameOver(p: p5) {
-  //   p.fill(0);
-  //   p.textAlign(p.CENTER);
-  //   p.textSize(48);
-  //   p.text("Game Over!", p.width * 0.5, p.height * 0.4);
 
-  //   p.textSize(32);
-  //   p.text("Final Score: " + score, p.width * 0.5, p.height * 0.5);
-  //   p.text("High Score: " + highScore, p.width * 0.5, p.height * 0.55);
-
-  //   p.textSize(20);
-  //   p.text("Press R to restart", p.width * 0.5, p.height * 0.7);
-  // }
 
   function endGame() {
     gameState = "gameOver";
     const gameDuration = Date.now() - gameStartTime;
     const accuracy = totalObstacles > 0 ? Math.round((successfulCatches / totalObstacles) * 100) : 0;
 
-    if (score > highScore) {
-      highScore = score;
+    if (score.value > highScore) {
+      highScore = score.value;
       if (typeof window !== 'undefined') {
         localStorage.setItem('feedPandaHighScore', highScore.toString());
       }
     }
 
     emit('gameCompleted', {
-      score,
+      score: score.value,
       highScore,
       duration: gameDuration,
       accuracy,
@@ -565,7 +550,7 @@ const sketch = (p: p5) => {
   function restartGame() {
     gameState = "playing";
     obstacles = [];
-    score = 0;
+    score.value = 0;
     totalObstacles = 0;
     successfulCatches = 0;
     speedMultiplier = INITIAL_SPEED_MULTIPLIER;
@@ -579,7 +564,7 @@ defineExpose({
   restartGame: () => {
     gameState = "playing";
     obstacles = [];
-    score = 0;
+    score.value = 0;
     totalObstacles = 0;
     successfulCatches = 0;
     speedMultiplier = INITIAL_SPEED_MULTIPLIER;
@@ -590,15 +575,15 @@ defineExpose({
     const gameDuration = Date.now() - gameStartTime;
     const accuracy = totalObstacles > 0 ? Math.round((successfulCatches / totalObstacles) * 100) : 0;
 
-    if (score > highScore) {
-      highScore = score;
+    if (score.value > highScore) {
+      highScore = score.value;
       if (typeof window !== 'undefined') {
         localStorage.setItem('feedPandaHighScore', highScore.toString());
       }
     }
 
     emit('gameCompleted', {
-      score,
+      score: score.value,
       highScore,
       duration: gameDuration,
       accuracy,
@@ -612,4 +597,10 @@ defineExpose({
 });
 </script>
 
-<style scoped></style>
+<style scoped>
+.score-container {
+  border-radius: 1rem;
+  padding-left: 2rem;
+  padding-right: 2rem;
+}
+</style>
