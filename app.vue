@@ -142,8 +142,6 @@ watch(
       // console.log("Menu button pressed - toggling menu");
       // menu.value = !menu.value;
       exerciseDevmode.value = !exerciseDevmode.value;
-    } else if (newKey === "fullscreen") {
-      console.log("Fullscreen button pressed - toggling fullscreen");
     } else if (newKey === "reset") {
       exerciseStore.resetExperience();
     }
