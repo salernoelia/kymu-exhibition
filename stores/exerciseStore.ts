@@ -5,7 +5,6 @@ export const useExerciseStore = defineStore('exerciseStore', () => {
     const error = ref<string | null>(null);
     const resultAngle = ref(0);
     const resultAnglePreviousExercise = ref();
-    const painMomentAngles = ref<number[]>([]);
     const startedRecording = ref<boolean>(false);
 
     const gameResults = ref<{
@@ -115,7 +114,6 @@ export const useExerciseStore = defineStore('exerciseStore', () => {
                 results = {
                     exercise_id: currentExercise.value.id,
                     achieved_angle: resultAngle.value,
-                    pain_angles_deg: painMomentAngles.value,
                 };
                 resultAnglePreviousExercise.value = resultAngle.value;
             }
@@ -128,7 +126,6 @@ export const useExerciseStore = defineStore('exerciseStore', () => {
                 gameResults.value = null;
             } else {
                 resultAngle.value = 0;
-                painMomentAngles.value = [];
             }
             startedRecording.value = false;
         }
@@ -142,7 +139,6 @@ export const useExerciseStore = defineStore('exerciseStore', () => {
 
     const resetExerciseExecutionState = () => {
         resultAngle.value = 0;
-        painMomentAngles.value = [];
         startedRecording.value = false;
         isLoading.value = false;
         error.value = null;
@@ -173,7 +169,6 @@ export const useExerciseStore = defineStore('exerciseStore', () => {
         error,
         resultAngle,
         resultAnglePreviousExercise,
-        painMomentAngles,
         startedRecording,
         gameResults,
         setGameResults,

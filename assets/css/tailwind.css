@@ -161,3 +161,8 @@ h4 {
     margin: 0;
     padding: 0;
 }
+
+.main-text {
+    position: absolute;
+    bottom: 4rem;
+}

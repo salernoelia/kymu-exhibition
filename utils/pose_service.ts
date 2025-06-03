@@ -15,7 +15,13 @@ export class PoseService extends Camera {
 
     private readonly ctx: CanvasRenderingContext2D;
     private readonly exerciseDevmode = useStorage('exercise-devmode', false);
-    // public savedLandmarks: Ref<NormalizedLandmarkList | null> = ref(null);
+    private exerciseStore = useExerciseStore();
+
+    private lastFrameTime = performance.now();
+    private fps = 0;
+    private _lowFpsStartTime: null | number = null;
+    private readonly LOW_FPS_THRESHOLD = 12;
+    private readonly LOW_FPS_TIMEOUT_MS = 4000;
 
     constructor(
         public readonly canvas: HTMLCanvasElement,
@@ -162,7 +168,10 @@ export class PoseService extends Camera {
             //     this.ctx.globalCompositeOperation = 'source-over';
             // }
 
+
             this.ctx.restore();
+
+            this.drawFPS();
         } catch (error) {
             console.error('Error in render method:', error);
         }
@@ -335,5 +344,39 @@ export class PoseService extends Camera {
                 vectorB: { x: 0, y: 0 },
             };
         }
+    }
+
+    private calculateFPS() {
+        const now = performance.now();
+        const delta = now - this.lastFrameTime;
+        this.fps = 1000 / delta;
+        this.lastFrameTime = now;
+
+
+        if (!this._lowFpsStartTime && this.fps < this.LOW_FPS_THRESHOLD) {
+            this._lowFpsStartTime = now;
+        } else if (this._lowFpsStartTime && this.fps >= this.LOW_FPS_THRESHOLD) {
+            this._lowFpsStartTime = null;
+        }
+
+        if (this._lowFpsStartTime && now - this._lowFpsStartTime > this.LOW_FPS_TIMEOUT_MS) {
+            console.log("Low FPS detected for over 2s, resetting experience");
+            this.exerciseStore.resetExperience();
+            this._lowFpsStartTime = null;
+        }
+
+    }
+
+    private drawFPS(): void {
+        this.calculateFPS()
+        if (!this.exerciseDevmode.value) return;
+
+
+        this.ctx.save();
+        this.ctx.font = 'bold 18px Poppins, Arial, sans-serif';
+        this.ctx.fillStyle = '#00FF00';
+        this.ctx.textAlign = 'left';
+        this.ctx.fillText(`FPS: ${this.fps.toFixed(1)}`, 10, 30);
+        this.ctx.restore();
     }
 }

@@ -16,7 +16,7 @@
                 src="/lottifiles/progress.lottie"
             />
             <h2>Unit 2</h2>
-            <h1>{{ text }}</h1>
+            <h1 class="text-[--color-primaryLight]">{{ text }}</h1>
             <!-- <Icon name="svg-spinners:bouncing-ball" /> -->
 
 

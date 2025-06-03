@@ -21,7 +21,7 @@
                 loop
                 src="/lottifiles/space-arrows.lottie"
             />
-            <h1>Make sure you have enough space around you.</h1>
+            <h1 class="main-text">{{ CAUTION_TEXT }}</h1>
         </div>
 
 
@@ -38,6 +38,9 @@ import { DotLottieVue } from '@lottiefiles/dotlottie-vue'
 import { motion } from 'motion-v'
 const exerciseStore = useExerciseStore()
 const { remoteKey } = useRemoteControl()
+
+const CAUTION_TEXT = "Make sure you have enough space around you."
+
 watch(
     () => remoteKey.value,
     (newKey) => {

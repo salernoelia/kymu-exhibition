@@ -21,6 +21,7 @@
       <h2>Left Hand: {{ leftHand.x.toFixed(2) }}, {{ leftHand.y.toFixed(2) }}</h2>
       <h2>Right Hand: {{ rightHand.x.toFixed(2) }}, {{ rightHand.y.toFixed(2) }}</h2>
       <h2>Position Valid: {{ isPersonVisibleState ? 'Yes' : 'No' }}</h2>
+      <h2 v-if="handService">FPS: {{ handService.fps.toFixed(1) }}</h2>
 
       <div class="camera-controls">
         <select
@@ -37,6 +38,17 @@
             {{ device.label || `Camera ${videoDevices.indexOf(device) + 1}` }}
           </option>
         </select>
+        <div class="zoom-controls">
+          <label>Zoom: {{ zoom.toFixed(2) }}</label>
+          <input
+            v-model.number="zoom"
+            type="range"
+            min="1"
+            max="2"
+            step="0.01"
+            @input="updateZoom"
+          >
+        </div>
       </div>
     </div>
   </div>
@@ -61,6 +73,14 @@ const leftHand = ref<HandPosition>({ x: 0, y: 0, visible: false });
 const rightHand = ref<HandPosition>({ x: 0, y: 0, visible: false });
 
 let handService: HandService | null = null;
+
+const zoom = useStorage('zoom-factor', 1.0);
+
+function updateZoom() {
+  if (handService) {
+    handService.setZoom(zoom.value);
+  }
+}
 
 const isPersonVisible = computed((): boolean => {
   return leftHand.value.visible || rightHand.value.visible;
@@ -199,7 +219,6 @@ defineExpose({
   font-size: 1.2rem;
   font-weight: bold;
   text-align: left;
-  width: 15%;
   z-index: 999;
 }
 
@@ -212,5 +231,9 @@ defineExpose({
   padding: 5px;
   border-radius: 3px;
   border: 1px solid #ccc;
+}
+
+.zoom-controls {
+  margin-top: 10px;
 }
 </style>

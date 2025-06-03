@@ -86,7 +86,6 @@
       <h2>Target Angle: {{ targetAngle }}</h2>
       <h2>Threshold: ±{{ thresholdDeg }}°</h2>
       <h2>Position Valid: {{ isPersonVisibleState ? 'Yes' : 'No' }}</h2>
-      <h2>Pain Moments: {{ exerciseStore.painMomentAngles }}</h2>
 
       <div class="camera-controls">
         <select
@@ -636,7 +635,7 @@ defineExpose({
 
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .pose {
   align-items: center;
   text-align: center;
@@ -715,7 +714,10 @@ h1 {
   font-size: 1.2rem;
   font-weight: bold;
   text-align: left;
-  width: 15%;
+
+  h2 {
+    font-weight: 400;
+  }
 
 }
 

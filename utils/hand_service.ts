@@ -24,8 +24,15 @@ export class HandService extends Camera {
         locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`,
     });
 
+    private exerciseStore = useExerciseStore();
     private readonly ctx: CanvasRenderingContext2D;
     private readonly exerciseDevmode = useStorage('exercise-devmode', false);
+    private lastFrameTime = performance.now();
+    public fps = 0;
+    public zoom = 1.0;
+    private _lowFpsStartTime: null | number = null;
+    private readonly LOW_FPS_THRESHOLD = 12;
+    private readonly LOW_FPS_TIMEOUT_MS = 4000;
 
     constructor(
         public readonly canvas: HTMLCanvasElement,
@@ -136,15 +143,21 @@ export class HandService extends Camera {
             this.ctx.save();
             this.ctx.clearRect(0, 0, width, height);
 
-            this.ctx.drawImage(results.image, 0, 0, width, height);
+            // ZOOM LOGIC 
+            const zoom = this.zoom || 1.0;
+            const cx = width / 2;
+            const cy = height / 2;
+            this.ctx.translate(cx, cy);
+            this.ctx.scale(zoom, zoom);
+            this.ctx.translate(-cx, -cy);
 
+            this.ctx.drawImage(results.image, 0, 0, width, height);
 
             if (this.exerciseDevmode.value && results.multiHandLandmarks && results.multiHandedness) {
                 for (let index = 0; index < results.multiHandLandmarks.length; index++) {
                     const classification = results.multiHandedness[index];
                     const isRightHand = classification.label === 'Right';
                     const landmarks = results.multiHandLandmarks[index];
-
 
                     drawConnectors(this.ctx, landmarks, HAND_CONNECTIONS, {
                         color: isRightHand ? '#00FF00' : '#FF0000',
@@ -160,6 +173,7 @@ export class HandService extends Camera {
             }
 
             this.ctx.restore();
+            this.drawFPS()
         } catch (error) {
             console.error('Error in render method:', error);
         }
@@ -173,29 +187,23 @@ export class HandService extends Camera {
         };
     }
 
-    // Expose the video stream for use in other components
     public getVideoStream(): MediaStream | null {
         return this.source.srcObject as MediaStream | null;
     }
 
-    // Comprehensive cleanup method
     public cleanup(): void {
         try {
-            // Stop the camera
             this.stop();
 
-            // Close the MediaPipe hands instance
             if (this.pipe) {
                 this.pipe.close();
             }
 
-            // Reset hand positions
             this.leftHand.value = { x: 0, y: 0, visible: false };
             this.rightHand.value = { x: 0, y: 0, visible: false };
             this.isPersonVisible.value = false;
             this.mediapipeResults.value = null;
 
-            // Clear canvas
             if (this.ctx) {
                 this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
             }
@@ -204,5 +212,43 @@ export class HandService extends Camera {
         } catch (error) {
             console.error('Error during HandService cleanup:', error);
         }
+    }
+
+    private calculateFPS() {
+        const now = performance.now();
+        const delta = now - this.lastFrameTime;
+        this.fps = 1000 / delta;
+        this.lastFrameTime = now;
+
+
+        if (!this._lowFpsStartTime && this.fps < this.LOW_FPS_THRESHOLD) {
+            this._lowFpsStartTime = now;
+        } else if (this._lowFpsStartTime && this.fps >= this.LOW_FPS_THRESHOLD) {
+            this._lowFpsStartTime = null;
+        }
+
+        if (this._lowFpsStartTime && now - this._lowFpsStartTime > this.LOW_FPS_TIMEOUT_MS) {
+            console.log("Low FPS detected for over 2s, resetting experience");
+            this.exerciseStore.resetExperience();
+            this._lowFpsStartTime = null;
+        }
+
+    }
+
+    private drawFPS(): void {
+        this.calculateFPS()
+        if (!this.exerciseDevmode.value) return;
+
+
+        this.ctx.save();
+        this.ctx.font = 'bold 18px Poppins, Arial, sans-serif';
+        this.ctx.fillStyle = '#00FF00';
+        this.ctx.textAlign = 'left';
+        this.ctx.fillText(`FPS: ${this.fps.toFixed(1)}`, 10, 30);
+        this.ctx.restore();
+    }
+
+    public setZoom(factor: number) {
+        this.zoom = Math.max(1, factor); // Prevent zoom < 1
     }
 }
