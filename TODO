@@ -18,11 +18,11 @@ Todo Assesment:
 Todo Game:
   ☐ improve placement of texts
   ☐ better cutout so only person visible
+  ☐ animation to show that ostacles can be collected
 
 Archive:
   ✔ fix not despawning objects @started(25-06-03 01:26) @done(25-06-03 01:45) @lasted(19m42s) @project(Todo Game)
   ✔ implement obstacle illustrations @started(25-06-03 01:15) @done(25-06-03 01:25) @lasted(10m8s) @project(Todo Game)
-  ✘ (person-detection on index) @cancelled(25-06-03 01:14) @project(Todo General)
   ✔ improve results sfx @done(25-06-03 01:14) @project(Todo SFX)
   ✔ improve the flow of exhibition application for unknowing users @done(25-06-03 01:13) @project(Todo General)
   ✔ skip with next button @done(25-06-03 01:13) @project(Todo Game)
@@ -51,3 +51,4 @@ Archive:
   ✔ fix stuck objects @done(25-06-01 21:41) @project(Todo Game)
   ✔ hand model mediapipe @started(25-06-01 14:55) @done(25-06-01 15:11) @lasted(16m3s) @project(Todo Game)
   ✔ properly reset on resetExperience @started(25-06-01 16:59) @done(25-06-01 17:28) @lasted(29m3s) @project(Todo Game)
+  ✘ (person-detection on index) @cancelled(25-06-03 01:14) @project(Todo General)

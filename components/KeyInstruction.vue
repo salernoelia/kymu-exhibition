@@ -1,11 +1,11 @@
 <template>
-    <div class="c">
+    <div class="c flex items-center">
         <div class="instructions-container">
             <template
                 v-for="(instruction, index) in instructions"
                 :key="index"
             >
-                <div class="instruction">
+                <div class="flex items-center">
                     <span class="text">
                         Press
                         <span
@@ -81,8 +81,9 @@ const getActionText = (action: Actions) => {
 <style scoped>
 .c {
     position: absolute;
-    top: 10px;
-    right: 10px;
+    top: 1rem;
+    right: 1rem;
+    height: 2.5rem;
 }
 
 .instructions-container {
@@ -92,11 +93,14 @@ const getActionText = (action: Actions) => {
 }
 
 .text {
-    font-size: 1.5rem;
+    font-size: 1.8rem;
     color: var(--color-inactiveNormal);
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    padding: 0;
+    margin: 0;
+    line-height: 0;
 }
 
 .button-label {
@@ -112,8 +116,8 @@ const getActionText = (action: Actions) => {
 }
 
 .separator {
-    height: 20px;
-    width: 1px;
+    height: 1.8rem;
+    width: 2px;
     background-color: var(--color-inactiveNormal);
     margin: 0 1.5rem;
 }
