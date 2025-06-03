@@ -32,7 +32,7 @@
         v-if="gameState === 'playing'"
         class="absolute bottom-10 left-6 text-left"
       >
-        Time Left: {{ Math.max(0, 20 - Math.floor(frameCount / 60)) }}s
+        Time Left: {{ Math.max(0, (GAME_DURATION / 60) - Math.floor(frameCount / 60)) }}s
       </h1>
     </div>
   </div>
