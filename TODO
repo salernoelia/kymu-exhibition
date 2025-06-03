@@ -1,7 +1,6 @@
 
 Todo General:
-  ☐ more welcoming index
-  ☐ improved instruction texts
+  
   ☐ analyze ux writing
   ☐ nicer caution page
   ☐ Index page guide
@@ -14,13 +13,17 @@ Todo SFX:
 Todo Assesment:
   ☐ animated cutout
   ☐ more instructions
+  ☐ improved instruction texts
 
 Todo Game:
   ☐ improve placement of texts
   ☐ better cutout so only person visible
   ☐ animation to show that ostacles can be collected
+  ☐ panda eating animation
+  ☐ improved instruction texts
 
 Archive:
+  ✔ more welcoming index @done(25-06-03 10:20) @project(Todo General)
   ✔ fix not despawning objects @started(25-06-03 01:26) @done(25-06-03 01:45) @lasted(19m42s) @project(Todo Game)
   ✔ implement obstacle illustrations @started(25-06-03 01:15) @done(25-06-03 01:25) @lasted(10m8s) @project(Todo Game)
   ✔ improve results sfx @done(25-06-03 01:14) @project(Todo SFX)

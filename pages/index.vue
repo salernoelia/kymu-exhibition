@@ -11,13 +11,27 @@
 
 
 
-            <h1 class=" flex flex-row gap-1 centered square-grid">
-                <span
-                    v-for="(char, index) in textChars"
-                    :key="index"
-                    class="text-char animated-char"
-                >{{ char }}</span>
-            </h1>
+            <div class="title flex flex-col gap-12">
+                <h1 class="title-text flex flex-row gap-1 centered square-grid">
+                    <span
+                        v-for="(char, index) in textChars"
+                        :key="index"
+                        class="text-char animated-char"
+                    >{{ char }}</span>
+                </h1>
+                <h2>
+                    Stand on
+                    <img
+                        src="/images/stand_here.png"
+                        class="ml-2 mr-2"
+                        style="width: 4.5rem; height: 4.5rem;"
+                    >
+                    and press
+                    <InstructionButton variant="next" />
+                    to start the demo.
+                </h2>
+            </div>
+
             <DotLottieVue
                 class="fixed w-full left-0 z-[-1] bg bottom-0"
                 autoplay
@@ -51,11 +65,10 @@ import { animate } from 'animejs';
 const fullscreen = useFullscreen();
 // import { motion } from 'motion-v'
 
-// Text to be animated
+
 const text = "Welcome to Kymu!";
 const textChars = ref([...text]);
 
-// Animation function
 const animateText = () => {
     animate('.animated-char', {
 
@@ -99,13 +112,23 @@ h2 {
     flex-wrap: wrap;
 }
 
+.title-text {
+
+    font-weight: 300;
+    margin: 0;
+    padding: 0;
+    font-size: 5.5rem;
+    color: var(--color-primaryNormal);
+
+}
+
 .title {
-    transform: translateY(-10vh);
+    transform: translateY(-6rem);
 }
 
 .text-char {
     display: inline-block;
-    margin: 0 2px;
+    margin: 0 1px;
 }
 
 .large {

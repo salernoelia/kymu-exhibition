@@ -107,10 +107,12 @@ const getActionText = (action: Actions) => {
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: var(--color-primaryNormal);
-    color: var(--color-primaryLight);
+    background-color: #fff;
+    color: var(--color-primaryNormal);
+    border: 2px var(--color-primaryNormal) solid;
     padding: 0.2rem 0.6rem;
-    border-radius: 4px;
+    border-radius: 50%;
+    aspect-ratio: 1/1;
     font-weight: 500;
     line-height: 1.2;
 }
