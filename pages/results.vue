@@ -41,6 +41,7 @@ import { DotLottieVue } from '@lottiefiles/dotlottie-vue'
 const exerciseStore = useExerciseStore();
 const { remoteKey } = useRemoteControl()
 const soundPlayer = useSoundPlayer();
+const route = useRoute()
 
 watch(
     () => remoteKey.value,
@@ -50,6 +51,12 @@ watch(
         }
     }
 );
+
+setTimeout(() => {
+    if (route.path == "/results") {
+        exerciseStore.resetExperience();
+    }
+}, 60000);
 
 onMounted(() => {
     exerciseStore.showResults();

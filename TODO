@@ -2,10 +2,9 @@
 Todo General:
   ☐ exhibition startup script on login
 
-Todo Game:
-  ☐ two hands support
 
 Archive:
+  ✔ two hands support @done(25-06-05 00:07) @project(Todo Game)
   ✔ tutorial start exercise button @done(25-06-04 23:58) @project(Todo General)
   ✘ (Index page guide for general usage) @cancelled(25-06-04 23:58) @project(Todo General)
   ✔ analyze ux writing @done(25-06-04 23:58) @project(Todo General)
