@@ -15,15 +15,33 @@
           :height="canvasHeight"
         />
         <img
-          v-if="!isPersonVisibleState && exerciseStore.currentExercise?.id === 'exercise_0'"
-          src="/public/images/overlay_white.png"
+          v-if="!isPersonVisibleState && romId === 'exercise_0' && !complete"
+          src="/public/images/shoulder_idle.png"
           class="absolute h-full output_canvas overlay"
         >
         <img
-          v-if="!isPersonVisibleState && exerciseStore.currentExercise?.id === 'exercise_2'"
-          src="/public/images/overlay_white.png"
+          v-if="isPersonVisibleState && romId === 'exercise_0' && !complete && !exerciseStore.startedRecording"
+          src="/public/images/shoulder_success.png"
           class="absolute h-full output_canvas overlay"
         >
+        <img
+          v-if="!isPersonVisibleState && romId === 'exercise_2' && !complete"
+          src="/public/images/elbow_idle.png"
+          class="absolute h-full output_canvas overlay"
+        >
+        <img
+          v-if="isPersonVisibleState && romId === 'exercise_2' && !complete && !exerciseStore.startedRecording"
+          src="/public/images/elbow_success.png"
+          class="absolute h-full output_canvas overlay"
+        >
+        <!-- <DotLottieVue
+          v-if="exerciseStore.startedRecording && romId=== 'exercise_0'"
+          autoplay
+          loop
+          class="absolute h-full output_canvas overlay"
+          src="/lottifiles/shoulder_full_body.lottie"
+        /> -->
+
         <!-- Countdown Timer (before recording starts) -->
         <motion.div
           v-if="isPersonVisibleState && showCheckIcon && startRecordingUserAssessmentTimeout"
@@ -137,9 +155,13 @@ function showErrorMessage(message: string) {
 }
 
 //  Recording 
-const USER_DETECTED_START_EXERCISE_TIMEOUT_MS = ref(3000);
+const USER_DETECTED_START_EXERCISE_TIMEOUT_MS = ref(5000);
+const PERSON_DETECTION_DEBOUNCE_MS = ref(500);
+const personDetectionDebounceTimeout = ref<ReturnType<typeof setTimeout> | null>(null);
+const stablePersonVisible = ref(false);
 const RECORDING_DURATION_MS = ref(4000);
 const UNEXPECTED_MOVEMENT_THRESHOLD = ref(0.1);
+const complete = ref(false);
 
 
 const currentTime = ref(Date.now());
@@ -255,6 +277,7 @@ const currentExercise = computed(() => exerciseStore.currentExercise);
 
 const props = defineProps<{
   romCombination: string;
+  romId: string;
 }>();
 
 
@@ -313,6 +336,22 @@ const isPersonVisible = computed((): boolean => {
 });
 
 watch(isPersonVisible, (visible) => {
+  if (personDetectionDebounceTimeout.value) {
+    clearTimeout(personDetectionDebounceTimeout.value);
+    personDetectionDebounceTimeout.value = null;
+  }
+
+  personDetectionDebounceTimeout.value = setTimeout(() => {
+
+    if (stablePersonVisible.value !== visible) {
+      stablePersonVisible.value = visible;
+      handlePersonVisibilityChange(visible);
+    }
+    personDetectionDebounceTimeout.value = null;
+  }, PERSON_DETECTION_DEBOUNCE_MS.value);
+}, { immediate: true });
+
+function handlePersonVisibilityChange(visible: boolean) {
   isPersonVisibleState.value = visible;
 
   if (visible) {
@@ -327,7 +366,6 @@ watch(isPersonVisible, (visible) => {
     }
 
     if (!exerciseStore.startedRecording) {
-
       if (startRecordingUserAssessmentTimeout.value) {
         clearTimeout(startRecordingUserAssessmentTimeout.value);
       }
@@ -360,7 +398,7 @@ watch(isPersonVisible, (visible) => {
       }
     }
   }
-}, { immediate: true });
+}
 
 watch(currentAngle, (newAngle) => {
   if (exerciseStore.startedRecording) {
@@ -510,6 +548,7 @@ function resetRecordingUserAssessment() {
 
 function completeRecordingUserAssessment() {
   console.log("Recording completed - max angle achieved:", maxAngleAchieved.value);
+  complete.value = true;
 
   if (recordingTimeout.value) {
     clearTimeout(recordingTimeout.value);
@@ -592,6 +631,9 @@ onBeforeUnmount(() => {
   if (recordingTimeout.value) {
     clearTimeout(recordingTimeout.value);
   }
+  if (personDetectionDebounceTimeout.value) {
+    clearTimeout(personDetectionDebounceTimeout.value);
+  }
   errorMessage.value = null;
   if (errorTimeout) {
     clearTimeout(errorTimeout);
@@ -602,13 +644,15 @@ onBeforeUnmount(() => {
 onUnmounted(() => {
   toneForRom.stopTone();
   stopTimer();
+  if (personDetectionDebounceTimeout.value) {
+    clearTimeout(personDetectionDebounceTimeout.value);
+  }
   errorMessage.value = null;
   if (errorTimeout) {
     clearTimeout(errorTimeout);
     errorTimeout = null;
   }
 });
-
 
 function cleanup() {
   currentAngle.value = 0;
@@ -623,6 +667,11 @@ function cleanup() {
     recordingTimeout.value = null;
   }
 
+  if (personDetectionDebounceTimeout.value) {
+    clearTimeout(personDetectionDebounceTimeout.value);
+    personDetectionDebounceTimeout.value = null;
+  }
+
   errorMessage.value = null;
   if (errorTimeout) {
     clearTimeout(errorTimeout);
@@ -632,6 +681,7 @@ function cleanup() {
   console.log("cleanup done");
   exerciseStore.startedRecording = false;
 }
+
 
 defineExpose({
   startRecordingUserAssessment,
@@ -696,9 +746,9 @@ h1 {
 }
 
 .overlay {
-  transform: scale(0.8) translateY(10%);
-  opacity: 0.5;
-  filter: brightness(20) saturate(100%) invert(21%) sepia(92%) saturate(500%) hue-rotate(180deg) brightness(95%) contrast(85%);
+  transform: scale(1.3) translateY(4.75%);
+  opacity: 1;
+  mix-blend-mode: soft-light;
 }
 
 .canvas-container {

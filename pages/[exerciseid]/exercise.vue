@@ -1,9 +1,15 @@
 <template>
     <div class="w-full h-full">
+
         <div class="w-full h-full flex flex-col items-center justify-start mt-2">
+            <ExerciseTypeLabel
+                v-if="loadedExercise?.type"
+                :type="loadedExercise?.type"
+            />
             <MediapipeRom
                 v-if="loadedExercise?.category && loadedExercise?.type == 'range-of-motion'"
                 ref="romComponent"
+                :rom-id="loadedExercise?.id"
                 :rom-combination="loadedExercise?.category"
             />
 
@@ -15,7 +21,6 @@
                 @score-changed="onScoreChanged"
             />
         </div>
-
 
         <KeyInstruction :instructions="[
             { button: 'reset', action: 'reset' },

@@ -25,7 +25,7 @@
                         {{ getActionText(instruction.action) }}
                     </span>
                     <span
-                        v-if="instruction.button == 'next' || instruction.button == 'skip'"
+                        v-if="instruction.button == 'next' || instruction.button == 'skip' || instruction.button == 'start_exercise'"
                         class="text"
                     >
                         {{ getActionText(instruction.action) }}
@@ -50,8 +50,8 @@ const currentRouteTopRoute = computed(() => {
 });
 
 
-type Actions = "skip" | "continue" | "reset";
-type Buttons = "next" | "reset" | "skip";
+type Actions = "skip" | "continue" | "reset" | "start_exercise";
+type Buttons = "next" | "reset" | "skip" | "start_exercise";
 
 interface Instruction {
     button: Buttons;
@@ -83,9 +83,9 @@ const getActionText = (action: Actions) => {
         skip: "Skip",
         cancel: "cancel the operation",
         retry: "try again",
-        start_exercise: "start exercise",
+        start_exercise: "Start Exercise",
         mark_pain: "mark pain",
-        restart: "restart"
+        restart: "restart",
     };
 
     return actionTexts[action] || "continue";

@@ -24,7 +24,7 @@
         "pivot": 14,
         "movable": 16,
         "reference": 12,
-        "threshold": 5,
+        "threshold": 8,
         "targetAngle": 145
     },
     "wrist_flexion_right": {

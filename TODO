@@ -2,17 +2,18 @@
 Todo General:
   ☐ analyze ux writing
   ☐ exhibition startup script on login
-  ☐ install poppins font on exhibition mac mini
   ☐ (Index page guide for general usage)
+  ☐ tutorial start exercise button
 
 Todo Assesment:
-  ☐ animated cutouts
   ☐ add instruction texts for step-by-step
 
 Todo Game:
   ☐ animation to show that ostacles can be collected 
 
 Archive:
+  ✔ animated cutouts @done(25-06-04 22:18) @project(Todo Assesment)
+  ✔ install poppins font on exhibition mac mini @done(25-06-04 20:38) @project(Todo General)
   ✔ key information to center @done(25-06-04 20:22) @project(Todo General)
   ✔ name the tutorials tutorials @started(25-06-04 19:35) @done(25-06-04 19:40) @lasted(5m18s) @project(Todo General)
   ✘ (Spoken hints) @cancelled(25-06-04 19:34) @project(Todo SFX)

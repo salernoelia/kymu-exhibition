@@ -3,7 +3,6 @@
         class="container absolute top-4 flex items-center justify-center"
         :class="getTypeClass(type)"
     >
-
         <Icon
             v-if="type === 'caution'"
             name="material-symbols:info-outline"
@@ -17,13 +16,17 @@
 
 <script setup lang="ts">
 defineProps<{
-    type: "range-of-motion" | "p5_game" | "caution";
+    type: "range-of-motion" | "p5_game" | "caution" | "tutorial";
 }>()
 
 const getTypeClass = (type: string) => {
     switch (type) {
-        case 'range-of-motion':
+        case 'tutorial':
             return 'green';
+        case 'p5_game':
+            return 'orange';
+        case 'range-of-motion':
+            return 'orange';
         case 'caution':
             return 'caution';
         default:
@@ -33,8 +36,12 @@ const getTypeClass = (type: string) => {
 
 const getTypeLabel = (type: string) => {
     switch (type) {
-        case 'range-of-motion':
+        case 'tutorial':
             return 'Tutorial';
+        case 'p5_game':
+            return 'Game';
+        case 'range-of-motion':
+            return 'Assessment';
         case 'caution':
             return 'Caution';
         default:

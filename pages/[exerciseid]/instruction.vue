@@ -1,10 +1,7 @@
 <template>
     <div class="w-full h-full">
         <div class="center-full">
-            <ExerciseTypeLabel
-                v-if="exerciseStore.currentExercise?.type"
-                :type="exerciseStore.currentExercise?.type"
-            />
+            <ExerciseTypeLabel type="tutorial" />
             <div
                 v-if="exerciseStore.currentExercise"
                 class="flex flex-row c items-center"
@@ -78,7 +75,7 @@
 
         <KeyInstruction :instructions="[
             { button: 'reset', action: 'reset' },
-            { button: 'next', action: 'continue' }
+            { button: 'start_exercise', action: 'start_exercise' }
         ]" />
     </div>
 </template>

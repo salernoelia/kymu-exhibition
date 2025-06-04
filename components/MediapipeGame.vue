@@ -63,8 +63,6 @@ const rightHand = ref<HandPosition>({ x: 0, y: 0, visible: false });
 
 let handService: HandService | null = null;
 
-
-
 const isPersonVisible = computed((): boolean => {
   return leftHand.value.visible || rightHand.value.visible;
 });
