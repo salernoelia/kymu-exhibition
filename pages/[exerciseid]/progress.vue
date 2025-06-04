@@ -2,8 +2,8 @@
     <div class="h-full w-full">
         <div class="flex flex-col w-full h-full items-center justify-center cont">
             <DotLottieVue
-                style="height: 300px; width: 300px"
-                class="absolute top-28"
+                style="height: 450px; width: 450px"
+                class="absolute top-0"
                 autoplay
                 loop
                 src="/lottifiles/party.lottie"
@@ -42,50 +42,54 @@
                 alt="caution"
                 class="cloud_3 cloud"
             />
+            <div class="flex flex-col justify-center items-center">
+
+                <motion.h1
+                    v-if="previousExercise?.type === 'range-of-motion'"
+                    class="num"
+                >
+                    {{ countedValue }}°
+                </motion.h1>
+                <motion.h1
+                    v-else-if="previousExercise?.type === 'p5_game'"
+                    class="num"
+                >
+                    {{ countedValue }} pts
+                </motion.h1>
+                <motion.h1
+                    v-else
+                    class="num text-[--color-dangerNormal]"
+                >
+                    Reset Required
+                </motion.h1>
+
+                <motion.h2
+                    class="mb-12"
+                    :initial="{ opacity: 0, scale: 0 }"
+                    :animate="{ opacity: 1, scale: 1 }"
+                    :transition="{
+                        duration: 0.4,
+                        scale: { type: 'spring', visualDuration: 0.4, bounce: 0.5 }
+                    }"
+                >
+                    You are doing great! Only
+                    {{ exerciseStore.exercisesCount - exerciseStore.currentExerciseIndex }}
+                    more to go!
+                </motion.h2>
+
+                <ProgressBar
+                    :current="exerciseStore.currentExerciseIndex"
+                    :total="exerciseStore.exercisesCount"
+                />
+            </div>
 
 
-            <motion.h1
-                v-if="previousExercise?.type === 'range-of-motion'"
-                class="num"
-            >
-                {{ countedValue }}°
-            </motion.h1>
-            <motion.h1
-                v-else-if="previousExercise?.type === 'p5_game'"
-                class="num"
-            >
-                {{ countedValue }} pts
-            </motion.h1>
-            <motion.h1
-                v-else
-                class="num text-[--color-dangerNormal]"
-            >
-                Reset Required
-            </motion.h1>
 
-            <motion.h2
-                class="mb-12"
-                :initial="{ opacity: 0, scale: 0 }"
-                :animate="{ opacity: 1, scale: 1 }"
-                :transition="{
-                    duration: 0.4,
-                    scale: { type: 'spring', visualDuration: 0.4, bounce: 0.5 }
-                }"
-            >
-                You are doing great! Only
-                {{ exerciseStore.exercisesCount - exerciseStore.currentExerciseIndex }}
-                more to go!
-            </motion.h2>
-
-            <ProgressBar
-                :current="exerciseStore.currentExerciseIndex"
-                :total="exerciseStore.exercisesCount"
-            />
         </div>
-        <KeyInstruction
-            button="next"
-            action="continue"
-        />
+        <KeyInstruction :instructions="[
+            { button: 'reset', action: 'reset' },
+            { button: 'next', action: 'continue' }
+        ]" />
     </div>
 </template>
 
@@ -162,7 +166,7 @@ playSuccessSound()
 }
 
 .cont {
-    transform: translateY(-4vh);
+    transform: translateY(8vh);
 }
 
 .cloud {
