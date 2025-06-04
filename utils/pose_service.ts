@@ -202,12 +202,10 @@ export class PoseService extends Camera {
             }
 
             const pivot = currentLandmarks[pivotIndex];
-
             const pointA = savedLandmarks[pointIndex];
-
             const pointB = currentLandmarks[pointIndex];
 
-            const minVisibility = 0.7;
+            const minVisibility = 0.65;
             if (
                 (pivot.visibility || 0) < minVisibility ||
                 (pointA.visibility || 0) < minVisibility ||
@@ -216,14 +214,18 @@ export class PoseService extends Camera {
                 return;
             }
 
-            const { angle,
-                // angleRad,
-                startAngle,
-                endAngle,
-                vectorA,
-                vectorB
-            } =
+            const { angle, startAngle, endAngle, vectorA, vectorB } =
                 this.calculateJointAngle(pivot, pointA, pointB);
+
+            let angleDiff = Math.abs(endAngle - startAngle);
+            if (angleDiff > Math.PI) {
+                angleDiff = 2 * Math.PI - angleDiff;
+            }
+            const maxArcAngle = (180 * Math.PI) / 180;
+
+            if (angleDiff > maxArcAngle) {
+                return;
+            }
 
             const { width, height } = this.canvas;
             const pivotX = pivot.x * width;
@@ -235,18 +237,28 @@ export class PoseService extends Camera {
                     Math.sqrt(vectorB.x * vectorB.x + vectorB.y * vectorB.y)
                 ) * 0.6;
 
-            this.ctx.beginPath();
-            this.ctx.arc(pivotX, pivotY, radius * width * 1.5, startAngle, endAngle);
-            this.ctx.strokeStyle = '#FFFFFF';
-            this.ctx.lineWidth = 2;
-            this.ctx.stroke();
-
             const arcRadius = radius * width * 1.5;
+
+            if (angle > 0 && angle <= 180) {
+                this.ctx.beginPath();
+                this.ctx.arc(pivotX, pivotY, arcRadius, startAngle, endAngle);
+                this.ctx.strokeStyle = '#FFFFFF';
+                this.ctx.lineWidth = 2;
+                this.ctx.stroke();
+            }
+
+
+            if (angle > 0) {
+                this.ctx.beginPath();
+                this.ctx.arc(pivotX, pivotY, arcRadius, startAngle, endAngle);
+                this.ctx.strokeStyle = '#FFFFFF';
+                this.ctx.lineWidth = 2;
+                this.ctx.stroke();
+            }
 
             const arrowAngle = endAngle;
             const arrowX = pivotX + arcRadius * Math.cos(arrowAngle);
             const arrowY = pivotY + arcRadius * Math.sin(arrowAngle);
-
 
             const arrowDirection = arrowAngle + Math.PI / 2;
             const arrowSize = 15;

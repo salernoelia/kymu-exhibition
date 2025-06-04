@@ -112,7 +112,7 @@ h2 {
 }
 
 .title-text {
-    font-weight: 200;
+    font-weight: 300;
     margin: 0;
     padding: 0;
     font-size: 5.5rem;
