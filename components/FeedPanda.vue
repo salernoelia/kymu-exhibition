@@ -436,13 +436,11 @@ const sketch = (p: p5) => {
           activeHand = 'right';
         }
       } else if (!o.grabbed && activeHand !== null) {
-        // User tries to grab another while already carrying one
         if (
           (leftHandVisible && o.isHandOver(leftHandX, leftHandY)) ||
           (rightHandVisible && o.isHandOver(rightHandX, rightHandY))
         ) {
           userTriesToGrabSecondObject.value = true;
-          console.warn("You can only carry one object at a time!");
         }
       }
 
@@ -479,10 +477,59 @@ const sketch = (p: p5) => {
       }
     }
   }
+  function drawArrowToPanda(p: p5, fromX: number, fromY: number) {
+    const dx = bucketX - fromX;
+    const dy = bucketY - fromY;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+
+    if (distance > 50) {
+      const angle = Math.atan2(dy, dx);
+      const arrowX = fromX + Math.cos(angle) * 60;
+      const arrowY = fromY + Math.sin(angle) * 60;
+
+      p.stroke(255, 200, 0, 180);
+      p.strokeWeight(4);
+      p.fill(255, 200, 0, 180);
+
+
+      p.line(fromX, fromY, arrowX, arrowY);
+
+
+      p.push();
+      p.translate(arrowX, arrowY);
+      p.rotate(angle);
+      p.triangle(0, 0, -20, -8, -20, 8);
+      p.pop();
+    }
+  }
+
+
+  function drawDottedTrail(p: p5, fromX: number, fromY: number) {
+    const dx = bucketX - fromX;
+    const dy = bucketY - fromY;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+
+    if (distance > 80) {
+      const steps = Math.floor(distance / 20);
+      p.fill(17, 39, 122);
+      p.noStroke();
+
+      for (let i = 1; i < steps; i++) {
+        const t = i / steps;
+        const x = fromX + dx * t;
+        const y = fromY + dy * t;
+        const opacity = (1 - t) * 200;
+
+        p.fill(17, 39, 122, opacity);
+        p.ellipse(x, y, 8, 8);
+      }
+    }
+  }
 
   function drawGame(p: p5) {
     p.noStroke();
     p.imageMode(p.CENTER);
+
     if (kymuIsEating.value) {
       p.image(kymuEats, bucketX, bucketY, bucketWidth, bucketHeight);
     } else {
@@ -491,6 +538,10 @@ const sketch = (p: p5) => {
 
     for (const obstacle of obstacles) {
       obstacle.show(p);
+
+      if (obstacle.grabbed) {
+        drawDottedTrail(p, obstacle.horizontalPosition, obstacle.y);
+      }
     }
 
     if (leftHandVisible) {

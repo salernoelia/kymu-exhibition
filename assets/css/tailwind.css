@@ -11,7 +11,7 @@
     --color-primaryNormal: #1734a3;
     --color-primaryNormalHover: #152f93;
     --color-primaryNormalActive: #122a82;
-    --color-primaryDark: #11277a;
+    --color-primaryDark: rgb(17, 39, 122);
     --color-primaryDarkHover: #0e1f62;
     --color-primaryDarkActive: #0a1749;
     --color-primaryDarker: #081239;
