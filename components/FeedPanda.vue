@@ -81,7 +81,7 @@ const emit = defineEmits<{
 
 let gameState = "playing";
 let obstacles: Obstacle[] = [];
-let obstacle_spawn_rate = 50;
+let obstacle_spawn_rate = 80;
 let bambooImage: p5.Image;
 let cherryImage: p5.Image;
 let figImage: p5.Image;
