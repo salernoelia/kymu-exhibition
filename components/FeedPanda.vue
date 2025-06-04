@@ -81,7 +81,7 @@ const emit = defineEmits<{
 
 let gameState = "playing";
 let obstacles: Obstacle[] = [];
-let obstacle_spawn_rate = 80;
+let obstacle_spawn_rate = 75;
 let bambooImage: p5.Image;
 let cherryImage: p5.Image;
 let figImage: p5.Image;
@@ -408,7 +408,7 @@ const sketch = (p: p5) => {
 
     if (p.frameCount % SPEED_INCREASE_INTERVAL === 0) {
       speedMultiplier += SPEED_INCREMENT;
-      obstacle_spawn_rate = Math.round(obstacle_spawn_rate * 0.85);
+      obstacle_spawn_rate = Math.round(obstacle_spawn_rate * 0.75);
     }
 
     if (p.frameCount % obstacle_spawn_rate === 0) {

@@ -1,17 +1,15 @@
 
 Todo General:
-  ☐ analyze ux writing
   ☐ exhibition startup script on login
-  ☐ (Index page guide for general usage)
-  ☐ tutorial start exercise button
-
-Todo Assesment:
-  ☐ arrows
 
 Todo Game:
   ☐ two hands support
 
 Archive:
+  ✔ tutorial start exercise button @done(25-06-04 23:58) @project(Todo General)
+  ✘ (Index page guide for general usage) @cancelled(25-06-04 23:58) @project(Todo General)
+  ✔ analyze ux writing @done(25-06-04 23:58) @project(Todo General)
+  ✔ arrows @done(25-06-04 23:58) @project(Todo Assesment)
   ✔ animation to show that ostacles can be collected @done(25-06-04 23:13) @project(Todo Game)
   ✔ add instruction texts for step-by-step @done(25-06-04 22:57) @project(Todo Assesment)
   ✔ animated cutouts @done(25-06-04 22:18) @project(Todo Assesment)
