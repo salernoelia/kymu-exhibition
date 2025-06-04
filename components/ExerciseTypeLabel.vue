@@ -23,7 +23,7 @@ defineProps<{
 const getTypeClass = (type: string) => {
     switch (type) {
         case 'range-of-motion':
-            return 'orange';
+            return 'green';
         case 'caution':
             return 'caution';
         default:
@@ -34,11 +34,11 @@ const getTypeClass = (type: string) => {
 const getTypeLabel = (type: string) => {
     switch (type) {
         case 'range-of-motion':
-            return 'Assessment';
+            return 'Tutorial';
         case 'caution':
             return 'Caution';
         default:
-            return 'Game';
+            return 'Tutorial';
     }
 }
 </script>

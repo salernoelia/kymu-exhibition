@@ -19,7 +19,7 @@
 
         <KeyInstruction :instructions="[
             { button: 'reset', action: 'reset' },
-            { button: 'next', action: 'reset' }
+            { button: 'next', action: 'skip' }
         ]" />
     </div>
 </template>

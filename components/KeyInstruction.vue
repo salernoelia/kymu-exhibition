@@ -1,42 +1,57 @@
 <template>
-    <div class="c flex items-center">
-        <div class="instructions-container">
+    <div
+        class="key-instruction-container flex items-center"
+        :style="currentRouteTopRoute ? 'top: 1rem' : 'top: calc(50vh - 3rem)'"
+    >
+        <div
+            class="instructions-container w-full "
+            :class="instructions.length <= 1 ? 'justify-end' : 'justify-between'"
+        >
             <template
                 v-for="(instruction, index) in instructions"
                 :key="index"
             >
-                <div class="flex items-center">
-                    <span class="text">
-                        Press
-                        <span
-                            v-if="instruction.button == 'next'"
-                            class="button-label"
-                        >
-                            <Icon name="ic:baseline-arrow-forward" />
-                        </span>
+                <div class="flex items-center ">
+                    <span
+                        v-if="instruction.button == 'reset'"
+                        class="text"
+                    >
                         <span
                             v-if="instruction.button == 'reset'"
                             class="button-label"
                         >
                             <Icon name="ic:baseline-close" />
                         </span>
-                        to {{ getActionText(instruction.action) }}
+                        {{ getActionText(instruction.action) }}
+                    </span>
+                    <span
+                        v-if="instruction.button == 'next' || instruction.button == 'skip'"
+                        class="text"
+                    >
+                        {{ getActionText(instruction.action) }}
+                        <span class="button-label">
+                            <Icon name="ic:baseline-arrow-forward" />
+                        </span>
                     </span>
                 </div>
-                <div
-                    v-if="index < instructions.length - 1"
-                    class="separator"
-                />
             </template>
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
 
-type Actions = "continue" | "reset";
-type Buttons = "next" | "reset";
+const route = useRoute();
+
+const topRoutes = ["/", "/results"];
+
+const currentRouteTopRoute = computed(() => {
+    return topRoutes.includes(route.path);
+});
+
+
+type Actions = "skip" | "continue" | "reset";
+type Buttons = "next" | "reset" | "skip";
 
 interface Instruction {
     button: Buttons;
@@ -63,9 +78,9 @@ const instructions = computed(() => {
 
 const getActionText = (action: Actions) => {
     const actionTexts = {
-        continue: "continue",
-        reset: "reset",
-        skip: "skip this step",
+        continue: "Continue",
+        reset: "Back to Menu",
+        skip: "Skip",
         cancel: "cancel the operation",
         retry: "try again",
         start_exercise: "start exercise",
@@ -79,12 +94,13 @@ const getActionText = (action: Actions) => {
 
 
 <style scoped>
-.c {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    height: 2.5rem;
+.key-instruction-container {
+    position: fixed;
+
+    width: calc(100vw - 2rem);
 }
+
+
 
 .instructions-container {
     display: flex;
@@ -97,7 +113,7 @@ const getActionText = (action: Actions) => {
     color: var(--color-inactiveNormal);
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.8rem;
     padding: 0;
     margin: 0;
     line-height: 0;

@@ -15,7 +15,12 @@
           :height="canvasHeight"
         />
         <img
-          v-if="!isPersonVisibleState"
+          v-if="!isPersonVisibleState && exerciseStore.currentExercise?.id === 'exercise_0'"
+          src="/public/images/overlay_white.png"
+          class="absolute h-full output_canvas overlay"
+        >
+        <img
+          v-if="!isPersonVisibleState && exerciseStore.currentExercise?.id === 'exercise_2'"
           src="/public/images/overlay_white.png"
           class="absolute h-full output_canvas overlay"
         >

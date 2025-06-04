@@ -32,10 +32,10 @@
 
 
 
-        <KeyInstruction
-            button="next"
-            action="continue"
-        />
+        <KeyInstruction :instructions="[
+            { button: 'reset', action: 'reset' },
+            { button: 'next', action: 'continue' }
+        ]" />
     </div>
 </template>
 
