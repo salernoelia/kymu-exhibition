@@ -742,12 +742,13 @@ h1 {
 }
 
 .inactive_canvas {
-  filter: brightness(0.5);
+  filter: brightness(0.3);
 }
 
 .overlay {
   transform: scale(1.3) translateY(4.75%);
-  opacity: 1;
+  opacity: 0.8;
+  filter: brightness(1);
   mix-blend-mode: soft-light;
 }
 
