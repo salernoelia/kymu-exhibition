@@ -27,8 +27,6 @@ This Nuxt 3 web application is part of the larger [Kymu](https://github.com/sale
 * **Framework:** Nuxt 3 (Vue 3, TypeScript)
 * **Styling:** Tailwind CSS
 * **Pose Tracking:** Google Mediapipe (Pose)
-* **Database:** SQLite
-* **ORM:** Drizzle ORM
 * **State Management:** Pinia
 * **Audio:** Tone.js (for ROM feedback), standard HTML5 Audio for SFX
 * **Animations:** Lottie, Motion One (`motion-v`)
@@ -56,24 +54,6 @@ This Nuxt 3 web application is part of the larger [Kymu](https://github.com/sale
 
     ```bash
     npm install
-    ```
-
-### Database Setup (Drizzle ORM with SQLite)
-
-This project uses Drizzle ORM to manage a local SQLite database (`drizzle.db`).
-
-1. **Generate Drizzle Migrations (if schema changes):**
-    If you modify the database schema in `db/users.ts` or `db/results.ts`, you'll need to generate new migration files:
-
-    ```bash
-    npm exec drizzle-kit generate
-    ```
-
-2. **Apply Migrations to Database:**
-    This command will create the `drizzle.db` file if it doesn't exist and apply any pending migrations to set up your database tables:
-
-    ```bash
-    npm exec drizzle-kit push
     ```
 
 ### Running the Application
