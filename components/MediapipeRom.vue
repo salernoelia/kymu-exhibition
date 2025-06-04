@@ -155,7 +155,7 @@ function showErrorMessage(message: string) {
 }
 
 //  Recording 
-const USER_DETECTED_START_EXERCISE_TIMEOUT_MS = ref(5000);
+const USER_DETECTED_START_EXERCISE_TIMEOUT_MS = ref(2000);
 const PERSON_DETECTION_DEBOUNCE_MS = ref(500);
 const personDetectionDebounceTimeout = ref<ReturnType<typeof setTimeout> | null>(null);
 const stablePersonVisible = ref(false);

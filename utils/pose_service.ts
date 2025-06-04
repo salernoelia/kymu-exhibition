@@ -184,7 +184,6 @@ export class PoseService extends Camera {
         savedLandmarks: NormalizedLandmarkList
     ): void {
         try {
-            // Ensure landmarks exist at these indices and indices are valid
             if (
                 !currentLandmarks ||
                 !savedLandmarks ||
@@ -202,13 +201,10 @@ export class PoseService extends Camera {
                 return;
             }
 
-            // Get pivot point (e.g. elbow)
             const pivot = currentLandmarks[pivotIndex];
 
-            // Get the saved position (point A)
             const pointA = savedLandmarks[pointIndex];
 
-            // Get current position (point B)
             const pointB = currentLandmarks[pointIndex];
 
             const minVisibility = 0.7;
@@ -237,7 +233,7 @@ export class PoseService extends Camera {
                 Math.min(
                     Math.sqrt(vectorA.x * vectorA.x + vectorA.y * vectorA.y),
                     Math.sqrt(vectorB.x * vectorB.x + vectorB.y * vectorB.y)
-                ) * 0.3;
+                ) * 0.6;
 
             this.ctx.beginPath();
             this.ctx.arc(pivotX, pivotY, radius * width * 1.5, startAngle, endAngle);
@@ -245,12 +241,36 @@ export class PoseService extends Camera {
             this.ctx.lineWidth = 2;
             this.ctx.stroke();
 
+            const arcRadius = radius * width * 1.5;
+
+            const arrowAngle = endAngle;
+            const arrowX = pivotX + arcRadius * Math.cos(arrowAngle);
+            const arrowY = pivotY + arcRadius * Math.sin(arrowAngle);
+
+
+            const arrowDirection = arrowAngle + Math.PI / 2;
+            const arrowSize = 15;
+
+            this.ctx.save();
+            this.ctx.translate(arrowX, arrowY);
+            this.ctx.rotate(arrowDirection);
+
+            this.ctx.beginPath();
+            this.ctx.moveTo(-arrowSize, -arrowSize / 2);
+            this.ctx.lineTo(0, 0);
+            this.ctx.lineTo(-arrowSize, arrowSize / 2);
+            this.ctx.strokeStyle = '#FFFFFF';
+            this.ctx.lineWidth = 3;
+            this.ctx.stroke();
+
+            this.ctx.restore();
+
             this.ctx.font = '200 24px Poppins';
             this.ctx.fillStyle = '#FFFFFF';
             this.ctx.textAlign = 'center';
 
             const textAngle = (startAngle + endAngle) / 2;
-            const textRadius = radius * 4;
+            const textRadius = radius * 2;
             const textX = pivotX + textRadius * width * Math.cos(textAngle);
             const textY = pivotY + textRadius * width * Math.sin(textAngle);
 

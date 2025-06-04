@@ -110,7 +110,7 @@ const getActionText = (action: Actions) => {
 
 .text {
     font-size: 1.8rem;
-    color: var(--color-inactiveNormal);
+    color: var(--color-inactiveDark);
     display: flex;
     align-items: center;
     gap: 0.8rem;
