@@ -92,19 +92,21 @@ let kymuIdle: p5.Image;
 ; let bucketX: number, bucketY: number, bucketWidth: number, bucketHeight: number;
 const score = ref(0);
 let highScore = 0;
-let offsetX: number, offsetY: number;
+
 let speedMultiplier = INITIAL_SPEED_MULTIPLIER;
 let gameStartTime = 0;
 let totalObstacles = 0;
 let successfulCatches = 0;
 const kymuIsEating = ref(false)
+let leftHandHasObject = false;
+let rightHandHasObject = false;
 
 const userTriesToGrabSecondObject = ref(false);
-const USER_TRIES_GETTING_MULTIPLE_OBSTACLES_WARNING_NOTICE = "Drag the food to the panda to score!"
+const USER_TRIES_GETTING_MULTIPLE_OBSTACLES_WARNING_NOTICE = "Only one treat per hand!"
 
 let leftHandX = 0, leftHandY = 0, leftHandVisible = false;
 let rightHandX = 0, rightHandY = 0, rightHandVisible = false;
-let activeHand: 'left' | 'right' | null = null;
+
 
 const mediapipeRef = ref<{
   leftHand: { x: number, y: number, visible: boolean };
@@ -171,8 +173,7 @@ function cleanup() {
   obstacles = [];
   obstacle_spawn_rate = 120;
   score.value = 0;
-  offsetX = 0;
-  offsetY = 0;
+
   speedMultiplier = INITIAL_SPEED_MULTIPLIER;
   gameStartTime = 0;
   totalObstacles = 0;
@@ -184,7 +185,7 @@ function cleanup() {
   rightHandX = 0;
   rightHandY = 0;
   rightHandVisible = false;
-  activeHand = null;
+
 
   if (videoFeed.value?.srcObject) {
     const stream = videoFeed.value.srcObject as MediaStream;
@@ -274,8 +275,12 @@ class Obstacle {
   y: number;
   velocity: number;
   grabbed: boolean;
+  grabbingHand: 'left' | 'right' | null;
   rotation: number;
   rotationSpeed: number;
+  offsetX: number;
+  offsetY: number;
+
 
   constructor(diameter: number, p: p5) {
     this.diameter = diameter;
@@ -284,8 +289,11 @@ class Obstacle {
     this.y = 0;
     this.velocity = speeds[p.int(p.random(speeds.length))] * speedMultiplier;
     this.grabbed = false;
+    this.grabbingHand = null;
     this.rotation = 0;
     this.rotationSpeed = p.random(0.02, 0.08);
+    this.offsetX = 0;
+    this.offsetY = 0;
   }
 
   update() {
@@ -293,15 +301,16 @@ class Obstacle {
       this.y += this.velocity;
       this.rotation += this.rotationSpeed;
     } else {
-      if (activeHand === 'left' && leftHandVisible) {
-        this.horizontalPosition = leftHandX + offsetX;
-        this.y = leftHandY + offsetY;
-      } else if (activeHand === 'right' && rightHandVisible) {
-        this.horizontalPosition = rightHandX + offsetX;
-        this.y = rightHandY + offsetY;
+      if (this.grabbingHand === 'left' && leftHandVisible) {
+        this.horizontalPosition = leftHandX + this.offsetX;
+        this.y = leftHandY + this.offsetY;
+      } else if (this.grabbingHand === 'right' && rightHandVisible) {
+        this.horizontalPosition = rightHandX + this.offsetX;
+        this.y = rightHandY + this.offsetY;
       }
     }
   }
+
 
   show(p: p5) {
     p.fill(238, 88, 38);
@@ -419,33 +428,32 @@ const sketch = (p: p5) => {
     for (let i = obstacles.length - 1; i >= 0; i--) {
       const o = obstacles[i];
 
-      if (!o.grabbed && activeHand === null) {
-        if (leftHandVisible && o.isHandOver(leftHandX, leftHandY)) {
+      if (!o.grabbed) {
+        if (leftHandVisible && !leftHandHasObject && o.isHandOver(leftHandX, leftHandY)) {
           soundplayer.playCaughtSaund();
-          // userTriesToGrabSecondObject.value = false;
-          offsetX = o.horizontalPosition - leftHandX;
-          offsetY = o.y - leftHandY;
+          o.offsetX = o.horizontalPosition - leftHandX;
+          o.offsetY = o.y - leftHandY;
           o.grabbed = true;
-          activeHand = 'left';
-        } else if (rightHandVisible && o.isHandOver(rightHandX, rightHandY)) {
+          o.grabbingHand = 'left';
+          leftHandHasObject = true;
+        } else if (rightHandVisible && !rightHandHasObject && o.isHandOver(rightHandX, rightHandY)) {
           soundplayer.playCaughtSaund();
-          // userTriesToGrabSecondObject.value = false;
-          offsetX = o.horizontalPosition - rightHandX;
-          offsetY = o.y - rightHandY;
+          o.offsetX = o.horizontalPosition - rightHandX;
+          o.offsetY = o.y - rightHandY;
           o.grabbed = true;
-          activeHand = 'right';
-        }
-      } else if (!o.grabbed && activeHand !== null) {
-        if (
-          (leftHandVisible && o.isHandOver(leftHandX, leftHandY)) ||
-          (rightHandVisible && o.isHandOver(rightHandX, rightHandY))
-        ) {
+          o.grabbingHand = 'right';
+          rightHandHasObject = true;
+        } else if ((leftHandVisible && leftHandHasObject && o.isHandOver(leftHandX, leftHandY)) ||
+          (rightHandVisible && rightHandHasObject && o.isHandOver(rightHandX, rightHandY))) {
+
           userTriesToGrabSecondObject.value = true;
+          setTimeout(() => {
+            userTriesToGrabSecondObject.value = false;
+          }, 3000);
         }
       }
 
       o.update();
-
 
       if (o.grabbed && o.isInBucket()) {
         if (Math.random() < 0.5) {
@@ -454,52 +462,35 @@ const sketch = (p: p5) => {
           soundplayer.playEatingSoundTwo();
         }
 
-
-
         kymuIsEating.value = true;
         setTimeout(() => {
           kymuIsEating.value = false;
         }, 2000);
+
         obstacles.splice(i, 1);
-        // soundplayer.playScoreSound();
         score.value++;
-        userTriesToGrabSecondObject.value = false
+        userTriesToGrabSecondObject.value = false;
         successfulCatches++;
-        activeHand = null;
+
+        if (o.grabbingHand === 'left') {
+          leftHandHasObject = false;
+        } else if (o.grabbingHand === 'right') {
+          rightHandHasObject = false;
+        }
+
         emit('scoreChanged', score.value);
         continue;
       }
 
       if (o.y > p.height + o.radius) {
         obstacles.splice(i, 1);
-        if (o.grabbed) activeHand = null;
+        if (o.grabbed && o.grabbingHand === 'left') {
+          leftHandHasObject = false;
+        } else if (o.grabbed && o.grabbingHand === 'right') {
+          rightHandHasObject = false;
+        }
         emit('scoreChanged', score.value);
       }
-    }
-  }
-  function drawArrowToPanda(p: p5, fromX: number, fromY: number) {
-    const dx = bucketX - fromX;
-    const dy = bucketY - fromY;
-    const distance = Math.sqrt(dx * dx + dy * dy);
-
-    if (distance > 50) {
-      const angle = Math.atan2(dy, dx);
-      const arrowX = fromX + Math.cos(angle) * 60;
-      const arrowY = fromY + Math.sin(angle) * 60;
-
-      p.stroke(255, 200, 0, 180);
-      p.strokeWeight(4);
-      p.fill(255, 200, 0, 180);
-
-
-      p.line(fromX, fromY, arrowX, arrowY);
-
-
-      p.push();
-      p.translate(arrowX, arrowY);
-      p.rotate(angle);
-      p.triangle(0, 0, -20, -8, -20, 8);
-      p.pop();
     }
   }
 
@@ -605,7 +596,7 @@ const sketch = (p: p5) => {
     totalObstacles = 0;
     successfulCatches = 0;
     speedMultiplier = INITIAL_SPEED_MULTIPLIER;
-    activeHand = null;
+
     gameStartTime = Date.now();
     emit('gameStarted', { timestamp: gameStartTime });
   }
@@ -619,7 +610,7 @@ defineExpose({
     totalObstacles = 0;
     successfulCatches = 0;
     speedMultiplier = INITIAL_SPEED_MULTIPLIER;
-    activeHand = null;
+
   },
   endGame: () => {
     gameState = "gameOver";
