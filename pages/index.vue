@@ -24,7 +24,7 @@
                     <img
                         src="/images/stand_here.png"
                         class="ml-2 mr-2"
-                        style="width: 4.5rem; height: 4.5rem;"
+                        style="width: 4.2rem; height: 4.2rem;"
                     >
                     and press
                     <InstructionButton variant="next" />

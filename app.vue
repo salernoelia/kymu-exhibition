@@ -111,7 +111,7 @@ watch(() => route.path, (newPath, oldPath) => {
       return;
     }
 
-    transitionText.value = `Exercise ${exerciseStore.currentExercise?.name}`;
+    transitionText.value = `${exerciseStore.currentExercise?.name}`;
     isTransitioning.value = true;
 
     setTimeout(() => {

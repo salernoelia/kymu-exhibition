@@ -4,7 +4,7 @@
         class="button-label"
     >
         <Icon
-            class="ico"
+            class="ico subtle-move-x"
             name="ic:baseline-arrow-forward"
         />
     </span>
@@ -28,6 +28,19 @@ defineProps<{
 </script>
 
 <style scoped>
+@keyframes move-x {
+    0%, 100% {
+        transform: translateX(-3);
+    }
+    50% {
+        transform: translateX(3px);
+    }
+}
+
+.subtle-move-x {
+    animation: move-x 1.5s infinite ease-in-out;
+}
+
 .button-label {
     display: flex;
     align-items: center;

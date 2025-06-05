@@ -5,8 +5,8 @@
     >
         <Icon
             v-if="type === 'caution'"
-            name="material-symbols:info-outline"
-            class="mr-2 text-xl"
+            name="material-symbols:warning-outline"
+            class="mr-2 text-3xl"
         />
         <h2 style="line-height: 0.5; font-size: 2rem; font-weight: 300;">
             {{ getTypeLabel(type) }}

@@ -30,7 +30,7 @@
                     >
                         {{ getActionText(instruction.action) }}
                         <span class="button-label">
-                            <Icon name="ic:baseline-arrow-forward" />
+                            <Icon name="ic:baseline-arrow-forward" class="subtle-move-x" />
                         </span>
                     </span>
                 </div>
@@ -94,6 +94,19 @@ const getActionText = (action: Actions) => {
 
 
 <style scoped>
+@keyframes move-x {
+    0%, 100% {
+        transform: translateX(-3px);
+    }
+    50% {
+        transform: translateX(3px);
+    }
+}
+
+.subtle-move-x {
+    animation: move-x 1.5s infinite ease-in-out;
+}
+
 .key-instruction-container {
     position: fixed;
 
