@@ -1,4 +1,5 @@
 #!/bin/zsh
+cd /Users/user/kymu-exhibition || exit 1
 
 # Store the Node process ID
 node .output/server/index.mjs &
@@ -20,10 +21,5 @@ trap cleanup SIGINT SIGTERM
   --disable-features=VizDisplayCompositor \
   --start-fullscreen \
   --start-maximized \
-  --window-size=1920,1080 \
-  --window-position=0,0 \
-  --disable-restore-session-state \
-  --noerrdialogs \
-  --app=http://localhost:3000
 
 cleanup
