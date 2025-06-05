@@ -96,12 +96,11 @@ onMounted(async () => {
         rightHand,
         isPersonVisibleState
       );
-
       await handService.setOptions({
         maxNumHands: 2,
         modelComplexity: 1,
-        minDetectionConfidence: 0.7,
-        minTrackingConfidence: 0.5,
+        minDetectionConfidence: 0.5,
+        minTrackingConfidence: 0.3,
         selfieMode: true,
       });
       await startCamera();

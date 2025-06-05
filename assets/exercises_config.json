@@ -3,18 +3,6 @@
     "description": "Interactive exercises designed to evaluate and improve your range of motion and flexibility.",
     "exercises": [
         {
-            "id": "exercise_2",
-            "name": "Left Elbow Flexion",
-            "results": null,
-            "category": "elbow_flexion_left",
-            "description": "On the next page, bend and straighten your left elbow.",
-            "exercise_type": "assessment_screen",
-            "goal_type": "repetitions_goal",
-            "repetitions_goal": 5,
-            "duration_seconds_goal": null,
-            "type": "range-of-motion"
-        },
-        {
             "id": "exercise_1",
             "name": "Feed the Panda Game",
             "results": null,
@@ -35,6 +23,18 @@
             "exercise_type": "assessment_screen",
             "goal_type": "repetitions_goal",
             "repetitions_goal": 3,
+            "duration_seconds_goal": null,
+            "type": "range-of-motion"
+        },
+        {
+            "id": "exercise_2",
+            "name": "Left Elbow Flexion",
+            "results": null,
+            "category": "elbow_flexion_left",
+            "description": "On the next page, bend and straighten your left elbow.",
+            "exercise_type": "assessment_screen",
+            "goal_type": "repetitions_goal",
+            "repetitions_goal": 5,
             "duration_seconds_goal": null,
             "type": "range-of-motion"
         }

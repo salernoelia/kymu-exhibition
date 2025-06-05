@@ -544,7 +544,7 @@ const sketch = (p: p5) => {
 
     if (leftHandVisible) {
       // magnet
-      p.fill(100, 200, 100, 30);
+      p.fill(100, 200, 100, 110);
       p.noStroke();
       p.ellipse(leftHandX, leftHandY, MAGNETIC_RADIUS * 2, MAGNETIC_RADIUS * 2);
 
@@ -559,7 +559,7 @@ const sketch = (p: p5) => {
 
     if (rightHandVisible) {
       // magnet 
-      p.fill(200, 100, 100, 30);
+      p.fill(200, 100, 100, 110);
       p.noStroke();
       p.ellipse(rightHandX, rightHandY, MAGNETIC_RADIUS * 2, MAGNETIC_RADIUS * 2);
 
