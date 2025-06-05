@@ -3,7 +3,7 @@
         "pivot": 11,
         "movable": 13,
         "reference": 23,
-        "threshold": 5,
+        "threshold": 8,
         "targetAngle": 10
     },
     "shoulder_abduction_left": {
