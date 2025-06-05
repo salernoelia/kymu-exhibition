@@ -84,8 +84,8 @@ export const useExerciseStateMachine = () => {
                 window.location.href = '/';
             } catch (e) {
                 console.error('Error navigating to / on resetExperience:', e);
-                window.location.href = '/';
                 window.location.reload();
+                window.location.href = '/';
             }
         }
     };
