@@ -79,11 +79,13 @@ export const useExerciseStateMachine = () => {
             await nextTick();
 
             try {
-                console.log('Attempting navigation to / after state reset and nextTick');
-                await navigateTo('/', { replace: true });
+                console.log('Forcing full page refresh');
+                window.location.reload();
+                window.location.href = '/';
             } catch (e) {
                 console.error('Error navigating to / on resetExperience:', e);
                 window.location.href = '/';
+                window.location.reload();
             }
         }
     };

@@ -60,7 +60,7 @@ const BUCKET_WIDTH = 600 as const;
 
 const CANVAS_WIDTH = ref(800);
 const CANVAS_HEIGHT = ref(600);
-const HAND_SIZE = 80;
+// const HAND_SIZE = 80;
 const MAGNETIC_RADIUS = 100;
 
 const frameCount = ref(0)
