@@ -89,6 +89,9 @@ let figImage: p5.Image;
 let kymuEats: p5.Image;
 let kymuIdle: p5.Image;
 
+let leftHand: p5.Image;
+let rightHand: p5.Image;
+
 ; let bucketX: number, bucketY: number, bucketWidth: number, bucketHeight: number;
 const score = ref(0);
 let highScore = 0;
@@ -250,9 +253,10 @@ stopWatchers.push(
 stopWatchers.push(
   watch(() => mediapipeRef.value?.leftHand, (newPos) => {
     if (newPos) {
-      rightHandX = ((newPos.x - 0.2) / 0.6) * CANVAS_WIDTH.value;
-      rightHandY = ((newPos.y - 0.2) / 0.6) * CANVAS_HEIGHT.value;
-      rightHandVisible = newPos.visible;
+      // Change these to leftHandX/Y instead of rightHandX/Y
+      leftHandX = ((newPos.x - 0.2) / 0.6) * CANVAS_WIDTH.value;
+      leftHandY = ((newPos.y - 0.2) / 0.6) * CANVAS_HEIGHT.value;
+      leftHandVisible = newPos.visible;
     }
   }, { deep: true })
 );
@@ -260,9 +264,10 @@ stopWatchers.push(
 stopWatchers.push(
   watch(() => mediapipeRef.value?.rightHand, (newPos) => {
     if (newPos) {
-      leftHandX = ((newPos.x - 0.2) / 0.6) * CANVAS_WIDTH.value;
-      leftHandY = ((newPos.y - 0.2) / 0.6) * CANVAS_HEIGHT.value;
-      leftHandVisible = newPos.visible;
+      // Change these to rightHandX/Y instead of leftHandX/Y
+      rightHandX = ((newPos.x - 0.2) / 0.6) * CANVAS_WIDTH.value;
+      rightHandY = ((newPos.y - 0.2) / 0.6) * CANVAS_HEIGHT.value;
+      rightHandVisible = newPos.visible;
     }
   }, { deep: true })
 );
@@ -364,6 +369,8 @@ const sketch = (p: p5) => {
     fontRegular = p.loadFont('/fonts/Poppins-Light.ttf');
     kymuEats = p.loadImage('/lottifiles/instructions/kymu_eats.gif');
     kymuIdle = p.loadImage('/lottifiles/instructions/kymu_idle.gif');
+    leftHand = p.loadImage('/images/hand_left.png');
+    rightHand = p.loadImage('/images/hand_right.png');
   }
 
   p.setup = () => {
@@ -544,7 +551,10 @@ const sketch = (p: p5) => {
       p.fill(100, 200, 100, 150);
       p.stroke(100, 200, 100);
       p.strokeWeight(3);
-      p.ellipse(leftHandX, leftHandY, HAND_SIZE, HAND_SIZE);
+      // p.ellipse(leftHandX, leftHandY, HAND_SIZE, HAND_SIZE);
+      p.image(leftHand, leftHandX, leftHandY, MAGNETIC_RADIUS, MAGNETIC_RADIUS)
+
+
     }
 
     if (rightHandVisible) {
@@ -553,11 +563,16 @@ const sketch = (p: p5) => {
       p.noStroke();
       p.ellipse(rightHandX, rightHandY, MAGNETIC_RADIUS * 2, MAGNETIC_RADIUS * 2);
 
+
+
       // hand 
-      p.fill(200, 100, 100, 150);
+      p.fill(100, 200, 100, 150);
       p.stroke(200, 100, 100);
       p.strokeWeight(3);
-      p.ellipse(rightHandX, rightHandY, HAND_SIZE, HAND_SIZE);
+      // p.ellipse(rightHandX, rightHandY, HAND_SIZE, HAND_SIZE);
+      p.image(rightHand, rightHandX, rightHandY, MAGNETIC_RADIUS, MAGNETIC_RADIUS)
+
+
     }
 
     p.fill(0);
