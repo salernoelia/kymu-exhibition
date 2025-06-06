@@ -113,3 +113,69 @@ Windows (Powershell)
   --start-fullscreen `
   --app=<http://localhost:3000>
 ```
+
+
+```sh
+#!/bin/zsh
+cd /Users/user/kymu-exhibition || exit 1
+
+# Create persistent Chrome profile directory
+CHROME_PROFILE_DIR="$HOME/.kymu-chrome-profile"
+mkdir -p "$CHROME_PROFILE_DIR"
+
+# Create preferences file to auto-grant camera permissions
+PREFS_FILE="$CHROME_PROFILE_DIR/Default/Preferences"
+mkdir -p "$(dirname "$PREFS_FILE")"
+
+# Set up preferences to allow camera access for localhost:3000
+cat > "$PREFS_FILE" << 'EOF'
+{
+   "profile": {
+      "content_settings": {
+         "exceptions": {
+            "media_stream_camera": {
+               "http://localhost:3000,*": {
+                  "last_modified": "13000000000000000",
+                  "setting": 1
+               }
+            },
+            "media_stream_mic": {
+               "http://localhost:3000,*": {
+                  "last_modified": "13000000000000000",
+                  "setting": 1
+               }
+            }
+         }
+      }
+   }
+}
+EOF
+
+node .output/server/index.mjs &
+NODE_PID=$!
+
+sleep 2
+
+cleanup() {
+    echo "Cleaning up..."
+    kill $NODE_PID
+    exit 0
+}
+
+trap cleanup SIGINT SIGTERM
+
+# Open Chrome with persistent profile
+open -W -a "Google Chrome" --args \
+  --kiosk \
+  --disable-web-security \
+  --user-data-dir="$CHROME_PROFILE_DIR" \
+  --no-default-browser-check \
+  --no-first-run \
+  --start-fullscreen \
+  --start-maximized \
+  --use-fake-ui-for-media-stream \
+  --autoplay-policy=no-user-gesture-required \
+  http://localhost:3000
+
+cleanup
+```
