@@ -75,12 +75,12 @@ import type p5 from "p5"
 
 const soundplayer = useSoundPlayer();
 
-const GAME_DURATION = 1200 as const;
+const GAME_DURATION = 1800 as const;
 const SPEED_INCREASE_INTERVAL = 300 as const;
 const INITIAL_SPEED_MULTIPLIER = 1 as const;
 const SPEED_INCREMENT = 0.3 as const;
 const BUCKET_WIDTH = 600 as const;
-const HAND_INFO_FADEOUT_TIME = 7000 as const;
+const HAND_INFO_FADEOUT_TIME = 2000 as const;
 
 const CANVAS_WIDTH = ref(800);
 const CANVAS_HEIGHT = ref(600);
