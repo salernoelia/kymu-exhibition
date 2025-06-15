@@ -46,7 +46,7 @@ const exerciseStore = useExerciseStore()
 const { remoteKey } = useRemoteControl()
 const soundPlayer = useSoundPlayer();
 
-const CAUTION_TEXT = "Make sure you have enough space around you."
+const CAUTION_TEXT = "Make sure you carry nothing and have enough space."
 
 soundPlayer.playCautionSound();
 

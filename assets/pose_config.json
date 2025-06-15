@@ -10,7 +10,7 @@
         "pivot": 12,
         "movable": 14,
         "reference": 24,
-        "threshold": 10,
+        "threshold": 12,
         "targetAngle": 15
     },
     "elbow_flexion_right": {
@@ -24,7 +24,7 @@
         "pivot": 14,
         "movable": 16,
         "reference": 12,
-        "threshold": 8,
+        "threshold": 16,
         "targetAngle": 145
     },
     "wrist_flexion_right": {

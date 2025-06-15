@@ -56,7 +56,9 @@
               {{ countdownSeconds }}
             </span>
           </div>
-          <h2 class="text-white">Stay still</h2>
+          <h2 class="text-white bg-[--color-dangerNormal] p-2 translate-y-4">
+            Stand still like the shown position
+          </h2>
         </motion.div>
 
         <!-- Recording Timer (during recording) -->
@@ -72,7 +74,18 @@
           <div class="timer-circle recording">
             <span class="timer-number">{{ recordingSeconds }}</span>
           </div>
-          <h2 class="text-white">Follow Assesment</h2>
+          <h2
+            class="text-white bg-[--color-successNormal] p-2 translate-y-4"
+            v-if="currentExercise?.id === 'exercise_0'"
+          >
+            Lift your full Arm
+          </h2>
+          <h2
+            class="text-white bg-[--color-successNormal] p-2 translate-y-4"
+            v-else-if="currentExercise?.id === 'exercise_2'"
+          >
+            Lift your hand
+          </h2>
 
         </motion.div>
 
@@ -159,7 +172,7 @@ const USER_DETECTED_START_EXERCISE_TIMEOUT_MS = ref(2000);
 const PERSON_DETECTION_DEBOUNCE_MS = ref(500);
 const personDetectionDebounceTimeout = ref<ReturnType<typeof setTimeout> | null>(null);
 const stablePersonVisible = ref(false);
-const RECORDING_DURATION_MS = ref(4000);
+const RECORDING_DURATION_MS = ref(7000);
 const UNEXPECTED_MOVEMENT_THRESHOLD = ref(0.1);
 const complete = ref(false);
 
@@ -782,7 +795,7 @@ h1 {
   width: 80px;
   height: 80px;
   border-radius: 50%;
-  background-color: var(--color-successNormal);
+  background-color: var(--color-dangerNormal);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -790,7 +803,7 @@ h1 {
 }
 
 .timer-circle.recording {
-  background-color: var(--color-dangerNormal);
+  background-color: var(--color-successNormal);
   animation: pulse 1s infinite;
 }
 

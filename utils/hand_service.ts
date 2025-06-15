@@ -115,6 +115,7 @@ export class HandService extends Camera {
 
                     if (classification.label === 'Right') {
                         this.rightHand.value = handPosition;
+                        
                     } else if (classification.label === 'Left') {
                         this.leftHand.value = handPosition;
                     }

@@ -30,7 +30,10 @@
                     >
                         {{ getActionText(instruction.action) }}
                         <span class="button-label">
-                            <Icon name="ic:baseline-arrow-forward" class="subtle-move-x" />
+                            <Icon
+                                name="ic:baseline-arrow-forward"
+                                class="subtle-move-x"
+                            />
                         </span>
                     </span>
                 </div>
@@ -95,9 +98,12 @@ const getActionText = (action: Actions) => {
 
 <style scoped>
 @keyframes move-x {
-    0%, 100% {
+
+    0%,
+    100% {
         transform: translateX(-3px);
     }
+
     50% {
         transform: translateX(3px);
     }
@@ -122,7 +128,7 @@ const getActionText = (action: Actions) => {
 }
 
 .text {
-    font-size: 1.8rem;
+    font-size: 2.4rem;
     color: var(--color-inactiveDark);
     display: flex;
     align-items: center;

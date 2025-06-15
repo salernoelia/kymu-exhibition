@@ -15,6 +15,29 @@
 
     <div class="absolute w-full flex justify-center inset-0 pt-20">
       <P5Wrapper :sketch="sketch" />
+      <Transition
+        appear
+        name="fade"
+        v-show="startInfo"
+      >
+        <div
+          class="absolute flex flex-col items-center gap-4 z-20 left-1/2 top-1/3 transform -translate-x-1/2 -translate-y-1/2 p-6 bg-[--color-warningNormal] rounded-lg"
+        >
+          <div class="flex flex-row gap-4">
+            <img
+              class="w-10 h-auto filter"
+              src="../public/images/hand_left_invert.png"
+            />
+            <img
+              class="w-10 h-auto"
+              src="../public/images/hand_right_invert.png"
+            />
+          </div>
+          <h2 class="text-black">
+            Use your flat hands facing the TV
+          </h2>
+        </div>
+      </Transition>
       <div
         v-if="userTriesToGrabSecondObject"
         class="absolute flex flex-row items-center gap-4 z-20 bottom-20 p-6 bg-[--color-warningNormal] rounded-lg"
@@ -52,11 +75,12 @@ import type p5 from "p5"
 
 const soundplayer = useSoundPlayer();
 
-const GAME_DURATION = 1200 as const;
+const GAME_DURATION = 1800 as const;
 const SPEED_INCREASE_INTERVAL = 300 as const;
 const INITIAL_SPEED_MULTIPLIER = 1 as const;
 const SPEED_INCREMENT = 0.3 as const;
 const BUCKET_WIDTH = 600 as const;
+const HAND_INFO_FADEOUT_TIME = 2000 as const;
 
 const CANVAS_WIDTH = ref(800);
 const CANVAS_HEIGHT = ref(600);
@@ -80,6 +104,7 @@ const emit = defineEmits<{
 }>()
 
 let gameState = "playing";
+const startInfo = ref(true)
 let obstacles: Obstacle[] = [];
 let obstacle_spawn_rate = 75;
 let bambooImage: p5.Image;
@@ -110,7 +135,6 @@ const USER_TRIES_GETTING_MULTIPLE_OBSTACLES_WARNING_NOTICE = "Only one treat per
 let leftHandX = 0, leftHandY = 0, leftHandVisible = false;
 let rightHandX = 0, rightHandY = 0, rightHandVisible = false;
 
-
 const mediapipeRef = ref<{
   leftHand: { x: number, y: number, visible: boolean };
   rightHand: { x: number, y: number, visible: boolean };
@@ -140,8 +164,15 @@ const updateCanvasSize = () => {
   }
 };
 
+const startInfoCountdown = () => {
+  setTimeout(() => {
+    startInfo.value = false;
+  }, HAND_INFO_FADEOUT_TIME);
+}
+
 onMounted(() => {
   updateCanvasSize();
+  startInfoCountdown();
   window.addEventListener('resize', updateCanvasSize);
 
   if (videoFeed.value) {
@@ -160,6 +191,7 @@ onMounted(() => {
       })
       .catch(err => console.log('Video feed error:', err));
   }
+
 });
 
 onUnmounted(() => {
@@ -652,6 +684,8 @@ defineExpose({
   getGameState: () => gameState,
   cleanup,
 });
+
+
 </script>
 
 <style scoped>
@@ -659,5 +693,15 @@ defineExpose({
   border-radius: 1rem;
   padding-left: 2rem;
   padding-right: 2rem;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>
