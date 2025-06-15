@@ -1,7 +1,7 @@
 <template>
-  <div class="w-full h-full flex flex-col">
+  <div class="w-full h-full flex flex-col overflow-hidden relative">
     <div class="flex flex-row w-full flex-grow overflow-hidden">
-      <div class="flex flex-col w-full h-full justify-center items-center overflow-hidden">
+      <div class="flex flex-col w-full h-full justify-center items-center overflow-hidden relative">
         <video
           v-show="false"
           ref="source"
@@ -17,22 +17,22 @@
         <img
           v-if="!isPersonVisibleState && romId === 'exercise_0' && !complete"
           src="/public/images/shoulder_idle.png"
-          class="absolute h-full output_canvas overlay"
+          class="absolute w-full h-full output_canvas overlay object-contain"
         >
         <img
           v-if="isPersonVisibleState && romId === 'exercise_0' && !complete && !exerciseStore.startedRecording"
           src="/public/images/shoulder_success.png"
-          class="absolute h-full output_canvas overlay"
+          class="absolute w-full h-full output_canvas overlay object-contain"
         >
         <img
           v-if="!isPersonVisibleState && romId === 'exercise_2' && !complete"
           src="/public/images/elbow_idle.png"
-          class="absolute h-full output_canvas overlay"
+          class="absolute w-full h-full output_canvas overlay object-contain"
         >
         <img
           v-if="isPersonVisibleState && romId === 'exercise_2' && !complete && !exerciseStore.startedRecording"
           src="/public/images/elbow_success.png"
-          class="absolute h-full output_canvas overlay"
+          class="absolute w-full h-full output_canvas overlay object-contain"
         >
         <!-- <DotLottieVue
           v-if="exerciseStore.startedRecording && romId=== 'exercise_0'"
@@ -96,7 +96,7 @@
           :animate="{ opacity: 1, y: 0 }"
           :exit="{ opacity: 0, y: 20 }"
           :transition="{ duration: 0.3 }"
-          class="absolute flex flex-col items-center justify-center z-100 bg-[--color-dangerNormal] text-white px-8 py-4 text-xl rounded-lg shadow-2xl z-50 text-center"
+          class="absolute flex flex-col items-center justify-center z-50 bg-[--color-dangerNormal] text-white px-8 py-4 text-xl rounded-lg shadow-2xl text-center"
         >
           <Icon
             name="material-symbols:warning-outline-rounded"

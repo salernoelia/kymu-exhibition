@@ -1,7 +1,7 @@
 <template>
     <div class="w-full h-full">
 
-        <div class="w-full h-full flex flex-col items-center justify-start mt-2">
+        <div class="w-full h-full flex flex-col items-center justify-start mt-2 overflow-hidden">
             <ExerciseTypeLabel
                 v-if="loadedExercise?.type"
                 :type="loadedExercise?.type"
