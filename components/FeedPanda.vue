@@ -34,7 +34,7 @@
             />
           </div>
           <h2 class="text-black">
-            Use your flat hands facing the TV
+            {{ startInfoNotice }}
           </h2>
         </div>
       </Transition>
@@ -75,13 +75,20 @@ import type p5 from "p5"
 
 const soundplayer = useSoundPlayer();
 
-const GAME_DURATION = 1800 as const;
+const GAME_DURATION = 1200 as const;
 const SPEED_INCREASE_INTERVAL = 300 as const;
 const INITIAL_SPEED_MULTIPLIER = 1 as const;
 const SPEED_INCREMENT = 0.3 as const;
 const BUCKET_WIDTH = 600 as const;
-const HAND_INFO_FADEOUT_TIME = 2000 as const;
+const HAND_INFO_FADEOUT_TIME = 6000 as const;
+const DRAG_INFO_FADEOUT_TIME = 8000 as const;
 
+const START_INFO_HAND_NOTICE = 'Use your flat hands facing the TV';
+const START_INFO_DRAG_NOTICE = 'Drag food to the panda';
+const USER_TRIES_GETTING_MULTIPLE_OBSTACLES_WARNING_NOTICE = "Only one treat per hand!";
+
+
+const startInfoNotice = ref(START_INFO_HAND_NOTICE)
 const CANVAS_WIDTH = ref(800);
 const CANVAS_HEIGHT = ref(600);
 // const HAND_SIZE = 80;
@@ -130,7 +137,6 @@ let leftHandHasObject = false;
 let rightHandHasObject = false;
 
 const userTriesToGrabSecondObject = ref(false);
-const USER_TRIES_GETTING_MULTIPLE_OBSTACLES_WARNING_NOTICE = "Only one treat per hand!"
 
 let leftHandX = 0, leftHandY = 0, leftHandVisible = false;
 let rightHandX = 0, rightHandY = 0, rightHandVisible = false;
@@ -166,8 +172,11 @@ const updateCanvasSize = () => {
 
 const startInfoCountdown = () => {
   setTimeout(() => {
-    startInfo.value = false;
+    startInfoNotice.value = START_INFO_DRAG_NOTICE;
   }, HAND_INFO_FADEOUT_TIME);
+  setTimeout(() => {
+    startInfo.value = false;
+  }, DRAG_INFO_FADEOUT_TIME);
 }
 
 onMounted(() => {
