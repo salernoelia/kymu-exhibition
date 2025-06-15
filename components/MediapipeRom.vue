@@ -172,7 +172,7 @@ const USER_DETECTED_START_EXERCISE_TIMEOUT_MS = ref(2000);
 const PERSON_DETECTION_DEBOUNCE_MS = ref(500);
 const personDetectionDebounceTimeout = ref<ReturnType<typeof setTimeout> | null>(null);
 const stablePersonVisible = ref(false);
-const RECORDING_DURATION_MS = ref(7000);
+const RECORDING_DURATION_MS = ref(4000);
 const UNEXPECTED_MOVEMENT_THRESHOLD = ref(0.1);
 const complete = ref(false);
 
