@@ -56,7 +56,7 @@
               {{ countdownSeconds }}
             </span>
           </div>
-          <h2 class="text-white bg-[--color-dangerNormal] p-2 translate-y-4">
+          <h2 class="text-white bg-[--color-dangerNormal] rounded-2xl p-2 translate-y-4">
             Stand still like the shown position
           </h2>
         </motion.div>
@@ -75,13 +75,13 @@
             <span class="timer-number">{{ recordingSeconds }}</span>
           </div>
           <h2
-            class="text-white bg-[--color-successNormal] p-2 translate-y-4"
+            class="text-white bg-[--color-successNormal] rounded-2xl p-2 translate-y-4"
             v-if="currentExercise?.id === 'exercise_0'"
           >
             Lift your full Arm
           </h2>
           <h2
-            class="text-white bg-[--color-successNormal] p-2 translate-y-4"
+            class="text-white bg-[--color-successNormal] rounded-2xl p-2 translate-y-4"
             v-else-if="currentExercise?.id === 'exercise_2'"
           >
             Lift your hand
